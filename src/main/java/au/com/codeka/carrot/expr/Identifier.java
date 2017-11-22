@@ -6,10 +6,11 @@ import javax.annotation.Nullable;
  * An Identifier.
  */
 public class Identifier {
-	
+
 	private final String value;
 
 	public Identifier(Token token) {
+		// TODO: this is often redundant
 		if (token.getType() != TokenType.IDENTIFIER) {
 			throw new IllegalStateException("Expected IDENTIFIER");
 		}

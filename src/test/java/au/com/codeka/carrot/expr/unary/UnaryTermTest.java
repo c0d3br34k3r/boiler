@@ -1,19 +1,15 @@
 package au.com.codeka.carrot.expr.unary;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.expr.Term;
-import au.com.codeka.carrot.expr.accessible.AccessibleTerm;
-import au.com.codeka.carrot.expr.accessible.Callable;
-import au.com.codeka.carrot.expr.accessible.MethodTerm;
-import org.junit.Test;
-
-import javax.annotation.Nonnull;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * @author Marten Gajda

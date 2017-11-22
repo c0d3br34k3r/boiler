@@ -1,6 +1,13 @@
 package au.com.codeka.carrot;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import com.google.common.base.Predicate;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
 
 import au.com.codeka.carrot.tag.BlockTag;
 import au.com.codeka.carrot.tag.EchoTag;
@@ -12,97 +19,108 @@ import au.com.codeka.carrot.tag.IfTag;
 import au.com.codeka.carrot.tag.IncludeTag;
 import au.com.codeka.carrot.tag.SetTag;
 import au.com.codeka.carrot.tag.Tag;
-import au.com.codeka.carrot.util.Log;
 
 /**
  * Contains a collection of tags that will be matched when parsing a template.
  */
 public class TagRegistry {
-	/** Interface to implement for custom tag matching. */
-	public interface TagMatcher {
-		boolean isMatch(String tagName);
-	}
 
 	public static Builder newBuilder() {
 		return new Builder();
 	}
 
-	private final Configuration config;
-	private final ArrayList<Entry> entries;
+	private Map<String, Supplier<? extends Tag>> lookup =
+			new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private List<Entry> entries;
 
-	private TagRegistry(Configuration config, ArrayList<Entry> entries) {
-		this.config = config;
-		this.entries = entries;
+	private TagRegistry(Map<String, Supplier<? extends Tag>> lookup, List<Entry> entries) {
+		this.lookup = lookup;
+		this.entries = ImmutableList.copyOf(entries);
 	}
 
 	public Tag createTag(String tagName) {
+		Supplier<? extends Tag> supplier = lookup.get(tagName);
+		if (supplier != null) {
+			return supplier.get();
+		}
 		for (Entry entry : entries) {
-			if (entry.matcher.isMatch(tagName)) {
-				try {
-					return entry.tagClass.newInstance();
-				} catch (InstantiationException | IllegalAccessException e) {
-					Log.warning(config, "Error creating instance of tag '%s': %s", tagName, e);
-				}
+			if (entry.matcher.apply(tagName)) {
+				return entry.creator.get();
 			}
 		}
-
 		return null;
 	}
 
 	private static class Entry {
-		TagMatcher matcher;
-		Class<? extends Tag> tagClass;
 
-		public Entry(TagMatcher matcher, Class<? extends Tag> tagClass) {
+		private final Predicate<String> matcher;
+		private final Supplier<? extends Tag> creator;
+
+		public Entry(Predicate<String> matcher, Supplier<? extends Tag> creator) {
 			this.matcher = matcher;
-			this.tagClass = tagClass;
-		}
-	}
-
-	private static class DefaultTagMatcher implements TagMatcher {
-		private final String tagName;
-
-		public DefaultTagMatcher(String tagName) {
-			this.tagName = tagName;
-		}
-
-		@Override
-		public boolean isMatch(String tagName) {
-			return tagName.equalsIgnoreCase(this.tagName);
+			this.creator = creator;
 		}
 	}
 
 	public static class Builder {
-		private final ArrayList<Entry> entries = new ArrayList<>();
+
+		private Map<String, Supplier<? extends Tag>> lookup =
+				new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		private List<Entry> entries = new ArrayList<>();
 
 		public Builder() {
-			add("echo", EchoTag.class);
-			add("if", IfTag.class);
-			add("for", ForTag.class);
-			add("else", ElseTag.class);
-			add("extends", ExtendsTag.class);
-			add("block", BlockTag.class);
-			add("set", SetTag.class);
-			add("include", IncludeTag.class);
-			add(new TagMatcher() {
+			// @formatter:off
+			add("echo", new Supplier<Tag>() {
+				@Override public Tag get() { return new EchoTag(); }
+			});
+			add("if", new Supplier<Tag>() {
+				@Override public Tag get() { return new IfTag(); }
+			});
+			add("for", new Supplier<Tag>() {
+				@Override public Tag get() { return new ForTag(); }
+			});
+			add("else", new Supplier<Tag>() {
+				@Override public Tag get() { return new ElseTag(); }
+			});
+			add("extends", new Supplier<Tag>() {
+				@Override public Tag get() { return new ExtendsTag(); }
+			});
+			add("block", new Supplier<Tag>() {
+				@Override public Tag get() { return new BlockTag(); }
+			});
+			add("set", new Supplier<Tag>() {
+				@Override public Tag get() { return new SetTag(); }
+			});
+			add("include", new Supplier<Tag>() {
+				@Override public Tag get() { return new IncludeTag(); }
+			});
+			// @formatter:on
+			add(new Predicate<String>() {
 				@Override
-				public boolean isMatch(String tagName) {
-					return tagName.toLowerCase().startsWith("end");
+				public boolean apply(String input) {
+					return input.toLowerCase().startsWith("end");
 				}
-			}, EndTag.class);
+			}, new Supplier<Tag>() {
+				@Override
+				public Tag get() {
+					return new EndTag();
+				}
+			});
 		}
 
-		public Builder add(String name, Class<? extends Tag> tagClass) {
-			return add(new DefaultTagMatcher(name), tagClass);
+		public Builder add(String name, Supplier<? extends Tag> supplier) {
+			lookup.put(name, supplier);
+			return this;
 		}
 
-		public Builder add(TagMatcher tagMatcher, Class<? extends Tag> tagClass) {
-			entries.add(new Entry(tagMatcher, tagClass));
+		public Builder add(Predicate<String> matcher, Supplier<? extends Tag> supplier) {
+			entries.add(new Entry(matcher, supplier));
 			return this;
 		}
 
 		public TagRegistry build(Configuration config) {
-			return new TagRegistry(config, entries);
+			return new TagRegistry(lookup, entries);
 		}
 	}
+
 }

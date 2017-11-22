@@ -1,7 +1,8 @@
 package au.com.codeka.carrot;
 
+import java.lang.reflect.Array;
+import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import au.com.codeka.carrot.bindings.JsonArrayBindings;
 import au.com.codeka.carrot.bindings.JsonObjectBindings;
@@ -23,6 +25,7 @@ import au.com.codeka.carrot.util.SafeString;
  * Various helpers for working with {@link Object}s.
  */
 public class ValueHelper {
+
 	/**
 	 * Does the given value represent "true". For example, it's a Boolean that's
 	 * true, a non-zero integer, etc.
@@ -201,7 +204,7 @@ public class ValueHelper {
 	 * @return A {@link List} that can actually be iterated.
 	 * @throws CarrotException If the value is not iterable.
 	 */
-	public static Collection<?> iterate(Object iterable) throws CarrotException {
+	public static Collection<?> iterate(final Object iterable) throws CarrotException {
 		if (iterable == null) {
 			return Collections.emptySet();
 		}
@@ -215,7 +218,19 @@ public class ValueHelper {
 			return ((Map<?, ?>) iterable).keySet();
 		}
 		if (iterable.getClass().isArray()) {
-			return Arrays.asList((Object[]) iterable);
+			final int length = Array.getLength(iterable);
+			return new AbstractList<Object>() {
+				
+				@Override
+				public Object get(int index) {
+					return Array.get(iterable, index);
+				}
+
+				@Override
+				public int size() {
+					return length;
+				}
+			};
 		}
 		throw new CarrotException("Unable to iterate '" + iterable + "'");
 	}
@@ -290,6 +305,18 @@ public class ValueHelper {
 		}
 		if (object instanceof JsonArray) {
 			return new JsonArrayBindings((JsonArray) object);
+		}
+		if (object instanceof JsonPrimitive) {
+			JsonPrimitive primitive = (JsonPrimitive) object;
+			if (primitive.isNumber()) {
+				return primitive.getAsNumber();
+			}
+			if (primitive.isString()) {
+				return primitive.getAsString();
+			}
+			if (primitive.isBoolean()) {
+				return primitive.getAsBoolean();
+			}
 		}
 		if (JsonNull.INSTANCE.equals(object)) {
 			return null;

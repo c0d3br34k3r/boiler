@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
@@ -15,7 +17,7 @@ import au.com.codeka.carrot.ValueHelper;
  *
  * @author Marten Gajda
  */
-public final class JsonArrayBindings implements Bindings, Iterable<JsonElement> {
+public final class JsonArrayBindings implements Bindings, Iterable<Object> {
 
 	private final JsonArray jsonArray;
 
@@ -34,8 +36,14 @@ public final class JsonArrayBindings implements Bindings, Iterable<JsonElement> 
 	}
 
 	@Override
-	public Iterator<JsonElement> iterator() {
-		return jsonArray.iterator();
+	public Iterator<Object> iterator() {
+		return Iterators.transform(jsonArray.iterator(), new Function<JsonElement, Object>() {
+
+			@Override
+			public Object apply(JsonElement input) {
+				return ValueHelper.jsonHelper(input);
+			}
+		});
 	}
 
 }

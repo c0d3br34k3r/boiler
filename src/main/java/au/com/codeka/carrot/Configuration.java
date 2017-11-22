@@ -1,5 +1,8 @@
 package au.com.codeka.carrot;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import au.com.codeka.carrot.resource.MemoryResourceLocator;
 import au.com.codeka.carrot.resource.ResourceLocator;
 
@@ -8,6 +11,7 @@ import au.com.codeka.carrot.resource.ResourceLocator;
  * engine.
  */
 public class Configuration {
+	
 	public interface Logger {
 		int LEVEL_DEBUG = 1;
 		int LEVEL_INFO = 2;
@@ -16,14 +20,14 @@ public class Configuration {
 		void print(int level, String msg);
 	}
 
-	private final String encoding;
+	private final Charset encoding;
 	private final ResourceLocator resourceLocator;
 	private final TagRegistry tagRegistry;
 	private final Logger logger;
 	private final boolean autoEscape;
 
 	private Configuration(
-			String encoding,
+			Charset encoding,
 			ResourceLocator.Builder resourceLocatorBuilder,
 			TagRegistry.Builder tagRegistryBuilder,
 			Logger logger,
@@ -35,7 +39,7 @@ public class Configuration {
 		this.autoEscape = autoEscape;
 	}
 
-	public String getEncoding() {
+	public Charset getEncoding() {
 		return encoding;
 	}
 
@@ -60,18 +64,19 @@ public class Configuration {
 	}
 
 	public static class Builder {
-		private String encoding;
+		
+		private Charset encoding;
 		private ResourceLocator.Builder resourceLocatorBuilder;
 		private TagRegistry.Builder tagRegistryBuilder;
 		private Logger logger;
 		private boolean autoEscape;
 
 		public Builder() {
-			encoding = "utf-8";
+			encoding = StandardCharsets.UTF_8;
 			autoEscape = true;
 		}
 
-		public Builder setEncoding(String encoding) {
+		public Builder setEncoding(Charset encoding) {
 			this.encoding = encoding;
 			return this;
 		}

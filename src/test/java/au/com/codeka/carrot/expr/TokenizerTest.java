@@ -1,16 +1,18 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.resource.ResourcePointer;
-import au.com.codeka.carrot.util.LineReader;
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
+import java.io.StringReader;
+import java.util.EnumSet;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.StringReader;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.resource.ResourcePointer;
+import au.com.codeka.carrot.util.LineReader;
 
 /**
  * Tests for {@link Tokenizer}.
@@ -171,12 +173,12 @@ public class TokenizerTest {
 			Tokenizer tokenizer = createTokenizer("a + + b");
 			assertThat(tokenizer.require(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
 			assertThat(tokenizer.require(TokenType.PLUS).getType()).isEqualTo(TokenType.PLUS);
-			assertThat(tokenizer.expect(TokenType.IDENTIFIER, TokenType.NUMBER_LITERAL,
-					TokenType.STRING_LITERAL).getValue()).isEqualTo("b");
+			assertThat(tokenizer.require(EnumSet.of(TokenType.IDENTIFIER, TokenType.NUMBER_LITERAL,
+					TokenType.STRING_LITERAL)).getValue()).isEqualTo("b");
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage()).isEqualTo(
-					"???\n1: a + + b\n        ^\nExpected token of type IDENTIFIER, NUMBER_LITERAL or STRING_LITERAL, got PLUS");
+					"???\n1: a + + b\n        ^\nExpected token of type [STRING_LITERAL, NUMBER_LITERAL, IDENTIFIER], got PLUS");
 		}
 	}
 
@@ -239,7 +241,7 @@ public class TokenizerTest {
 		assertThat(t1).isEqualTo(new Token(TokenType.ASSIGNMENT));
 
 		assertThat(t1.toString()).isEqualTo("ASSIGNMENT");
-		assertThat(t2.toString()).isEqualTo("EQUALITY");
+		assertThat(t2.toString()).isEqualTo("EQUAL");
 		assertThat(t3.toString()).isEqualTo("IDENTIFIER <foo>");
 		assertThat(t4.toString()).isEqualTo("IDENTIFIER <bar>");
 		assertThat(t5.toString()).isEqualTo("IDENTIFIER <bar>");

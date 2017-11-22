@@ -21,6 +21,7 @@ import au.com.codeka.carrot.expr.values.Variable;
  * @author Marten Gajda
  */
 public final class AccessTermParser implements TermParser {
+
 	private final TermParser valueParser;
 	private final TermParser expressionTerm;
 	private final TermParser identifierTerm;

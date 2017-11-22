@@ -89,54 +89,47 @@ public class StatementParser {
 
 		strictIdentifierParser = new IdentifierTermParser(new ErrorTermParser());
 
+		// @formatter:off
 		TermParser base = new BinaryTermParser(
-				new BinaryTermParser(
-						new BinaryTermParser(
-								new BinaryTermParser(
-										new BinaryTermParser(
-												new BinaryTermParser(
-														new UnaryTermParser(
-																new NumberTermParser(
-																		new StringTermParser(
-																				new ExpressionTermParser(
-																						new AccessTermParser(
-																								new TermParser() {
-																									@Override
-																									public Term parse(
-																											Tokenizer tokenizer)
-																											throws CarrotException {
-																										return expressionParser
-																												.parse(tokenizer);
-																									}
-																								},
-																								strictIdentifierParser,
-																								new TermParser() {
-																									@Override
-																									public Term parse(
-																											Tokenizer tokenizer)
-																											throws CarrotException {
-																										return iterableParser
-																												.parse(tokenizer);
-																									}
-																								}),
-																						new TermParser() {
-																							@Override
-																							public Term parse(
-																									Tokenizer tokenizer)
-																									throws CarrotException {
-																								return expressionParser
-																										.parse(tokenizer);
-																							}
-																						}))),
-																TokenType.NOT),
-														TokenType.MULTIPLY, TokenType.DIVIDE),
-												TokenType.PLUS, TokenType.MINUS),
-										TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL,
-										TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL,
-										TokenType.IN),
-								TokenType.EQUAL, TokenType.NOT_EQUAL),
-						TokenType.LOGICAL_AND),
-				TokenType.LOGICAL_OR);
+		new BinaryTermParser(
+		  new BinaryTermParser(
+		    new BinaryTermParser(
+		      new BinaryTermParser(
+		        new BinaryTermParser(
+		          new UnaryTermParser(
+		            new NumberTermParser(
+		              new StringTermParser(
+		                new ExpressionTermParser(
+		                  new AccessTermParser(
+		                    new TermParser() {
+			                 @Override
+			                 public Term parse(Tokenizer tokenizer) throws CarrotException {
+				              return expressionParser.parse(tokenizer);
+			                 }
+		                    }, 
+		                    strictIdentifierParser,
+		                    new TermParser() {
+			                 @Override
+			                 public Term parse(Tokenizer tokenizer) throws CarrotException {
+				              return iterableParser.parse(tokenizer);
+			                 }
+		                    }),
+		                  new TermParser() {
+			               @Override
+			               public Term parse(Tokenizer tokenizer) throws CarrotException {
+				            return expressionParser.parse(tokenizer);
+			               }
+		                  })
+		                )
+		              ), 
+		            TokenType.NOT),
+		          TokenType.MULTIPLY, TokenType.DIVIDE),
+		        TokenType.PLUS, TokenType.MINUS),
+		      TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
+		    TokenType.EQUAL, TokenType.NOT_EQUAL),
+		  TokenType.LOGICAL_AND),
+		TokenType.LOGICAL_OR);
+		// @formatter:on
 
 		// the generic expression uses a lax iteration parser
 		expressionParser = new LaxIterationTermParser(base);
@@ -166,7 +159,7 @@ public class StatementParser {
 	 * @throws CarrotException if there's some error parsing the identifer.
 	 */
 	@Nullable
-	public Identifier maybeParseIdentifier() throws CarrotException {
+	public Identifier tryParseIdentifier() throws CarrotException {
 		if (tokenizer.accept(TokenType.IDENTIFIER)) {
 			return parseIdentifier();
 		}
@@ -199,13 +192,12 @@ public class StatementParser {
 	}
 
 	public List<Identifier> parseIdentifierList() throws CarrotException {
+		// TODO: most efficient?
 		List<Identifier> result = new LinkedList<>();
 		// first token of a list is always an identifier
-		result.add(new Identifier(tokenizer.require(TokenType.IDENTIFIER)));
-		while (tokenizer.accept(TokenType.COMMA)) {
-			tokenizer.require(TokenType.COMMA);
-			result.add(new Identifier(tokenizer.require(TokenType.IDENTIFIER)));
-		}
+		do {
+			result.add(parseIdentifier());
+		} while (tokenizer.expect(TokenType.COMMA) != null);
 		return result;
 	}
 
@@ -222,4 +214,5 @@ public class StatementParser {
 	public Term parseTermsIterable() throws CarrotException {
 		return iterableParser.parse(tokenizer);
 	}
+
 }

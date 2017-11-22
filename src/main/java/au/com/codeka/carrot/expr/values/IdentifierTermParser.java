@@ -36,6 +36,7 @@ public final class IdentifierTermParser implements TermParser {
 	 * name of the identifier.
 	 */
 	private static final class IdentifierTerm implements Term {
+
 		private final Token token;
 
 		public IdentifierTerm(Token token) {

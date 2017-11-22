@@ -1,15 +1,16 @@
 package au.com.codeka.carrot.expr.accessible;
 
-import au.com.codeka.carrot.bindings.Composite;
-import au.com.codeka.carrot.bindings.SingletonBindings;
-import au.com.codeka.carrot.util.MockLazyTerm;
-import com.google.common.collect.ImmutableMap;
-import org.dmfs.iterables.ArrayIterable;
-import org.junit.Test;
+import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Arrays;
 
-import static com.google.common.truth.Truth.assertThat;
+import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
+
+import au.com.codeka.carrot.bindings.Composite;
+import au.com.codeka.carrot.bindings.SingletonBindings;
+import au.com.codeka.carrot.util.MockLazyTerm;
 
 /**
  * @author Marten Gajda
@@ -35,11 +36,11 @@ public class AccessOperatorTest {
 		assertThat(new AccessOperator().apply(new MethodTestClass(), new MockLazyTerm("b")))
 				.isEqualTo("B");
 		assertThat(
-				new AccessOperator().apply(new ArrayIterable<>("a", "b", "c"), new MockLazyTerm(0)))
+				new AccessOperator().apply(Arrays.asList("a", "b", "c"), new MockLazyTerm(0)))
 						.isEqualTo("a");
-		assertThat(new AccessOperator().apply(new ArrayIterable<>("a", "b", "c"),
+		assertThat(new AccessOperator().apply(Arrays.asList("a", "b", "c"),
 				new MockLazyTerm(1L))).isEqualTo("b");
-		assertThat(new AccessOperator().apply(new ArrayIterable<>("a", "b", "c"),
+		assertThat(new AccessOperator().apply(Arrays.asList("a", "b", "c"),
 				new MockLazyTerm(2L))).isEqualTo("c");
 	}
 

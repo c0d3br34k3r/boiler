@@ -270,7 +270,7 @@ public class Tokenizer {
 					StringBuilder number = new StringBuilder();
 					number.append((char) ch);
 					next = nextChar();
-					while (next >= 0 && DIGIT_OR_DOT.matches((char) ch)) {
+					while (next >= 0 && DIGIT_OR_DOT.matches((char) next)) {
 						number.append((char) next);
 						next = nextChar();
 					}

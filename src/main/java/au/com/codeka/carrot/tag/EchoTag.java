@@ -12,9 +12,10 @@ import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.tmpl.TagNode;
 
 /**
- * Echo tag just echos the results of it's single parameter.
+ * Echo tag just echos the results of its single parameter.
  */
 public class EchoTag extends Tag {
+
 	private Term expr;
 
 	@Override
@@ -31,4 +32,5 @@ public class EchoTag extends Tag {
 		}
 		writer.write(value.toString());
 	}
+
 }

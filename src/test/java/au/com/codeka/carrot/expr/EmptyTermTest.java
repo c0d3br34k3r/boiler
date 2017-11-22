@@ -13,14 +13,14 @@ import static com.google.common.truth.Truth.assertThat;
 public class EmptyTermTest {
 	@Test
 	public void testEvaluate() throws Exception {
-		assertThat(((Iterable) new EmptyTerm().evaluate(
+		assertThat(((Iterable<?>) EmptyTerm.INSTANCE.evaluate(
 				new Configuration.Builder().build(),
 				new Scope(new EmptyBindings()))).iterator().hasNext()).isFalse();
 	}
 
 	@Test
 	public void testToString() throws Exception {
-		assertThat(new EmptyTerm().toString()).isEqualTo("");
+		assertThat(EmptyTerm.INSTANCE.toString()).isEqualTo("");
 	}
 
 }

@@ -1,19 +1,21 @@
 package au.com.codeka.carrot.expr.accessible;
 
+import static au.com.codeka.carrot.util.RenderHelper.render;
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.junit.Test;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.expr.Term;
-import org.junit.Test;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-
-import static au.com.codeka.carrot.util.RenderHelper.render;
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * @author Marten Gajda
@@ -38,7 +40,7 @@ public class MethodTermTest {
 								return new Callable() {
 									@Nullable
 									@Override
-									public Object call(@Nonnull Iterable<Object> params)
+									public Object call(@Nonnull Iterable<?> params)
 											throws CarrotException {
 										assertThat(params).isSameAs(testParams);
 										return testResult;
@@ -119,7 +121,7 @@ public class MethodTermTest {
 					public String toString() {
 						return "params";
 					}
-				}).toString()).isEqualTo("methodname LPAREN params RPAREN");
+				}).toString()).isEqualTo("methodname LEFT_PAREN params RIGHT_PAREN");
 	}
 
 }

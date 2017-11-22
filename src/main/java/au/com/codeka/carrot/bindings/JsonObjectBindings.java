@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.UnmodifiableIterator;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -17,6 +18,7 @@ import au.com.codeka.carrot.ValueHelper;
  * @author Marten Gajda
  */
 public final class JsonObjectBindings implements Bindings, Iterable<EntryBindings> {
+
 	private final JsonObject jsonObject;
 
 	public JsonObjectBindings(JsonObject JsonObject) {
@@ -35,22 +37,13 @@ public final class JsonObjectBindings implements Bindings, Iterable<EntryBinding
 
 	@Override
 	public Iterator<EntryBindings> iterator() {
+
 		final Iterator<Entry<String, JsonElement>> keys = jsonObject.entrySet().iterator();
 
-		// return an iterator of Map Entries which allows iterating json objects
-		// like this:
-		// {% for item in json %}
-		// {{ item.key }} -> {{ item.value }}
-		// {% end %}
-		return new Iterator<EntryBindings>() {
+		return new UnmodifiableIterator<EntryBindings>() {
 			@Override
 			public boolean hasNext() {
 				return keys.hasNext();
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException("Remove not supported.");
 			}
 
 			@Override
@@ -60,4 +53,5 @@ public final class JsonObjectBindings implements Bindings, Iterable<EntryBinding
 			}
 		};
 	}
+
 }

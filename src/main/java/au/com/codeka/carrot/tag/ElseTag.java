@@ -46,12 +46,12 @@ public class ElseTag extends Tag {
 		if (expr == null) {
 			return false;
 		}
-		return (nextTag instanceof ElseTag);
+		return nextTag instanceof ElseTag;
 	}
 
 	@Override
 	public void parseStatement(StatementParser stmtParser) throws CarrotException {
-		Identifier identifier = stmtParser.maybeParseIdentifier();
+		Identifier identifier = stmtParser.tryParseIdentifier();
 		if (identifier != null) {
 			if (!identifier.evaluate().equalsIgnoreCase("if")) {
 				throw new CarrotException("Expected 'if' after 'else'.");

@@ -1,19 +1,25 @@
 package au.com.codeka.carrot.tag;
 
-import au.com.codeka.carrot.CarrotEngine;
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.bindings.MapBindings;
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.annotation.Nullable;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.annotation.Nullable;
-import java.util.*;
-
-import static com.google.common.truth.Truth.assertThat;
+import au.com.codeka.carrot.CarrotEngine;
+import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.Configuration;
+import au.com.codeka.carrot.bindings.MapBindings;
+import au.com.codeka.carrot.resource.MemoryResourceLocator;
 
 /**
  * Tests for {@link ForTag}.
@@ -94,16 +100,17 @@ public class ForTagTest {
 								.isEqualTo("Hello  -foo:a-  World");
 	}
 
+	// TODO: This is dumb
 	@Test
 	public void testVariableExpansionLoop2() throws CarrotException {
 		Map<String, Object> context = new HashMap<>();
 		ArrayList<List<String>> values = new ArrayList<>();
 		values.add(Arrays.asList("foo", "bar", "baz"));
 		values.add(Arrays.asList("1", "2", "3"));
-		values.add(Arrays.asList("a", "b", "c"));
+		values.add(Arrays.asList("a", "b", "c", "d"));
 		context.put("values", values);
 		assertThat(
-				render("Hello {% for x,y, z in values %} -{{ x }}/{{ y }}/{{ z }}- {% end %} World",
+				render("Hello {% for x, y, z in values %} -{{ x }}/{{ y }}/{{ z }}- {% end %} World",
 						context))
 								.isEqualTo("Hello  -foo/bar/baz-  -1/2/3-  -a/b/c-  World");
 	}

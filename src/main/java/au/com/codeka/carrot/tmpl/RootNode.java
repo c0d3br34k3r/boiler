@@ -12,6 +12,7 @@ import au.com.codeka.carrot.resource.ResourcePointer;
  * Special node that represents the root of the syntax tree.
  */
 public class RootNode extends Node {
+
 	public RootNode(ResourcePointer ptr) {
 		super(ptr, true /* isBlockNode */);
 	}
@@ -21,4 +22,5 @@ public class RootNode extends Node {
 			throws CarrotException, IOException {
 		renderChildren(engine, writer, scope);
 	}
+
 }

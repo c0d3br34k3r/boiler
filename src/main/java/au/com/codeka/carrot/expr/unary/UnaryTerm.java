@@ -12,6 +12,7 @@ import au.com.codeka.carrot.expr.Term;
  * @author Marten Gajda
  */
 public final class UnaryTerm implements Term {
+
 	private final UnaryOperator operation;
 	private final Term term;
 
@@ -27,6 +28,7 @@ public final class UnaryTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("%s %s", operation.toString(), term.toString());
+		return String.format("%s %s", operation, term);
 	}
+
 }

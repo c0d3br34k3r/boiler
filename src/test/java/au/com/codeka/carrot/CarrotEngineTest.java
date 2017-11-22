@@ -1,19 +1,26 @@
 package au.com.codeka.carrot;
 
-import au.com.codeka.carrot.bindings.*;
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
-import com.google.common.collect.ImmutableMap;
-import org.dmfs.iterables.ArrayIterable;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.Arrays;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.annotation.Nullable;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonParser;
 
-import static com.google.common.truth.Truth.assertThat;
+import au.com.codeka.carrot.bindings.Composite;
+import au.com.codeka.carrot.bindings.EmptyBindings;
+import au.com.codeka.carrot.bindings.JsonArrayBindings;
+import au.com.codeka.carrot.bindings.JsonObjectBindings;
+import au.com.codeka.carrot.bindings.MapBindings;
+import au.com.codeka.carrot.bindings.SingletonBindings;
+import au.com.codeka.carrot.resource.MemoryResourceLocator;
 
 /**
  * These are basically end-to-end tests of the entire shebang.
@@ -66,7 +73,7 @@ public class CarrotEngineTest {
 		assertThat(
 				render(
 						"{{ iterable[2] }}",
-						new SingletonBindings("iterable", new ArrayIterable<>("a", "b", "c", "d"))))
+						new SingletonBindings("iterable", Arrays.asList("a", "b", "c", "d"))))
 								.isEqualTo("c");
 		assertThat(
 				render(
@@ -106,12 +113,8 @@ public class CarrotEngineTest {
 
 	@Test
 	public void testEchoTag() {
-		assertThat(render("foo{{ foo.bar[baz] }}", new MapBindings(ImmutableMap.of(
-				"foo", new Object() {
-					public Map<String, String> getBar() {
-						return ImmutableMap.of("hello", "World");
-					}
-				},
+		assertThat(render("foo{{ foo.bar[baz] }}", new MapBindings(ImmutableMap.<String, Object> of(
+				"foo", ImmutableMap.of("bar", ImmutableMap.of("hello", "World")),
 				"baz", "hello")))).isEqualTo("fooWorld");
 	}
 
@@ -142,13 +145,10 @@ public class CarrotEngineTest {
 						"foo{{ $map.foo.bar[$map.baz] }}",
 						new Composite(
 								new SingletonBindings("$map", new MapBindings(
-										ImmutableMap.of(
+										ImmutableMap.<String, Object> of(
 												"foo",
-												new Object() {
-													public Map<String, String> getBar() {
-														return ImmutableMap.of("hello", "World");
-													}
-												},
+												ImmutableMap.of("bar",
+														ImmutableMap.of("hello", "World")),
 												"baz",
 												"hello"))))))
 														.isEqualTo("fooWorld");
@@ -162,8 +162,9 @@ public class CarrotEngineTest {
 						new SingletonBindings(
 								"$json",
 								new JsonObjectBindings(
-										new JSONObject(
-												"{ \"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null }")))))
+										new JsonParser().parse(
+												"{ \"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null }")
+												.getAsJsonObject()))))
 														.isEqualTo(
 																"key1 -> a\nkey2 -> 2\nkey3 -> true\nkey4 -> \n");
 	}
@@ -176,8 +177,9 @@ public class CarrotEngineTest {
 						new SingletonBindings(
 								"$json",
 								new JsonObjectBindings(
-										new JSONObject(
-												"{\"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null }")))))
+										new JsonParser().parse(
+												"{\"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null }")
+												.getAsJsonObject()))))
 														.isEqualTo(
 																"key1 -> a\nkey2 -> 2\nkey3 -> true\nkey4 -> \n");
 	}
@@ -189,8 +191,10 @@ public class CarrotEngineTest {
 				new SingletonBindings(
 						"$json",
 						new JsonObjectBindings(
-								new JSONObject(
-										"{ \"map\": { \"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null } }")))))
+
+								new JsonParser().parse(
+										"{ \"map\": { \"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null } }")
+										.getAsJsonObject()))))
 												.isEqualTo(
 														"key1 -> a\nkey2 -> 2\nkey3 -> true\nkey4 -> \n");
 	}
@@ -199,8 +203,9 @@ public class CarrotEngineTest {
 	public void testJsonArrayIterable() {
 		assertThat(render("{% for value in $json %}{{ value }}{% end %}",
 				new SingletonBindings("$json",
-						new JsonArrayBindings(new JSONArray("[ \"a\", 2, true, null]")))))
-								.isEqualTo("a2true");
+						new JsonArrayBindings(new JsonParser().parse("[ \"a\", 2, true, null]")
+								.getAsJsonArray()))))
+										.isEqualTo("a2true");
 	}
 
 	private String render(String template, @Nullable Bindings bindings) {

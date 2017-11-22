@@ -44,4 +44,13 @@ public class HtmlHelper {
 	public SafeString escape(SafeString html) {
 		return html;
 	}
+
+//	public static final GenericFunction ESCAPE = new GenericFunction() {
+//
+//		@Override
+//		public Object accept(Object... params) {
+//			return ((String) params[0]).toUpperCase();
+//		}
+//	};
+
 }

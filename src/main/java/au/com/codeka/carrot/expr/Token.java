@@ -9,9 +9,9 @@ import javax.annotation.Nullable;
  * terminal like a string literal, number, identifier, etc.
  */
 public class Token {
+
 	private final TokenType tokenType;
-	@Nullable
-	private final Object value;
+	private final @Nullable Object value;
 
 	public Token(TokenType tokenType) {
 		this.tokenType = tokenType;
@@ -45,17 +45,8 @@ public class Token {
 		if (!(other instanceof Token)) {
 			return false;
 		}
-
 		Token otherToken = (Token) other;
-		if (otherToken.tokenType != tokenType) {
-			return false;
-		}
-
-		if (tokenType.hasValue()) {
-			return Objects.equals(otherToken.value, value);
-		}
-
-		return true;
+		return otherToken.tokenType == tokenType && Objects.equals(otherToken.value, value);
 	}
 
 	@Override

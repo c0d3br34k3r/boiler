@@ -1,16 +1,19 @@
 package au.com.codeka.carrot.bindings;
 
+import static org.junit.Assert.assertThat;
+
 import org.hamcrest.CoreMatchers;
-import org.json.JSONObject;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * @author marten
  */
 public class JsonObjectBindingsTest {
-	private final static String JSON_OBJECT = "{\n" +
+	
+	private final static JsonObject JSON_OBJECT = new JsonParser().parse("{\n" +
 			"  \"key1\": \"value\",\n" +
 			"  \"key2\": 2,\n" +
 			"  \"key3\": true,\n" +
@@ -19,30 +22,30 @@ public class JsonObjectBindingsTest {
 			"    \"inner\": \"value\"\n" +
 			"  },\n" +
 			"  \"key6\": null\n" +
-			"}";
+			"}").getAsJsonObject();
 
 	@Test
 	public void testResolved() throws Exception {
-		assertThat(new JsonObjectBindings(new JSONObject()).resolve("key"),
+		assertThat(new JsonObjectBindings(new JsonObject()).resolve("key"),
 				CoreMatchers.nullValue());
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).resolve("key1"),
+		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key1"),
 				CoreMatchers.<Object> is("value"));
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).resolve("key2"),
+		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key2"),
 				CoreMatchers.<Object> is(2));
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).resolve("key3"),
+		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key3"),
 				CoreMatchers.<Object> is(true));
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).resolve("key4"),
+		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key4"),
 				CoreMatchers.instanceOf(JsonArrayBindings.class));
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).resolve("key5"),
+		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key5"),
 				CoreMatchers.instanceOf(JsonObjectBindings.class));
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).resolve("key6"),
+		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key6"),
 				CoreMatchers.nullValue());
 	}
 
 	@Test
 	public void testIsEmpty() throws Exception {
-		assertThat(new JsonObjectBindings(new JSONObject()).isEmpty(), CoreMatchers.is(true));
-		assertThat(new JsonObjectBindings(new JSONObject(JSON_OBJECT)).isEmpty(),
+		assertThat(new JsonObjectBindings(new JsonObject()).isEmpty(), CoreMatchers.is(true));
+		assertThat(new JsonObjectBindings(JSON_OBJECT).isEmpty(),
 				CoreMatchers.is(false));
 	}
 }

@@ -5,7 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Arrays;
+import java.util.Collections;
 
 import static au.com.codeka.carrot.util.RenderHelper.render;
 import static com.google.common.truth.Truth.assertThat;
@@ -171,24 +174,11 @@ public class IfTagTest {
 
 		assertThat(render("{% if foo != null && foo.blah == null %}yes{% end %}", "foo", null))
 				.isEqualTo("");
-
 		assertThat(
-				render("{% if foo != null && foo.bar == null %}yes{% end %}", "foo", new Object() {
-					public Object bar = null;
-				})).isEqualTo("yes");
-
-		assertThat(render("{% if foo.bar != null && foo.bar.toString() == \"blah\" %}yes{% end %}",
-				"foo", new Object() {
-					public Object bar = new Object() {
-						@Override
-						public String toString() {
-							return "blah";
-						}
-					};
-				})).isEqualTo("yes");
-
-		assertThat(render("{% if foo.bar == null %}yes{% end %}", "foo", new Object() {
-			public Object bar = null;
-		})).isEqualTo("yes");
+				render("{% if foo != null && foo.bar == null %}yes{% end %}", "foo",
+						Collections.singletonMap("bar", null))).isEqualTo("yes");
+		assertThat(render("{% if foo.bar == null %}yes{% end %}", "foo",
+				Collections.singletonMap("bar", null))).isEqualTo("yes");
 	}
+
 }
