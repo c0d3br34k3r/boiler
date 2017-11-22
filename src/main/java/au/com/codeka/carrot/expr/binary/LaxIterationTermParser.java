@@ -28,9 +28,7 @@ public final class LaxIterationTermParser implements TermParser {
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = termParser.parse(tokenizer);
-		if (tokenizer.accept(TokenType.COMMA)) {
-			// consume the comma
-			tokenizer.expect(TokenType.COMMA);
+		if (tokenizer.expect(TokenType.COMMA) != null) {
 			// We're in an iteration, parse all remaining elements with the
 			// strict parser
 			Term right = iterationTermParser.parse(tokenizer);

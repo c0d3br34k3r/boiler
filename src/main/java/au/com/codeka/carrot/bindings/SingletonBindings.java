@@ -14,6 +14,7 @@ import au.com.codeka.carrot.Bindings;
  * @author Marten Gajda
  */
 public final class SingletonBindings implements Bindings, Iterable<EntryBindings> {
+	
 	private final String key;
 	private final Object value;
 

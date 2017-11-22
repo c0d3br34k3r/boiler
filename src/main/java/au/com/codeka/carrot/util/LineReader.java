@@ -12,6 +12,7 @@ import au.com.codeka.carrot.resource.ResourcePointer;
  * of the current line and colume via a {@link ResourcePointer}.
  */
 public class LineReader {
+	
 	private final BufferedReader reader;
 
 	private ResourcePointer ptr;

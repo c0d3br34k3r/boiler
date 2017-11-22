@@ -16,15 +16,13 @@ import au.com.codeka.carrot.resource.ResourcePointer;
  * Base class for nodes in the abstract syntax tree.
  */
 public abstract class Node {
-	@Nullable
-	private final List<Node> children;
-	@Nullable
-	private Node nextNode;
+
+	private final @Nullable List<Node> children;
+	private @Nullable Node nextNode;
 	private ResourcePointer ptr;
 
 	protected Node(ResourcePointer ptr, boolean isBlockNode) {
 		this.ptr = ptr;
-
 		if (isBlockNode) {
 			children = new ArrayList<>();
 		} else {
@@ -132,7 +130,6 @@ public abstract class Node {
 		if (children == null) {
 			throw new IllegalStateException("Cannot call renderChildren on non-block node.");
 		}
-
 		for (Node child : children) {
 			try {
 				child.render(engine, writer, scope);
@@ -147,4 +144,5 @@ public abstract class Node {
 			}
 		}
 	}
+
 }

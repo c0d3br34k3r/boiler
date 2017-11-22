@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.Iterators;
 
 import au.com.codeka.carrot.CarrotException;
@@ -17,9 +18,9 @@ import au.com.codeka.carrot.util.LineReader;
  * Converts an input {@link Reader} into a stream of {@link Token}s.
  */
 public class Tokenizer {
+
 	private final LineReader reader;
-	@Nullable
-	private Character lookahead;
+	private @Nullable Character lookahead;
 	private ArrayDeque<Token> tokens = new ArrayDeque<>();
 
 	public Tokenizer(LineReader reader) throws CarrotException {
@@ -67,8 +68,17 @@ public class Tokenizer {
 		return Iterators.get(tokens.iterator(), offset).getType() == type;
 	}
 
-	// TODO: nullable variant
-	
+	@Nonnull
+	public Token require(TokenType type) throws CarrotException {
+		Token token = expect(type);
+		if (token == null) {
+			throw new CarrotException(
+					"Expected token of type " + type + ", got " + tokens.peek().getType(),
+					reader.getPointer());
+		}
+		return token;
+	}
+
 	/**
 	 * Returns a {@link Token} if it's one of the given types, or throws a
 	 * {@link CarrotException} if it's not.
@@ -79,33 +89,43 @@ public class Tokenizer {
 	 *         not of the given type.
 	 */
 	@Nonnull
-	public Token expect(Set<TokenType> types) throws CarrotException {
-		if (types.contains(tokens.peek().getType())) {
-			Token t = tokens.remove();
-			next();
-			return t;
+	public Token require(Set<TokenType> types) throws CarrotException {
+		Token token = expect(types);
+		if (token == null) {
+			throw new CarrotException(
+					"Expected token of type " + types + ", got " + tokens.peek().getType(),
+					reader.getPointer());
 		}
-		throw new CarrotException(
-				"Expected token of type " + types + ", got " + tokens.peek().getType(),
-				reader.getPointer());
+		return token;
 	}
 
+	@Nullable
 	public Token expect(TokenType type) throws CarrotException {
 		if (type == tokens.peek().getType()) {
-			Token t = tokens.remove();
-			next();
-			return t;
+			return advance();
 		}
-		throw new CarrotException(
-				"Expected token of type " + type + ", got " + tokens.peek().getType(),
-				reader.getPointer());
+		return null;
+	}
+
+	@Nullable
+	public Token expect(Set<TokenType> types) throws CarrotException {
+		if (types.contains(tokens.peek().getType())) {
+			return advance();
+		}
+		return null;
+	}
+
+	private Token advance() throws CarrotException {
+		Token token = tokens.remove();
+		next();
+		return token;
 	}
 
 	/**
 	 * @throws CarrotException unless we're at the end of the tokens.
 	 */
 	public void end() throws CarrotException {
-		expect(TokenType.EOF);
+		require(TokenType.EOF);
 	}
 
 	/**
@@ -120,6 +140,9 @@ public class Tokenizer {
 		return new CarrotException(String.format("%s, found: %s", msg, tokens.peek()),
 				reader.getPointer());
 	}
+
+	private static final CharMatcher DIGIT = CharMatcher.inRange('0', '9');
+	private static final CharMatcher DIGIT_OR_DOT = DIGIT.or(CharMatcher.is('.'));
 
 	/**
 	 * Advance to the {@link Token}, storing it in the member variable token.
@@ -243,22 +266,23 @@ public class Tokenizer {
 				break;
 			default:
 				// if it starts with a number it's a number, else identifier.
-				if ("0123456789".indexOf(ch) >= 0) {
-					String number = "";
-					number += (char) ch;
+				if (DIGIT.matches((char) ch)) {
+					StringBuilder number = new StringBuilder();
+					number.append((char) ch);
 					next = nextChar();
-					while (next >= 0 && "0123456789.".indexOf(next) >= 0) {
-						number += (char) next;
+					while (next >= 0 && DIGIT_OR_DOT.matches((char) ch)) {
+						number.append((char) next);
 						next = nextChar();
 					}
 					if (next >= 0) {
 						lookahead = (char) next;
 					}
 					Object value;
-					if (number.contains(".")) {
-						value = Double.parseDouble(number);
+					String numberStr = number.toString();
+					if (numberStr.contains(".")) {
+						value = Double.parseDouble(numberStr);
 					} else {
-						value = Long.parseLong(number);
+						value = Long.parseLong(numberStr);
 					}
 					token = new Token(TokenType.NUMBER_LITERAL, value);
 				} else if (Character.isJavaIdentifierStart(ch)) {

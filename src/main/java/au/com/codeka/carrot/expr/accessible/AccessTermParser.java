@@ -11,8 +11,6 @@ import au.com.codeka.carrot.expr.TermParser;
 import au.com.codeka.carrot.expr.Token;
 import au.com.codeka.carrot.expr.TokenType;
 import au.com.codeka.carrot.expr.Tokenizer;
-import au.com.codeka.carrot.expr.binary.BinaryOperator;
-import au.com.codeka.carrot.expr.binary.BinaryOperators;
 import au.com.codeka.carrot.expr.values.EmptyTermParser;
 import au.com.codeka.carrot.expr.values.IdentifierTermParser;
 import au.com.codeka.carrot.expr.values.Variable;
@@ -46,9 +44,11 @@ public final class AccessTermParser implements TermParser {
 			return left;
 		}
 		AccessibleTerm result = new Unaccessible(new Variable(left));
-
-		while (tokenizer.accept(ACCESS_TYPE)) {
+		for (;;) {
 			Token token = tokenizer.expect(ACCESS_TYPE);
+			if (token == null) {
+				break;
+			}
 			switch (token.getType()) {
 				case DOT:
 					result = new AccessTerm(result, identifierTerm.parse(tokenizer), TokenType.DOT);
@@ -66,7 +66,7 @@ public final class AccessTermParser implements TermParser {
 				default:
 			}
 			if (token.getType().closingType() != null) {
-				tokenizer.expect(token.getType().closingType());
+				tokenizer.require(token.getType().closingType());
 			}
 		}
 		return result;

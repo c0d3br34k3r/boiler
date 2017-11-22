@@ -11,6 +11,8 @@ import au.com.codeka.carrot.expr.Term;
  * @author Marten Gajda
  */
 public interface AccessibleTerm extends Term {
+	
 	@Nonnull
 	Callable callable(@Nonnull Configuration config, @Nonnull Scope scope) throws CarrotException;
+	
 }

@@ -88,44 +88,55 @@ public class StatementParser {
 		 */
 
 		strictIdentifierParser = new IdentifierTermParser(new ErrorTermParser());
-		
+
 		TermParser base = new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new UnaryTermParser(
-		new NumberTermParser(
-		new StringTermParser(
-		new ExpressionTermParser(
-		new AccessTermParser(
-		new TermParser() {
-			@Override
-			public Term parse(Tokenizer tokenizer) throws CarrotException {
-				return expressionParser.parse(tokenizer);
-			}
-		},
-		strictIdentifierParser,
-		new TermParser() {
-			@Override
-			public Term parse(Tokenizer tokenizer) throws CarrotException {
-				return iterableParser.parse(tokenizer);
-			}
-		}),
-		new TermParser() {
-			@Override
-			public Term parse(Tokenizer tokenizer) throws CarrotException {
-				return expressionParser.parse(tokenizer);
-			}
-		}))),
-		TokenType.NOT),
-		TokenType.MULTIPLY, TokenType.DIVIDE),
-		TokenType.PLUS, TokenType.MINUS),
-		TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
-		TokenType.EQUAL, TokenType.NOT_EQUAL),
-		TokenType.LOGICAL_AND),
-		TokenType.LOGICAL_OR);
+				new BinaryTermParser(
+						new BinaryTermParser(
+								new BinaryTermParser(
+										new BinaryTermParser(
+												new BinaryTermParser(
+														new UnaryTermParser(
+																new NumberTermParser(
+																		new StringTermParser(
+																				new ExpressionTermParser(
+																						new AccessTermParser(
+																								new TermParser() {
+																									@Override
+																									public Term parse(
+																											Tokenizer tokenizer)
+																											throws CarrotException {
+																										return expressionParser
+																												.parse(tokenizer);
+																									}
+																								},
+																								strictIdentifierParser,
+																								new TermParser() {
+																									@Override
+																									public Term parse(
+																											Tokenizer tokenizer)
+																											throws CarrotException {
+																										return iterableParser
+																												.parse(tokenizer);
+																									}
+																								}),
+																						new TermParser() {
+																							@Override
+																							public Term parse(
+																									Tokenizer tokenizer)
+																									throws CarrotException {
+																								return expressionParser
+																										.parse(tokenizer);
+																							}
+																						}))),
+																TokenType.NOT),
+														TokenType.MULTIPLY, TokenType.DIVIDE),
+												TokenType.PLUS, TokenType.MINUS),
+										TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL,
+										TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL,
+										TokenType.IN),
+								TokenType.EQUAL, TokenType.NOT_EQUAL),
+						TokenType.LOGICAL_AND),
+				TokenType.LOGICAL_OR);
 
 		// the generic expression uses a lax iteration parser
 		expressionParser = new LaxIterationTermParser(base);
@@ -164,12 +175,12 @@ public class StatementParser {
 
 	@Nonnull
 	public Identifier parseIdentifier() throws CarrotException {
-		return new Identifier(tokenizer.expect(TokenType.IDENTIFIER));
+		return new Identifier(tokenizer.require(TokenType.IDENTIFIER));
 	}
 
 	@Nonnull
 	public Token parseToken(@Nonnull TokenType type) throws CarrotException {
-		return tokenizer.expect(type);
+		return tokenizer.require(type);
 	}
 
 	/**
@@ -190,21 +201,16 @@ public class StatementParser {
 	public List<Identifier> parseIdentifierList() throws CarrotException {
 		List<Identifier> result = new LinkedList<>();
 		// first token of a list is always an identifier
-		result.add(new Identifier(tokenizer.expect(TokenType.IDENTIFIER)));
+		result.add(new Identifier(tokenizer.require(TokenType.IDENTIFIER)));
 		while (tokenizer.accept(TokenType.COMMA)) {
-			tokenizer.expect(TokenType.COMMA);
-			result.add(new Identifier(tokenizer.expect(TokenType.IDENTIFIER)));
+			tokenizer.require(TokenType.COMMA);
+			result.add(new Identifier(tokenizer.require(TokenType.IDENTIFIER)));
 		}
 		return result;
 	}
 
 	public boolean isAssignment() throws CarrotException {
-		if (!tokenizer.accept(TokenType.ASSIGNMENT)) {
-			return false;
-		}
-		// consume the assignment operator
-		tokenizer.expect(TokenType.ASSIGNMENT);
-		return true;
+		return tokenizer.expect(TokenType.ASSIGNMENT) != null;
 	}
 
 	public Term parseTerm() throws CarrotException {

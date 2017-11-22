@@ -28,7 +28,7 @@ public final class IdentifierTermParser implements TermParser {
 		if (!tokenizer.accept(TokenType.IDENTIFIER)) {
 			return delegate.parse(tokenizer);
 		}
-		return new IdentifierTerm(tokenizer.expect(TokenType.IDENTIFIER));
+		return new IdentifierTerm(tokenizer.require(TokenType.IDENTIFIER));
 	}
 
 	/**

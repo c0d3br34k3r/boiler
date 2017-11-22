@@ -16,6 +16,7 @@ import au.com.codeka.carrot.ValueHelper;
  * @author Marten Gajda
  */
 public final class JsonArrayBindings implements Bindings, Iterable<JsonElement> {
+
 	private final JsonArray jsonArray;
 
 	public JsonArrayBindings(JsonArray jsonArray) {
@@ -36,4 +37,5 @@ public final class JsonArrayBindings implements Bindings, Iterable<JsonElement> 
 	public Iterator<JsonElement> iterator() {
 		return jsonArray.iterator();
 	}
+
 }

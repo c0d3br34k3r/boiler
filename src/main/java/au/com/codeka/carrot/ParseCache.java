@@ -1,8 +1,9 @@
 package au.com.codeka.carrot;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import au.com.codeka.carrot.resource.ResourceName;
 import au.com.codeka.carrot.tmpl.Node;
@@ -11,29 +12,26 @@ import au.com.codeka.carrot.tmpl.Node;
  * Helper class used to cache parsed template files.
  */
 public class ParseCache {
+
+	private static final long DEFAULT_SIZE = 256;
 	private final Configuration config;
-	private final Map<ResourceName, WeakReference<CacheEntry>> cache;
+	private final Cache<ResourceName, CacheEntry> cache;
 
 	public ParseCache(Configuration config) {
 		this.config = config;
-		cache = new HashMap<>();
+		cache = CacheBuilder.newBuilder().maximumSize(DEFAULT_SIZE).build();
 	}
 
 	public Node getNode(ResourceName resourceName) throws CarrotException {
-		WeakReference<CacheEntry> cacheEntryRef = cache.get(resourceName);
-		if (cacheEntryRef != null) {
-			CacheEntry cacheEntry = cacheEntryRef.get();
-			if (cacheEntry != null) {
-				long modifiedTime = config.getResourceLocator().getModifiedTime(resourceName);
-				if (modifiedTime != cacheEntry.modifiedTime) {
-					cache.remove(resourceName);
-					return null;
-				}
-
-				return cacheEntry.node;
+		CacheEntry entry = cache.getIfPresent(resourceName);
+		if (entry != null) {
+			long modifiedTime = config.getResourceLocator().getModifiedTime(resourceName);
+			if (modifiedTime != entry.modifiedTime) {
+				cache.invalidate(resourceName);
+				return null;
 			}
+			return entry.node;
 		}
-
 		return null;
 	}
 

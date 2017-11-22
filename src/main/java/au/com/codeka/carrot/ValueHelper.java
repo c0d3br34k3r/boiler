@@ -1,6 +1,5 @@
 package au.com.codeka.carrot;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +10,6 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
@@ -128,7 +126,6 @@ public class ValueHelper {
 		if (lhs == null || rhs == null) {
 			throw new CarrotException("Left hand side or right hand side is null.");
 		}
-
 		Number lhsNumber = toNumber(lhs);
 		Number rhsNumber = toNumber(rhs);
 		if (lhsNumber instanceof Double || rhsNumber instanceof Double) {
@@ -140,7 +137,6 @@ public class ValueHelper {
 		} else if (lhsNumber instanceof Integer || rhsNumber instanceof Integer) {
 			return lhsNumber.longValue() + rhsNumber.longValue();
 		}
-
 		throw new CarrotException("Unknown number type '" + lhs + "' or '" + rhs + "'.");
 	}
 
@@ -158,10 +154,8 @@ public class ValueHelper {
 		if (lhs == null || rhs == null) {
 			throw new CarrotException("Left hand side or right hand side is null.");
 		}
-
 		Number lhsNumber = toNumber(lhs);
 		Number rhsNumber = toNumber(rhs);
-
 		if (lhsNumber instanceof Double || rhsNumber instanceof Double) {
 			return lhsNumber.doubleValue() / rhsNumber.doubleValue();
 		} else if (lhsNumber instanceof Float || rhsNumber instanceof Float) {
@@ -171,7 +165,6 @@ public class ValueHelper {
 		} else if (lhsNumber instanceof Integer || rhsNumber instanceof Integer) {
 			return lhsNumber.longValue() / rhsNumber.longValue();
 		}
-
 		throw new CarrotException("Unknown number type '" + lhs + "' or '" + rhs + "'.");
 	}
 
@@ -189,10 +182,8 @@ public class ValueHelper {
 		if (lhs == null || rhs == null) {
 			throw new CarrotException("Left hand side or right hand side is null.");
 		}
-
 		Number lhsNumber = toNumber(lhs);
 		Number rhsNumber = toNumber(rhs);
-
 		if (lhsNumber instanceof Double || rhsNumber instanceof Double) {
 			return lhsNumber.doubleValue() * rhsNumber.doubleValue();
 		} else if (lhsNumber instanceof Float || rhsNumber instanceof Float) {
@@ -202,7 +193,6 @@ public class ValueHelper {
 		} else if (lhsNumber instanceof Integer || rhsNumber instanceof Integer) {
 			return lhsNumber.longValue() * rhsNumber.longValue();
 		}
-
 		throw new CarrotException("Unknown number type '" + lhs + "' or '" + rhs + "'.");
 	}
 
@@ -215,8 +205,6 @@ public class ValueHelper {
 	 * @return A {@link List} that can actually be iterated.
 	 * @throws CarrotException If the value is not iterable.
 	 */
-	// TODO: Return an Iterator or something so we don't have to construct a new
-	// ArrayList.
 	public static Collection<?> iterate(Object iterable) throws CarrotException {
 		if (iterable == null) {
 			return Collections.emptySet();

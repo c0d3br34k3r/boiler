@@ -6,6 +6,7 @@ import java.util.Set;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TermParser;
+import au.com.codeka.carrot.expr.Token;
 import au.com.codeka.carrot.expr.TokenType;
 import au.com.codeka.carrot.expr.Tokenizer;
 
@@ -27,10 +28,15 @@ public final class BinaryTermParser implements TermParser {
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = termParser.parse(tokenizer);
-		while (tokenizer.accept(tokenTypes)) {
-			left = new BinaryTerm(left, tokenizer.expect(tokenTypes).getType().binaryOperator(),
+		for (;;) {
+			Token token = tokenizer.expect(tokenTypes);
+			if (token == null) {
+				return left;
+			}
+			left = new BinaryTerm(left,
+					token.getType().binaryOperator(),
 					termParser.parse(tokenizer));
 		}
-		return left;
 	}
+
 }

@@ -28,6 +28,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * <code>{% if blah %} {% else if blah %}...{% end %}</code> as you like.
  */
 public class ElseTag extends Tag {
+
 	@Nullable
 	private Term expr;
 
@@ -45,7 +46,6 @@ public class ElseTag extends Tag {
 		if (expr == null) {
 			return false;
 		}
-
 		return (nextTag instanceof ElseTag);
 	}
 
@@ -56,7 +56,6 @@ public class ElseTag extends Tag {
 			if (!identifier.evaluate().equalsIgnoreCase("if")) {
 				throw new CarrotException("Expected 'if' after 'else'.");
 			}
-
 			expr = stmtParser.parseTerm();
 		}
 	}
@@ -73,4 +72,5 @@ public class ElseTag extends Tag {
 			}
 		}
 	}
+
 }

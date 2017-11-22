@@ -1,7 +1,6 @@
 package au.com.codeka.carrot.tmpl.parse;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
@@ -33,10 +32,10 @@ import au.com.codeka.carrot.util.LineReader;
  * </pre>
  */
 public class Tokenizer {
+
 	private final LineReader ins;
 	private final TokenFactory tokenFactory;
-
-	private char[] lookahead;
+	private String lookahead;
 
 	/**
 	 * Construct a new {@link Tokenizer} with the given {@link LineReader}, and
@@ -88,36 +87,41 @@ public class Tokenizer {
 						content.append(ch);
 						return tokenFactory.create(tokenType, content);
 					}
-
 					switch (i) {
 						case '%':
-							if (tokenType == TokenType.UNKNOWN) {
-								tokenType = TokenType.TAG;
-							} else if (tokenType == TokenType.FIXED) {
-								lookahead = new char[] { '{', '%' };
-								return tokenFactory.create(tokenType, content);
-							} else {
-								throw new CarrotException("Unexpected '{%'", ins.getPointer());
+							switch (tokenType) {
+								case UNKNOWN:
+									tokenType = TokenType.TAG;
+									break;
+								case FIXED:
+									lookahead = "{%";
+									return tokenFactory.create(tokenType, content);
+								default:
+									throw new CarrotException("Unexpected '{%'", ins.getPointer());
 							}
 							break;
 						case '{':
-							if (tokenType == TokenType.UNKNOWN) {
-								tokenType = TokenType.ECHO;
-							} else if (tokenType == TokenType.FIXED) {
-								lookahead = new char[] { '{', '{' };
-								return tokenFactory.create(tokenType, content);
-							} else {
-								throw new CarrotException("Unexpected '{{", ins.getPointer());
+							switch (tokenType) {
+								case UNKNOWN:
+									tokenType = TokenType.ECHO;
+									break;
+								case FIXED:
+									lookahead = "{{";
+									return tokenFactory.create(tokenType, content);
+								default:
+									throw new CarrotException("Unexpected '{{", ins.getPointer());
 							}
 							break;
 						case '#':
-							if (tokenType == TokenType.UNKNOWN) {
-								tokenType = TokenType.COMMENT;
-							} else if (tokenType == TokenType.FIXED) {
-								lookahead = new char[] { '{', '#' };
-								return tokenFactory.create(tokenType, content);
-							} else {
-								throw new CarrotException("Unexpected '{{", ins.getPointer());
+							switch (tokenType) {
+								case UNKNOWN:
+									tokenType = TokenType.COMMENT;
+									break;
+								case FIXED:
+									lookahead = "{#";
+									return tokenFactory.create(tokenType, content);
+								default:
+									throw new CarrotException("Unexpected '{{", ins.getPointer());
 							}
 							break;
 						case '\\':
@@ -180,15 +184,14 @@ public class Tokenizer {
 
 	private int getNextChar() throws CarrotException {
 		if (lookahead != null) {
-			char ch = lookahead[0];
-			if (lookahead.length == 1) {
+			char ch = lookahead.charAt(0);
+			if (lookahead.length() == 1) {
 				lookahead = null;
 			} else {
-				lookahead = Arrays.copyOfRange(lookahead, 1, lookahead.length);
+				lookahead = lookahead.substring(1, lookahead.length());
 			}
 			return ch;
 		}
-
 		try {
 			return ins.nextChar();
 		} catch (IOException e) {
@@ -207,4 +210,5 @@ public class Tokenizer {
 			}
 		}
 	}
+
 }

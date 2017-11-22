@@ -37,11 +37,11 @@ public final class ExpressionTermParser implements TermParser {
 			return delegate.parse(tokenizer);
 		}
 		// consume the "(".
-		tokenizer.expect(TokenType.LPAREN);
+		tokenizer.require(TokenType.LPAREN);
 		// parse the expression in between
 		Term term = expressionParser.parse(tokenizer);
 		// consume the ")".
-		tokenizer.expect(TokenType.LPAREN.closingType());
+		tokenizer.require(TokenType.LPAREN.closingType());
 		return term;
 	}
 }

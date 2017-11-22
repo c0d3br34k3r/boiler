@@ -12,11 +12,9 @@ import au.com.codeka.carrot.Scope;
  *
  * @author Marten Gajda
  */
-public final class EmptyTerm implements Term {
+public enum EmptyTerm implements Term {
 
-	public final static EmptyTerm INSTANCE = new EmptyTerm();
-
-	private EmptyTerm() {}
+	INSTANCE;
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {

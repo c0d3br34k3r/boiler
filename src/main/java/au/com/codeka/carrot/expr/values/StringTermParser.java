@@ -29,13 +29,14 @@ public final class StringTermParser implements TermParser {
 			// not a number, delegate to the next parser
 			return delegate.parse(tokenizer);
 		}
-		return new StringTerm(tokenizer.expect(TokenType.STRING_LITERAL));
+		return new StringTerm(tokenizer.require(TokenType.STRING_LITERAL));
 	}
 
 	/**
 	 * A trivial term containing only a constant string.
 	 */
 	private static final class StringTerm implements Term {
+
 		private final Token token;
 
 		public StringTerm(Token token) {
@@ -52,4 +53,5 @@ public final class StringTermParser implements TermParser {
 			return "\"" + token.getValue().toString() + "\"";
 		}
 	}
+
 }

@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TermParser;
+import au.com.codeka.carrot.expr.Token;
 import au.com.codeka.carrot.expr.TokenType;
 import au.com.codeka.carrot.expr.Tokenizer;
 
@@ -27,9 +28,9 @@ public final class UnaryTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		if (tokenizer.accept(tokenTypes)) {
-			return new UnaryTerm(tokenizer.expect(tokenTypes).getType().unaryOperator(),
-					this.parse(tokenizer));
+		Token token = tokenizer.expect(tokenTypes);
+		if (token != null) {
+			return new UnaryTerm(token.getType().unaryOperator(), this.parse(tokenizer));
 		}
 		return termParser.parse(tokenizer);
 	}

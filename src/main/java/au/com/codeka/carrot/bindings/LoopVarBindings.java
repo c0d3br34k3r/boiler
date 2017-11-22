@@ -11,6 +11,7 @@ import au.com.codeka.carrot.Bindings;
  * @author Marten Gajda
  */
 public final class LoopVarBindings implements Bindings {
+
 	private final int count;
 	private final int current;
 
@@ -43,4 +44,5 @@ public final class LoopVarBindings implements Bindings {
 		// loop bindings are never ever empty
 		return false;
 	}
+
 }

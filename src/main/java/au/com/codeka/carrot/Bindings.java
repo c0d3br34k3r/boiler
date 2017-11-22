@@ -27,4 +27,5 @@ public interface Bindings {
 	 *         is at least one value.
 	 */
 	boolean isEmpty();
+
 }

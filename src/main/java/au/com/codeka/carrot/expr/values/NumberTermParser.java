@@ -30,7 +30,7 @@ public final class NumberTermParser implements TermParser {
 			// not a number, delegate to the next parser
 			return delegate.parse(tokenizer);
 		}
-		return new NumberTerm(tokenizer.expect(TokenType.NUMBER_LITERAL));
+		return new NumberTerm(tokenizer.require(TokenType.NUMBER_LITERAL));
 	}
 
 	/**

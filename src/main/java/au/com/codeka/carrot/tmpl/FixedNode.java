@@ -13,6 +13,7 @@ import au.com.codeka.carrot.tmpl.parse.Token;
  * text that's just "fixed".
  */
 public class FixedNode extends Node {
+
 	private String content;
 
 	private FixedNode(ResourcePointer ptr, String content) {
@@ -32,4 +33,5 @@ public class FixedNode extends Node {
 	public void render(CarrotEngine engine, Writer writer, Scope scope) throws IOException {
 		writer.write(content);
 	}
+
 }

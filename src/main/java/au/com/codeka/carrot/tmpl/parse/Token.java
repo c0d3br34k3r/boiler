@@ -10,10 +10,10 @@ import au.com.codeka.carrot.resource.ResourcePointer;
  * Represents a token in a stream of tokens from the {@link Tokenizer}.
  */
 public class Token {
+
 	private final TokenType type;
 	private final String content;
-	@Nullable
-	private final ResourcePointer ptr;
+	private final @Nullable ResourcePointer ptr;
 
 	private Token(TokenType type, String content, ResourcePointer ptr) {
 		this.type = type;

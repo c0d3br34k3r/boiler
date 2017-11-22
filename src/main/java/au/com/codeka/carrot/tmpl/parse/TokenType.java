@@ -4,6 +4,7 @@ package au.com.codeka.carrot.tmpl.parse;
  * An enumeration which describes the different types of tokens we can parse.
  */
 public enum TokenType {
+	
 	/** Unknown token usually represents the end of the file. */
 	UNKNOWN,
 
