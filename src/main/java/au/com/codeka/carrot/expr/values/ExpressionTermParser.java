@@ -32,16 +32,16 @@ public final class ExpressionTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		if (!tokenizer.accept(TokenType.LPAREN)) {
+		if (!tokenizer.accept(TokenType.LEFT_PAREN)) {
 			// delegate to the next parser
 			return delegate.parse(tokenizer);
 		}
 		// consume the "(".
-		tokenizer.require(TokenType.LPAREN);
+		tokenizer.require(TokenType.LEFT_PAREN);
 		// parse the expression in between
 		Term term = expressionParser.parse(tokenizer);
 		// consume the ")".
-		tokenizer.require(TokenType.LPAREN.closingType());
+		tokenizer.require(TokenType.LEFT_PAREN.closingType());
 		return term;
 	}
 }

@@ -1,7 +1,5 @@
 package au.com.codeka.carrot;
 
-import java.lang.ref.WeakReference;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -37,7 +35,7 @@ public class ParseCache {
 
 	public void addNode(ResourceName resourceName, Node node) throws CarrotException {
 		long modifiedTime = config.getResourceLocator().getModifiedTime(resourceName);
-		cache.put(resourceName, new WeakReference<>(new CacheEntry(node, modifiedTime)));
+		cache.put(resourceName, new CacheEntry(node, modifiedTime));
 	}
 
 	private static class CacheEntry {

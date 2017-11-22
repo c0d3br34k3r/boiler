@@ -143,7 +143,7 @@ public enum BinaryOperators implements BinaryOperator {
 				// TODO: find more appropriate exception
 				throw new IllegalStateException("can't iterate elements", e);
 			}
-			return val instanceof Iterable ? ((Iterable<?>) val).iterator()
+			return val instanceof Iterable ? ((Iterable<Object>) val).iterator()
 					: Iterators.singletonIterator(val);
 		}
 	}

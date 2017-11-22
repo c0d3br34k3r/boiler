@@ -35,7 +35,7 @@ public final class AccessTermParser implements TermParser {
 	}
 
 	private static final Set<TokenType> ACCESS_TYPE =
-			Sets.immutableEnumSet(TokenType.DOT, TokenType.LSQUARE, TokenType.LPAREN);
+			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET, TokenType.LEFT_PAREN);
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
@@ -53,12 +53,12 @@ public final class AccessTermParser implements TermParser {
 				case DOT:
 					result = new AccessTerm(result, identifierTerm.parse(tokenizer), TokenType.DOT);
 					break;
-				case LSQUARE:
+				case LEFT_BRACKET:
 					// the accessor in [] is supposed to be any expression
 					result = new AccessTerm(result, expressionTerm.parse(tokenizer),
-							TokenType.LSQUARE);
+							TokenType.LEFT_BRACKET);
 					break;
-				case LPAREN:
+				case LEFT_PAREN:
 					// the accessor in () is supposed to be an iteration
 					result = new Unaccessible(
 							new MethodTerm(result, iterationTerm.parse(tokenizer)));
@@ -71,4 +71,5 @@ public final class AccessTermParser implements TermParser {
 		}
 		return result;
 	}
+
 }

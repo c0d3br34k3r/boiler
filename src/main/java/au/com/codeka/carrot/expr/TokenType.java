@@ -25,16 +25,16 @@ public enum TokenType {
 	IDENTIFIER(true),
 
 	/** Right-parenthesis: {@code )} */
-	RPAREN,
+	RIGHT_PAREN,
 
 	/** Left-parenthesis: {@code (} */
-	LPAREN(RPAREN),
+	LEFT_PAREN(RIGHT_PAREN),
 
 	/** Right-square-bracket: {@code ]} */
-	RSQUARE,
+	RIGHT_BRACKET,
 
 	/** Left-square-bracket: {@code [} */
-	LSQUARE(RSQUARE),
+	LEFT_BRACKET(RIGHT_BRACKET),
 
 	/** Single Equals: {@code =} */
 	ASSIGNMENT,

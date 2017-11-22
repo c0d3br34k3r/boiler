@@ -165,16 +165,16 @@ public class Tokenizer {
 		// TODO: Cache
 		switch (ch) {
 			case '(':
-				token = new Token(TokenType.LPAREN);
+				token = new Token(TokenType.LEFT_PAREN);
 				break;
 			case ')':
-				token = new Token(TokenType.RPAREN);
+				token = new Token(TokenType.RIGHT_PAREN);
 				break;
 			case '[':
-				token = new Token(TokenType.LSQUARE);
+				token = new Token(TokenType.LEFT_BRACKET);
 				break;
 			case ']':
-				token = new Token(TokenType.RSQUARE);
+				token = new Token(TokenType.RIGHT_BRACKET);
 				break;
 			case ',':
 				token = new Token(TokenType.COMMA);

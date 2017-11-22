@@ -4,6 +4,7 @@ import static au.com.codeka.carrot.util.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class ExtendsTag extends Tag {
 		}
 
 		// TODO: we should locate the resource with the current parent.
-		Path resourceName =
+		ResourceName resourceName =
 				engine.getConfig().getResourceLocator().findResource(null, skeletonName);
 
 		scope.push(new SingletonBindings("__blocks", blockTags));

@@ -28,12 +28,12 @@ public class TokenizerTest {
 	@Test
 	public void testParen() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("(foo) (bar)");
-		assertThat(tokenizer.require(TokenType.LPAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.LEFT_PAREN)).isNotNull();
 		assertThat(tokenizer.require(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-		assertThat(tokenizer.require(TokenType.RPAREN)).isNotNull();
-		assertThat(tokenizer.require(TokenType.LPAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.RIGHT_PAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.LEFT_PAREN)).isNotNull();
 		assertThat(tokenizer.require(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
-		assertThat(tokenizer.require(TokenType.RPAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.RIGHT_PAREN)).isNotNull();
 	}
 
 	@Test
