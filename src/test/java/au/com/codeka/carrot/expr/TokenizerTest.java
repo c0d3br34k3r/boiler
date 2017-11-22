@@ -85,12 +85,12 @@ public class TokenizerTest {
 	public void testEquality() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("a == b");
 		assertThat(tokenizer.expect(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.expect(TokenType.EQUALITY)).isNotNull();
+		assertThat(tokenizer.expect(TokenType.EQUAL)).isNotNull();
 		assertThat(tokenizer.expect(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a != b");
 		assertThat(tokenizer.expect(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.expect(TokenType.INEQUALITY)).isNotNull();
+		assertThat(tokenizer.expect(TokenType.NOT_EQUAL)).isNotNull();
 		assertThat(tokenizer.expect(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a ! b");
@@ -223,7 +223,7 @@ public class TokenizerTest {
 	@Test
 	public void testTokenEqualsToString() {
 		Token t1 = new Token(TokenType.ASSIGNMENT);
-		Token t2 = new Token(TokenType.EQUALITY);
+		Token t2 = new Token(TokenType.EQUAL);
 		Token t3 = new Token(TokenType.IDENTIFIER, "foo");
 		Token t4 = new Token(TokenType.IDENTIFIER, "bar");
 		Token t5 = new Token(TokenType.IDENTIFIER, new String("bar") /*

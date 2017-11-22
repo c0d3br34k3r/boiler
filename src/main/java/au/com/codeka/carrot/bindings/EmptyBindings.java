@@ -13,6 +13,7 @@ import au.com.codeka.carrot.Bindings;
  * @author Marten Gajda
  */
 public final class EmptyBindings implements Bindings, Iterable<EntryBindings> {
+
 	@Override
 	public Object resolve(@Nonnull String key) {
 		return null;
@@ -27,4 +28,5 @@ public final class EmptyBindings implements Bindings, Iterable<EntryBindings> {
 	public Iterator<EntryBindings> iterator() {
 		return Collections.<EntryBindings> emptyList().iterator();
 	}
+
 }

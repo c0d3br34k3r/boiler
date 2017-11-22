@@ -1,5 +1,9 @@
 package au.com.codeka.carrot.expr.unary;
 
+import java.util.Set;
+
+import com.google.common.collect.Sets;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TermParser;
@@ -12,12 +16,13 @@ import au.com.codeka.carrot.expr.Tokenizer;
  * @author Marten Gajda
  */
 public final class UnaryTermParser implements TermParser {
-	private final TermParser termParser;
-	private final TokenType[] tokenTypes;
 
-	public UnaryTermParser(TermParser termParser, TokenType... tokenTypes) {
+	private final TermParser termParser;
+	private final Set<TokenType> tokenTypes;
+
+	public UnaryTermParser(TermParser termParser, TokenType first, TokenType... rest) {
 		this.termParser = termParser;
-		this.tokenTypes = tokenTypes;
+		this.tokenTypes = Sets.immutableEnumSet(first, rest);
 	}
 
 	@Override
@@ -28,4 +33,5 @@ public final class UnaryTermParser implements TermParser {
 		}
 		return termParser.parse(tokenizer);
 	}
+
 }

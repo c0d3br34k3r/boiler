@@ -16,6 +16,7 @@ import au.com.codeka.carrot.expr.Tokenizer;
  * @author Marten Gajda
  */
 public final class LaxIterationTermParser implements TermParser {
+
 	private final TermParser termParser;
 	private final TermParser iterationTermParser;
 
@@ -34,8 +35,9 @@ public final class LaxIterationTermParser implements TermParser {
 			// strict parser
 			Term right = iterationTermParser.parse(tokenizer);
 			return right instanceof EmptyTerm ? new IterationTerm(left)
-					: new BinaryTerm(left, TokenType.COMMA.binaryOperator(), right);
+					: new BinaryTerm(left, BinaryOperators.ITERATION, right);
 		}
 		return left;
 	}
+
 }

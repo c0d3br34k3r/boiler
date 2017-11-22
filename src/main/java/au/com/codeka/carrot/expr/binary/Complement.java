@@ -10,6 +10,7 @@ import au.com.codeka.carrot.expr.Lazy;
  * @author Marten Gajda
  */
 public final class Complement implements BinaryOperator {
+	
 	private final BinaryOperator delegate;
 
 	public Complement(BinaryOperator delegate) {

@@ -12,6 +12,7 @@ import au.com.codeka.carrot.expr.Term;
  * @author Marten Gajda
  */
 public final class Variable implements Term {
+
 	private final Term term;
 
 	public Variable(Term term) {
@@ -31,4 +32,5 @@ public final class Variable implements Term {
 	public String toString() {
 		return term.toString();
 	}
+
 }

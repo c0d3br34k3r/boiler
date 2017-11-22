@@ -68,6 +68,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * followed by the identifier "in" followed by a statement.
  */
 public class StatementParser {
+
 	private final Tokenizer tokenizer;
 	private final TermParser expressionParser;
 	private final TermParser iterableParser;
@@ -87,55 +88,44 @@ public class StatementParser {
 		 */
 
 		strictIdentifierParser = new IdentifierTermParser(new ErrorTermParser());
-
+		
 		TermParser base = new BinaryTermParser(
-				new BinaryTermParser(
-						new BinaryTermParser(
-								new BinaryTermParser(
-										new BinaryTermParser(
-												new BinaryTermParser(
-														new UnaryTermParser(
-																new NumberTermParser(
-																		new StringTermParser(
-																				new ExpressionTermParser(
-																						new AccessTermParser(
-																								new TermParser() {
-																									@Override
-																									public Term parse(
-																											Tokenizer tokenizer)
-																											throws CarrotException {
-																										return expressionParser
-																												.parse(tokenizer);
-																									}
-																								},
-																								strictIdentifierParser,
-																								new TermParser() {
-																									@Override
-																									public Term parse(
-																											Tokenizer tokenizer)
-																											throws CarrotException {
-																										return iterableParser
-																												.parse(tokenizer);
-																									}
-																								}),
-																						new TermParser() {
-																							@Override
-																							public Term parse(
-																									Tokenizer tokenizer)
-																									throws CarrotException {
-																								return expressionParser
-																										.parse(tokenizer);
-																							}
-																						}))),
-																TokenType.NOT),
-														TokenType.MULTIPLY, TokenType.DIVIDE),
-												TokenType.PLUS, TokenType.MINUS),
-										TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL,
-										TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL,
-										TokenType.IN),
-								TokenType.EQUALITY, TokenType.INEQUALITY),
-						TokenType.LOGICAL_AND),
-				TokenType.LOGICAL_OR);
+		new BinaryTermParser(
+		new BinaryTermParser(
+		new BinaryTermParser(
+		new BinaryTermParser(
+		new BinaryTermParser(
+		new UnaryTermParser(
+		new NumberTermParser(
+		new StringTermParser(
+		new ExpressionTermParser(
+		new AccessTermParser(
+		new TermParser() {
+			@Override
+			public Term parse(Tokenizer tokenizer) throws CarrotException {
+				return expressionParser.parse(tokenizer);
+			}
+		},
+		strictIdentifierParser,
+		new TermParser() {
+			@Override
+			public Term parse(Tokenizer tokenizer) throws CarrotException {
+				return iterableParser.parse(tokenizer);
+			}
+		}),
+		new TermParser() {
+			@Override
+			public Term parse(Tokenizer tokenizer) throws CarrotException {
+				return expressionParser.parse(tokenizer);
+			}
+		}))),
+		TokenType.NOT),
+		TokenType.MULTIPLY, TokenType.DIVIDE),
+		TokenType.PLUS, TokenType.MINUS),
+		TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
+		TokenType.EQUAL, TokenType.NOT_EQUAL),
+		TokenType.LOGICAL_AND),
+		TokenType.LOGICAL_OR);
 
 		// the generic expression uses a lax iteration parser
 		expressionParser = new LaxIterationTermParser(base);
@@ -194,7 +184,6 @@ public class StatementParser {
 		if (!tokenizer.accept(TokenType.IDENTIFIER)) {
 			return null;
 		}
-
 		return parseIdentifierList();
 	}
 

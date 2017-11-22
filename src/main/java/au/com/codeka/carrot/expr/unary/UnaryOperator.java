@@ -8,5 +8,7 @@ import au.com.codeka.carrot.CarrotException;
  * @author Marten Gajda
  */
 public interface UnaryOperator {
+
 	Object apply(Object value) throws CarrotException;
+
 }

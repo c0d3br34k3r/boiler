@@ -10,6 +10,7 @@ import au.com.codeka.carrot.Scope;
  * @author Marten Gajda
  */
 public final class LazyTerm implements Lazy {
+
 	private final Configuration config;
 	private final Scope scope;
 	private final Term term;
@@ -24,4 +25,5 @@ public final class LazyTerm implements Lazy {
 	public Object value() throws CarrotException {
 		return term.evaluate(config, scope);
 	}
+
 }

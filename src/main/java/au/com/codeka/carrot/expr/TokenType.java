@@ -1,109 +1,119 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.expr.binary.AddOperator;
-import au.com.codeka.carrot.expr.binary.AndOperator;
 import au.com.codeka.carrot.expr.binary.BinaryOperator;
+import au.com.codeka.carrot.expr.binary.BinaryOperators;
 import au.com.codeka.carrot.expr.binary.Complement;
-import au.com.codeka.carrot.expr.binary.DivOperator;
-import au.com.codeka.carrot.expr.binary.EqOperator;
-import au.com.codeka.carrot.expr.binary.GreaterOperator;
-import au.com.codeka.carrot.expr.binary.InOperator;
-import au.com.codeka.carrot.expr.binary.IterationOperator;
-import au.com.codeka.carrot.expr.binary.LessOperator;
-import au.com.codeka.carrot.expr.binary.MulOperator;
-import au.com.codeka.carrot.expr.binary.OrOperator;
-import au.com.codeka.carrot.expr.binary.SubOperator;
-import au.com.codeka.carrot.expr.unary.MinusOperator;
-import au.com.codeka.carrot.expr.unary.NotOperator;
-import au.com.codeka.carrot.expr.unary.PlusOperator;
 import au.com.codeka.carrot.expr.unary.UnaryOperator;
+import au.com.codeka.carrot.expr.unary.UnaryOperators;
 
 /**
  * An enumeration of the different types of {@link Token}s we can pull off the
  * statement parser.
  */
 public enum TokenType {
-	/**
-	 * An unknown token, or the end of the stream.
-	 */
-	EOF(false),
 
-	/**
-	 * A string literal "like this".
-	 */
+	/** An unknown token, or the end of the stream. */
+	EOF,
+
+	/** A string literal {@code "like this"}. */
 	STRING_LITERAL(true),
 
-	/**
-	 * A number literal, like 12 or 12.34.
-	 */
+	/** A number literal, like {@code 12} or {@code 12.34}. */
 	NUMBER_LITERAL(true),
 
-	/**
-	 * A Java-style identifier like foo or bar.
-	 */
+	/** A Java-style identifier like {@code foo} or {@code bar}. */
 	IDENTIFIER(true),
 
-	/**
-	 * Right-parenthesis: )
-	 */
-	RPAREN(false),
+	/** Right-parenthesis: {@code )} */
+	RPAREN,
 
-	/**
-	 * Left-parenthesis: (
-	 */
-	LPAREN(false, RPAREN),
+	/** Left-parenthesis: {@code (} */
+	LPAREN(RPAREN),
 
-	/**
-	 * Right-square-bracket: ]
-	 */
-	RSQUARE(false),
+	/** Right-square-bracket: {@code ]} */
+	RSQUARE,
 
-	/**
-	 * Left-square-bracket: [
-	 */
-	LSQUARE(false, RSQUARE),
+	/** Left-square-bracket: {@code [} */
+	LSQUARE(RSQUARE),
 
-	/**
-	 * Single Equals: =
-	 */
-	ASSIGNMENT(false),
+	/** Single Equals: {@code =} */
+	ASSIGNMENT,
 
-	COMMA(false, new IterationOperator()),
-	DOT(false),
-	NOT(false, null, new NotOperator()),
-	LOGICAL_AND(false, new AndOperator()),
-	LOGICAL_OR(false, new OrOperator()),
-	EQUALITY(false, new EqOperator()),
-	INEQUALITY(false, new Complement(EQUALITY.binaryOperator)),
-	LESS_THAN(false, new LessOperator()),
-	GREATER_THAN(false, new GreaterOperator()),
-	LESS_THAN_OR_EQUAL(false, new Complement(GREATER_THAN.binaryOperator)),
-	GREATER_THAN_OR_EQUAL(false, new Complement(LESS_THAN.binaryOperator)),
-	PLUS(false, new AddOperator(), new PlusOperator()),
-	MINUS(false, new SubOperator(), new MinusOperator()),
-	MULTIPLY(false, new MulOperator()),
-	DIVIDE(false, new DivOperator()),
-	IN(false, new InOperator());
+	/** Comma: {@code ,} */
+	COMMA(BinaryOperators.ITERATION),
+	
+	/** Dot: {@code .} */
+	DOT,
+	
+	/** Not: {@code !} */
+	NOT(UnaryOperators.NOT),
+	
+	/** Logical and: {@code &&} */
+	LOGICAL_AND(BinaryOperators.AND),
+	
+	/** Logical or: {@code ||} */
+	LOGICAL_OR(BinaryOperators.OR),
+	
+	/** Equal: {@code ==} */
+	EQUAL(BinaryOperators.EQUALS),
+	
+	/** Not equal: {@code !=} */
+	NOT_EQUAL(new Complement(BinaryOperators.EQUALS)),
+	
+	/** Less than: {@code <} */
+	LESS_THAN(BinaryOperators.LESS_THAN),
+	
+	/** Greater than: {@code >} */
+	GREATER_THAN(BinaryOperators.GREATER_THAN),
+	
+	/** Less than or equal: {@code <=} */
+	LESS_THAN_OR_EQUAL(new Complement(GREATER_THAN.binaryOperator)),
+	
+	/** Greater than or equal: {@code >=} */
+	GREATER_THAN_OR_EQUAL(new Complement(LESS_THAN.binaryOperator)),
+	
+	/** Plus: {@code +} */
+	PLUS(BinaryOperators.ADDITION, UnaryOperators.PLUS),
+	
+	/** Minus : {@code -} */
+	MINUS(BinaryOperators.SUBTRACTION, UnaryOperators.MINUS),
+	
+	/** Multiply: {@code *} */
+	MULTIPLY(BinaryOperators.MULTIPLICATION),
+	
+	/** Divide: {@code /} */
+	DIVIDE(BinaryOperators.DIVISION),
+	
+	/** In: {@code in} */
+	IN(BinaryOperators.IN);
 
 	private final boolean hasValue;
 	private final BinaryOperator binaryOperator;
 	private final UnaryOperator unaryOperator;
 	private final TokenType closingToken;
 
+	TokenType() {
+		this(false, null, null, null);
+	}
+
 	TokenType(boolean hasValue) {
 		this(hasValue, null, null, null);
 	}
 
-	TokenType(boolean hasValue, TokenType closingToken) {
-		this(hasValue, null, null, closingToken);
+	TokenType(TokenType closingToken) {
+		this(false, null, null, closingToken);
 	}
 
-	TokenType(boolean hasValue, BinaryOperator binaryOperator) {
-		this(hasValue, binaryOperator, null, null);
+	TokenType(UnaryOperator unaryOperator) {
+		this(false, null, unaryOperator, null);
 	}
 
-	TokenType(boolean hasValue, BinaryOperator binaryOperator, UnaryOperator unaryOperator) {
-		this(hasValue, binaryOperator, unaryOperator, null);
+	TokenType(BinaryOperator binaryOperator) {
+		this(false, binaryOperator, null, null);
+	}
+
+	TokenType(BinaryOperator binaryOperator, UnaryOperator unaryOperator) {
+		this(false, binaryOperator, unaryOperator, null);
 	}
 
 	TokenType(boolean hasValue, BinaryOperator binaryOperator, UnaryOperator unaryOperator,
@@ -137,4 +147,5 @@ public enum TokenType {
 	public TokenType closingType() {
 		return closingToken;
 	}
+
 }

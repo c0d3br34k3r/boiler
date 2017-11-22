@@ -3,9 +3,12 @@ package au.com.codeka.carrot.expr;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayDeque;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.collect.Iterators;
 
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.util.LineReader;
@@ -32,16 +35,13 @@ public class Tokenizer {
 	 * @param types The {@link TokenType} we want to accept.
 	 * @return True, if the current token is of the given type, or false it's
 	 *         not.
-	 * @throws CarrotException If there's an error parsing the tokens.
 	 */
-	public boolean accept(TokenType... types) throws CarrotException {
-		Token token = tokens.peek();
-		for (int i = 0; i < types.length; i++) {
-			if (types[i] == token.getType()) {
-				return true;
-			}
-		}
-		return false;
+	public boolean accept(Set<TokenType> types) {
+		return types.contains(tokens.peek().getType());
+	}
+
+	public boolean accept(TokenType type) {
+		return type == tokens.peek().getType();
 	}
 
 	/**
@@ -61,14 +61,14 @@ public class Tokenizer {
 		if (offset == 0) {
 			return accept(type);
 		}
-
 		while (tokens.size() <= offset) {
 			next();
 		}
-		Token[] array = tokens.toArray(new Token[tokens.size()]);
-		return (array[offset].getType() == type);
+		return Iterators.get(tokens.iterator(), offset).getType() == type;
 	}
 
+	// TODO: nullable variant
+	
 	/**
 	 * Returns a {@link Token} if it's one of the given types, or throws a
 	 * {@link CarrotException} if it's not.
@@ -79,28 +79,25 @@ public class Tokenizer {
 	 *         not of the given type.
 	 */
 	@Nonnull
-	public Token expect(TokenType... types) throws CarrotException {
-		for (TokenType type : types) {
-			if (tokens.peek().getType() == type) {
-				Token t = tokens.remove();
-				next();
-				return t;
-			}
-		}
-
-		StringBuilder typeString = new StringBuilder();
-		for (int i = 0; i < types.length; i++) {
-			if (i > 0) {
-				if (i == types.length - 1) {
-					typeString.append(" or ");
-				} else {
-					typeString.append(", ");
-				}
-			}
-			typeString.append(types[i]);
+	public Token expect(Set<TokenType> types) throws CarrotException {
+		if (types.contains(tokens.peek().getType())) {
+			Token t = tokens.remove();
+			next();
+			return t;
 		}
 		throw new CarrotException(
-				"Expected token of type " + typeString + ", got " + tokens.peek().getType(),
+				"Expected token of type " + types + ", got " + tokens.peek().getType(),
+				reader.getPointer());
+	}
+
+	public Token expect(TokenType type) throws CarrotException {
+		if (type == tokens.peek().getType()) {
+			Token t = tokens.remove();
+			next();
+			return t;
+		}
+		throw new CarrotException(
+				"Expected token of type " + type + ", got " + tokens.peek().getType(),
 				reader.getPointer());
 	}
 
@@ -142,6 +139,7 @@ public class Tokenizer {
 		int next;
 		Token token;
 
+		// TODO: Cache
 		switch (ch) {
 			case '(':
 				token = new Token(TokenType.LPAREN);
@@ -195,7 +193,7 @@ public class Tokenizer {
 					}
 					token = new Token(TokenType.ASSIGNMENT);
 				} else {
-					token = new Token(TokenType.EQUALITY);
+					token = new Token(TokenType.EQUAL);
 				}
 				break;
 			case '!':
@@ -204,7 +202,7 @@ public class Tokenizer {
 					lookahead = (char) next;
 					token = new Token(TokenType.NOT);
 				} else {
-					token = new Token(TokenType.INEQUALITY);
+					token = new Token(TokenType.NOT_EQUAL);
 				}
 				break;
 			case '<':

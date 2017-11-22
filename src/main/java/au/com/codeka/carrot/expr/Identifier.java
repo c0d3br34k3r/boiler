@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
  * An Identifier.
  */
 public class Identifier {
+	
 	private final String value;
 
 	public Identifier(Token token) {
@@ -21,7 +22,6 @@ public class Identifier {
 			// "null" is a special identifier that... evaluates to null.
 			return null;
 		}
-
 		return value;
 	}
 

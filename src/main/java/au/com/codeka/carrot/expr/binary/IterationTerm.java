@@ -13,6 +13,7 @@ import au.com.codeka.carrot.expr.Term;
  * @author Marten Gajda
  */
 public final class IterationTerm implements Term {
+
 	private final Term left;
 
 	public IterationTerm(Term left) {
@@ -28,4 +29,5 @@ public final class IterationTerm implements Term {
 	public String toString() {
 		return left.toString();
 	}
+
 }

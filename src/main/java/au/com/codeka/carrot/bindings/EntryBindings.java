@@ -28,6 +28,7 @@ import au.com.codeka.carrot.Bindings;
  * @author Marten Gajda
  */
 public final class EntryBindings implements Bindings, Iterable<Object> {
+
 	private final Map.Entry<String, Object> entry;
 
 	public EntryBindings(String key, Object value) {
@@ -59,4 +60,5 @@ public final class EntryBindings implements Bindings, Iterable<Object> {
 	public Iterator<Object> iterator() {
 		return Arrays.asList(entry.getKey(), entry.getValue()).iterator();
 	}
+
 }

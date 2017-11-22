@@ -1,5 +1,8 @@
 package au.com.codeka.carrot.expr.binary;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TermParser;
@@ -12,12 +15,13 @@ import au.com.codeka.carrot.expr.Tokenizer;
  * @author Marten Gajda
  */
 public final class BinaryTermParser implements TermParser {
-	private final TermParser termParser;
-	private final TokenType[] tokenTypes;
 
-	public BinaryTermParser(TermParser termParser, TokenType... tokenTypes) {
+	private final TermParser termParser;
+	private final Set<TokenType> tokenTypes;
+
+	public BinaryTermParser(TermParser termParser, TokenType first, TokenType... rest) {
 		this.termParser = termParser;
-		this.tokenTypes = tokenTypes;
+		this.tokenTypes = EnumSet.of(first, rest);
 	}
 
 	@Override

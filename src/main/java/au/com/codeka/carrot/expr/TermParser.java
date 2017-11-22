@@ -17,4 +17,5 @@ public interface TermParser {
 	 * @throws CarrotException in the syntax of the term was invalid.
 	 */
 	Term parse(Tokenizer tokenizer) throws CarrotException;
+
 }

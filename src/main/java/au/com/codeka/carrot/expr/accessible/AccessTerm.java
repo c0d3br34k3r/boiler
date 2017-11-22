@@ -14,7 +14,6 @@ import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.expr.LazyTerm;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TokenType;
-import au.com.codeka.carrot.expr.binary.BinaryOperator;
 import au.com.codeka.carrot.util.Log;
 
 /**
@@ -24,22 +23,21 @@ import au.com.codeka.carrot.util.Log;
  * @author Marten Gajda
  */
 public final class AccessTerm implements AccessibleTerm {
+	
 	private final AccessibleTerm left;
-	private final BinaryOperator operation;
 	private final Term right;
 	private final TokenType accessorToken;
 
-	public AccessTerm(AccessibleTerm left, AccessOperator operation, Term right,
+	public AccessTerm(AccessibleTerm left, Term right,
 			TokenType accessorToken) {
 		this.left = left;
-		this.operation = operation;
 		this.right = right;
 		this.accessorToken = accessorToken;
 	}
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
-		return operation.apply(left.evaluate(config, scope), new LazyTerm(config, scope, right));
+		return Access.access(left.evaluate(config, scope), new LazyTerm(config, scope, right));
 	}
 
 	@Nonnull

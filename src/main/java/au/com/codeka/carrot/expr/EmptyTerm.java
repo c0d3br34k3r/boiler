@@ -13,7 +13,10 @@ import au.com.codeka.carrot.Scope;
  * @author Marten Gajda
  */
 public final class EmptyTerm implements Term {
+
 	public final static EmptyTerm INSTANCE = new EmptyTerm();
+
+	private EmptyTerm() {}
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
@@ -24,4 +27,5 @@ public final class EmptyTerm implements Term {
 	public String toString() {
 		return "";
 	}
+
 }

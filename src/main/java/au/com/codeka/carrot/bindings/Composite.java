@@ -36,6 +36,7 @@ import au.com.codeka.carrot.Bindings;
  * </pre>
  */
 public final class Composite implements Bindings {
+	
 	private final Iterable<Bindings> bindingsIterable;
 
 	public Composite(Bindings... bindings) {
