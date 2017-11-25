@@ -2,8 +2,8 @@ package au.com.codeka.carrot;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
 import au.com.codeka.carrot.resource.ResourceLocator;
 
 /**
@@ -11,7 +11,7 @@ import au.com.codeka.carrot.resource.ResourceLocator;
  * engine.
  */
 public class Configuration {
-	
+
 	public interface Logger {
 		int LEVEL_DEBUG = 1;
 		int LEVEL_INFO = 2;
@@ -20,31 +20,31 @@ public class Configuration {
 		void print(int level, String msg);
 	}
 
-	private final Charset encoding;
-	private final ResourceLocator resourceLocator;
+	private final Charset charset;
+	private final Path dir;
 	private final TagRegistry tagRegistry;
 	private final Logger logger;
 	private final boolean autoEscape;
 
 	private Configuration(
-			Charset encoding,
-			ResourceLocator.Builder resourceLocatorBuilder,
+			Charset charset,
+			Path root,
 			TagRegistry.Builder tagRegistryBuilder,
 			Logger logger,
 			boolean autoEscape) {
-		this.encoding = encoding;
-		this.resourceLocator = resourceLocatorBuilder.build(this);
+		this.charset = charset;
+		this.dir = root;
 		this.tagRegistry = tagRegistryBuilder.build(this);
 		this.logger = logger;
 		this.autoEscape = autoEscape;
 	}
 
-	public Charset getEncoding() {
-		return encoding;
+	public Charset getCharset() {
+		return charset;
 	}
 
-	public ResourceLocator getResourceLocator() {
-		return resourceLocator;
+	public Path getResourceLocator() {
+		return dir;
 	}
 
 	public TagRegistry getTagRegistry() {
@@ -64,25 +64,25 @@ public class Configuration {
 	}
 
 	public static class Builder {
-		
-		private Charset encoding;
-		private ResourceLocator.Builder resourceLocatorBuilder;
+
+		private Charset charset;
+		private Path dir;
 		private TagRegistry.Builder tagRegistryBuilder;
 		private Logger logger;
 		private boolean autoEscape;
 
 		public Builder() {
-			encoding = StandardCharsets.UTF_8;
+			charset = StandardCharsets.UTF_8;
 			autoEscape = true;
 		}
 
-		public Builder setEncoding(Charset encoding) {
-			this.encoding = encoding;
+		public Builder setCharset(Charset charset) {
+			this.charset = charset;
 			return this;
 		}
 
-		public Builder setResourceLocator(ResourceLocator.Builder resourceLocatorBuilder) {
-			this.resourceLocatorBuilder = resourceLocatorBuilder;
+		public Builder setResourceLocator(Path dir) {
+			this.dir = dir;
 			return this;
 		}
 
@@ -123,9 +123,9 @@ public class Configuration {
 
 		public Configuration build() {
 			return new Configuration(
-					encoding,
-					resourceLocatorBuilder == null ? new MemoryResourceLocator.Builder()
-							: resourceLocatorBuilder,
+					charset,
+					dir == null ? new MemoryResourceLocator.Builder()
+							: dir,
 					tagRegistryBuilder == null ? new TagRegistry.Builder() : tagRegistryBuilder,
 					logger,
 					autoEscape);

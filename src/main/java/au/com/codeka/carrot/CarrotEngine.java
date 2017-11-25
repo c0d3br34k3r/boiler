@@ -1,8 +1,11 @@
 package au.com.codeka.carrot;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.annotation.Nullable;
 
@@ -13,14 +16,14 @@ import au.com.codeka.carrot.resource.ResourceName;
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TemplateParser;
 import au.com.codeka.carrot.tmpl.parse.Tokenizer;
-import au.com.codeka.carrot.util.LineReader;
+import au.com.codeka.carrot.util.Preconditions;
 
 /**
  * {@link CarrotEngine} is the root of the carrot system. You create an instance
  * of this, make it global or static, load templates and process them from here.
  */
 public class CarrotEngine {
-	
+
 	private final Configuration config;
 	private final MapBindings globalBindings;
 	private final ParseCache parseCache;
@@ -86,24 +89,22 @@ public class CarrotEngine {
 	 *
 	 * @param writer A {@link Writer} to write the results of processing the
 	 *        given template to.
-	 * @param resourceName The {@link ResourceName} of the template file, which
-	 *        will be located by our configured {@link ResourceLocator}.
+	 * @param file The {@link ResourceName} of the template file, which will be
+	 *        located by our configured {@link ResourceLocator}.
 	 * @param scope The {@link Scope} we're rendering into.
 	 *
 	 * @throws CarrotException Thrown if any errors occur.
 	 */
 	public void process(
 			Writer writer,
-			ResourceName resourceName,
+			Path file,
 			Scope scope) throws CarrotException {
-		Node node = parseCache.getNode(resourceName);
+		Node node = parseCache.getNode(file);
 		if (node == null) {
-			LineReader lineReader = new LineReader(resourceName,
-					config.getResourceLocator().getReader(resourceName));
-			node = templateParser.parse(new Tokenizer(lineReader));
-			parseCache.addNode(resourceName, node);
+			Reader reader = Files.newBufferedReader(file, config.getCharset());
+			node = templateParser.parse(new Tokenizer(reader));
+			parseCache.addNode(file, node);
 		}
-
 		try {
 			node.render(this, writer, scope);
 		} catch (IOException e) {
@@ -117,8 +118,7 @@ public class CarrotEngine {
 	 *
 	 * @param writer A {@link Writer} to write the results of processing the
 	 *        given template to.
-	 * @param templateFile The name of the template file, which will be resolved
-	 *        by our configured {@link ResourceLocator}.
+	 * @param path
 	 * @param bindings A mapping of string to variables that make up the
 	 *        bindings for this template.
 	 *
@@ -126,33 +126,31 @@ public class CarrotEngine {
 	 */
 	public void process(
 			Writer writer,
-			String templateFile,
-			@Nullable Bindings bindings) throws CarrotException {
-		ResourceName resourceName = config.getResourceLocator().findResource(templateFile);
-
+			Path path,
+			Bindings bindings) throws CarrotException {
 		Scope scope = new Scope(globalBindings);
+		Preconditions.checkNotNull(bindings);
 		if (bindings != null) {
 			scope.push(bindings);
 		}
-
-		process(writer, resourceName, scope);
+		process(writer, path, scope);
 	}
 
 	/**
 	 * Process the template with the given filename, and returns the result as a
 	 * string.
 	 *
-	 * @param templateFile The name of the template file, which will be resolved
-	 *        by our configured {@link ResourceLocator}.
+	 * @param file
 	 * @param bindings A mapping of string to variables that make up the
 	 *        bindings for this template.
 	 * @return The processed template, as a string.
 	 *
 	 * @throws CarrotException Thrown if any errors occur.
 	 */
-	public String process(String templateFile, @Nullable Bindings bindings) throws CarrotException {
+	public String process(Path file, @Nullable Bindings bindings) throws CarrotException {
 		StringWriter writer = new StringWriter();
-		process(writer, templateFile, bindings);
+		process(writer, file, bindings);
 		return writer.getBuffer().toString();
 	}
+
 }
