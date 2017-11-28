@@ -32,11 +32,11 @@ public final class ExpressionTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		if (tokenizer.expect(TokenType.LEFT_PARENTHESIS) != null) {
+		if (tokenizer.tryConsume(TokenType.LEFT_PARENTHESIS)) {
 			// parse the expression in between
 			Term term = expressionParser.parse(tokenizer);
 			// consume the ")".
-			tokenizer.require(TokenType.RIGHT_PARENTHESIS);
+			tokenizer.get(TokenType.RIGHT_PARENTHESIS);
 			return term;
 		}
 		return delegate.parse(tokenizer);

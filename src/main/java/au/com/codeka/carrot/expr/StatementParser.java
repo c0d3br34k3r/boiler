@@ -161,20 +161,13 @@ public class StatementParser {
 	 */
 	@Nullable
 	public Identifier tryParseIdentifier() throws CarrotException {
-		if (tokenizer.accept(TokenType.IDENTIFIER)) {
-			return parseIdentifier();
-		}
-		return null;
-	}
-
-	@Nonnull
-	public Identifier parseIdentifier() throws CarrotException {
-		return new Identifier(tokenizer.require(TokenType.IDENTIFIER));
+		Token token = tokenizer.tryGet(TokenType.IDENTIFIER);
+		return token != null ? new Identifier((String) token.getValue()) : null;
 	}
 
 	@Nonnull
 	public Token parseToken(@Nonnull TokenType type) throws CarrotException {
-		return tokenizer.require(type);
+		return tokenizer.get(type);
 	}
 
 	/**
@@ -185,11 +178,11 @@ public class StatementParser {
 	 *         parse an identifier.
 	 * @throws CarrotException if there's some error parsing the identifiers.
 	 */
-	public List<Identifier> maybeParseIdentifierList() throws CarrotException {
-		if (!tokenizer.accept(TokenType.IDENTIFIER)) {
-			return null;
+	public List<Identifier> tryParseIdentifierList() throws CarrotException {
+		if (tokenizer.check(TokenType.IDENTIFIER)) {
+			return parseIdentifierList();
 		}
-		return parseIdentifierList();
+		return null;
 	}
 
 	public List<Identifier> parseIdentifierList() throws CarrotException {
@@ -197,13 +190,13 @@ public class StatementParser {
 		List<Identifier> result = new LinkedList<>();
 		// first token of a list is always an identifier
 		do {
-			result.add(parseIdentifier());
-		} while (tokenizer.expect(TokenType.COMMA) != null);
+			result.add(new Identifier((String) tokenizer.get(TokenType.IDENTIFIER).getValue()));
+		} while (tokenizer.tryConsume(TokenType.COMMA));
 		return result;
 	}
 
 	public boolean isAssignment() throws CarrotException {
-		return tokenizer.expect(TokenType.ASSIGNMENT) != null;
+		return tokenizer.tryConsume(TokenType.ASSIGNMENT);
 	}
 
 	public Term parseTerm() throws CarrotException {

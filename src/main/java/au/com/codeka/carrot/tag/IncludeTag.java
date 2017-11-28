@@ -43,7 +43,7 @@ public class IncludeTag extends Tag {
 	public void parseStatement(StatementParser stmtParser) throws CarrotException {
 		templateNameExpr = stmtParser.parseTerm();
 
-		identifiers = stmtParser.maybeParseIdentifierList();
+		identifiers = stmtParser.tryParseIdentifierList();
 		if (identifiers != null) {
 			stmtParser.parseToken(TokenType.ASSIGNMENT);
 			expression = stmtParser.parseTerm();

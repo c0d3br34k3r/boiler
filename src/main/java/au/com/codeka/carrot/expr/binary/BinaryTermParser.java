@@ -30,7 +30,7 @@ public final class BinaryTermParser implements TermParser {
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = termParser.parse(tokenizer);
 		for (;;) {
-			Token token = tokenizer.expect(tokenTypes);
+			Token token = tokenizer.tryGet(tokenTypes);
 			if (token == null) {
 				return left;
 			}

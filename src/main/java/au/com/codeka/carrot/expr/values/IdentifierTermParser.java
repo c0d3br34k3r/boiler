@@ -25,7 +25,7 @@ public final class IdentifierTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		Token token = tokenizer.expect(TokenType.IDENTIFIER);
+		Token token = tokenizer.tryGet(TokenType.IDENTIFIER);
 		return token != null ? new IdentifierTerm(token) : delegate.parse(tokenizer);
 	}
 

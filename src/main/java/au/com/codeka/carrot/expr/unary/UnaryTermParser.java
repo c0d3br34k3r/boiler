@@ -28,7 +28,7 @@ public final class UnaryTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		Token token = tokenizer.expect(tokenTypes);
+		Token token = tokenizer.tryGet(tokenTypes);
 		if (token != null) {
 			return new UnaryTerm(token.getType().unaryOperator(), this.parse(tokenizer));
 		}

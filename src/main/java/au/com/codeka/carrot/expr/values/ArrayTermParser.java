@@ -41,8 +41,8 @@ public final class ArrayTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		if (tokenizer.expect(TokenType.LEFT_BRACKET) != null) {
-			if (tokenizer.expect(TokenType.RIGHT_BRACKET) != null) {
+		if (tokenizer.tryConsume(TokenType.LEFT_BRACKET)) {
+			if (tokenizer.tryConsume(TokenType.RIGHT_BRACKET)) {
 				return new ArrayTerm(Collections.<Term> emptyList());
 			}
 			List<Term> terms = new ArrayList<>();
@@ -50,8 +50,8 @@ public final class ArrayTermParser implements TermParser {
 				// parse the expression in between
 				terms.add(expressionParser.parse(tokenizer));
 				// consume the ")".
-			} while (tokenizer.expect(TokenType.COMMA) != null);
-			tokenizer.require(TokenType.RIGHT_BRACKET);
+			} while (tokenizer.tryConsume(TokenType.COMMA));
+			tokenizer.get(TokenType.RIGHT_BRACKET);
 			return new ArrayTerm(terms);
 		}
 		return delegate.parse(tokenizer);

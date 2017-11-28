@@ -25,7 +25,7 @@ public final class StringTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		Token token = tokenizer.expect(TokenType.STRING_LITERAL);
+		Token token = tokenizer.tryGet(TokenType.STRING_LITERAL);
 		return token != null ? new StringTerm(token) : delegate.parse(tokenizer);
 	}
 

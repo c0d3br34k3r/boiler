@@ -3,7 +3,6 @@ package au.com.codeka.carrot.expr;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
-import java.util.ArrayDeque;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -11,7 +10,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
 
 import au.com.codeka.carrot.CarrotException;
 
@@ -21,28 +19,73 @@ import au.com.codeka.carrot.CarrotException;
 public class Tokenizer {
 
 	private final PushbackReader reader;
-	private ArrayDeque<Token> tokens = new ArrayDeque<>();
+	private Token next;
 
 	public Tokenizer(Reader reader) throws CarrotException {
 		this.reader = new PushbackReader(reader);
 		next();
 	}
 
-	/**
-	 * Returns true if the current token is and of the given {@link TokenType}s.
-	 * You can then use {@link #expect} to get the token (and advance to the
-	 * next one).
-	 *
-	 * @param types The {@link TokenType} we want to accept.
-	 * @return True, if the current token is of the given type, or false it's
-	 *         not.
-	 */
-	public boolean accept(Set<TokenType> types) {
-		return types.contains(tokens.peek().getType());
+	public boolean check(TokenType type) {
+		return type == next.getType();
 	}
 
-	public boolean accept(TokenType type) {
-		return type == tokens.peek().getType();
+	public boolean check(Set<TokenType> types) {
+		return types.contains(next.getType());
+	}
+
+	@Nonnull
+	public Token get(TokenType type) throws CarrotException {
+		Token token = tryGet(type);
+		if (token == null) {
+			throw new CarrotException(
+					"Expected token of type " + type + ", got " + next.getType());
+		}
+		return token;
+	}
+
+	/**
+	 * Returns a {@link Token} if it's one of the given types, or throws a
+	 * {@link CarrotException} if it's not.
+	 *
+	 * @param types The {@link TokenType}s we want to accept one of.
+	 * @return The next {@link Token}, if it's of the given type.
+	 * @throws CarrotException If there's an error parsing the token, or if it's
+	 *         not of the given type.
+	 * @throws IOException
+	 */
+	@Nonnull
+	public Token get(Set<TokenType> types) throws CarrotException {
+		Token token = tryGet(types);
+		if (token == null) {
+			throw new CarrotException(
+					"Expected token of type " + types + ", got " + next.getType());
+		}
+		return token;
+	}
+
+	@Nullable
+	public Token tryGet(TokenType type) throws CarrotException {
+		if (type == next.getType()) {
+			return advance();
+		}
+		return null;
+	}
+
+	@Nullable
+	public Token tryGet(Set<TokenType> types) throws CarrotException {
+		if (types.contains(next.getType())) {
+			return advance();
+		}
+		return null;
+	}
+
+	public boolean tryConsume(TokenType type) throws CarrotException {
+		return tryGet(type) != null;
+	}
+
+	public boolean tryConsume(Set<TokenType> types) throws CarrotException {
+		return tryGet(types) != null;
 	}
 
 	/**
@@ -61,63 +104,18 @@ public class Tokenizer {
 	 */
 	@Deprecated
 	public boolean accept(int offset, TokenType type) throws CarrotException {
-		if (offset == 0) {
-			return accept(type);
-		}
-		while (tokens.size() <= offset) {
-			next();
-		}
-		return Iterators.get(tokens.iterator(), offset).getType() == type;
-	}
-
-	@Nonnull
-	public Token require(TokenType type) throws CarrotException {
-		Token token = expect(type);
-		if (token == null) {
-			throw new CarrotException(
-					"Expected token of type " + type + ", got " + tokens.peek().getType());
-		}
-		return token;
-	}
-
-	/**
-	 * Returns a {@link Token} if it's one of the given types, or throws a
-	 * {@link CarrotException} if it's not.
-	 *
-	 * @param types The {@link TokenType}s we want to accept one of.
-	 * @return The next {@link Token}, if it's of the given type.
-	 * @throws CarrotException If there's an error parsing the token, or if it's
-	 *         not of the given type.
-	 * @throws IOException
-	 */
-	@Nonnull
-	public Token require(Set<TokenType> types) throws CarrotException {
-		Token token = expect(types);
-		if (token == null) {
-			throw new CarrotException(
-					"Expected token of type " + types + ", got " + tokens.peek().getType());
-		}
-		return token;
-	}
-
-	@Nullable
-	public Token expect(TokenType type) throws CarrotException {
-		if (type == tokens.peek().getType()) {
-			return advance();
-		}
-		return null;
-	}
-
-	@Nullable
-	public Token expect(Set<TokenType> types) throws CarrotException {
-		if (types.contains(tokens.peek().getType())) {
-			return advance();
-		}
-		return null;
+		throw new AssertionError();
+		// if (offset == 0) {
+		// return accept(type);
+		// }
+		// while (tokens.size() <= offset) {
+		// next();
+		// }
+		// return Iterators.get(tokens.iterator(), offset).getType() == type;
 	}
 
 	private Token advance() throws CarrotException {
-		Token token = tokens.remove();
+		Token token = next;
 		next();
 		return token;
 	}
@@ -127,7 +125,7 @@ public class Tokenizer {
 	 * @throws IOException
 	 */
 	public void end() throws CarrotException {
-		require(TokenType.EOF);
+		get(TokenType.EOF);
 	}
 
 	/**
@@ -139,7 +137,7 @@ public class Tokenizer {
 	 *         because we got an unexpected token).
 	 */
 	public CarrotException unexpected(String msg) {
-		return new CarrotException(String.format("%s, found: %s", msg, tokens.peek()));
+		return new CarrotException(String.format("%s, found: %s", msg, next));
 	}
 
 	private static final CharMatcher DIGIT = CharMatcher.inRange('0', '9');
@@ -152,12 +150,6 @@ public class Tokenizer {
 		}
 	};
 
-	/**
-	 * Advance to the {@link Token}, storing it in the member variable token.
-	 *
-	 * @throws CarrotException if there's an error parsing the tokens.
-	 * @throws IOException
-	 */
 	private void next() throws CarrotException {
 		try {
 			int ch;
@@ -165,10 +157,10 @@ public class Tokenizer {
 				ch = reader.read();
 			} while (Character.isWhitespace(ch));
 			if (ch == -1) {
-				tokens.add(Token.of(TokenType.EOF));
+				next = Token.of(TokenType.EOF);
 				return;
 			}
-			tokens.add(getToken(ch));
+			next = getToken(ch);
 		} catch (IOException e) {
 			throw new CarrotException(e);
 		}

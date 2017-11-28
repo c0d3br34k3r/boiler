@@ -28,7 +28,7 @@ public final class StrictIterationTermParser implements TermParser {
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = termParser.parse(tokenizer);
-		if (tokenizer.expect(TokenType.COMMA) != null) {
+		if (tokenizer.tryConsume(TokenType.COMMA)) {
 			Term right = this.parse(tokenizer);
 			return right == EmptyTerm.INSTANCE ? new IterationTerm(left)
 					: new BinaryTerm(left, BinaryOperators.ITERATION, right);

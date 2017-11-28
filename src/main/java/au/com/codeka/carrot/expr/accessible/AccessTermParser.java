@@ -47,7 +47,7 @@ public final class AccessTermParser implements TermParser {
 		}
 		AccessibleTerm result = new Unaccessible(new Variable(left));
 		for (;;) {
-			Token token = tokenizer.expect(ACCESS_TYPE);
+			Token token = tokenizer.tryGet(ACCESS_TYPE);
 			if (token == null) {
 				break;
 			}
@@ -68,7 +68,7 @@ public final class AccessTermParser implements TermParser {
 				default:
 			}
 			if (token.getType().closingType() != null) {
-				tokenizer.require(token.getType().closingType());
+				tokenizer.get(token.getType().closingType());
 			}
 		}
 		return result;

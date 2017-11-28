@@ -26,7 +26,7 @@ public final class NumberTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		Token token = tokenizer.expect(TokenType.NUMBER_LITERAL);
+		Token token = tokenizer.tryGet(TokenType.NUMBER_LITERAL);
 		return token != null ? new NumberTerm(token) : delegate.parse(tokenizer);
 	}
 
