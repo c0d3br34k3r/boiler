@@ -26,17 +26,15 @@ public final class NumberTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		if (!tokenizer.accept(TokenType.NUMBER_LITERAL)) {
-			// not a number, delegate to the next parser
-			return delegate.parse(tokenizer);
-		}
-		return new NumberTerm(tokenizer.require(TokenType.NUMBER_LITERAL));
+		Token token = tokenizer.expect(TokenType.NUMBER_LITERAL);
+		return token != null ? new NumberTerm(token) : delegate.parse(tokenizer);
 	}
 
 	/**
 	 * A trivial term containing only a constant number.
 	 */
 	private static final class NumberTerm implements Term {
+
 		private final Token token;
 
 		public NumberTerm(Token token) {
@@ -53,4 +51,5 @@ public final class NumberTermParser implements TermParser {
 			return token.getValue().toString();
 		}
 	}
+
 }

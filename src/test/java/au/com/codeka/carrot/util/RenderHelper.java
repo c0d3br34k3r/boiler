@@ -1,14 +1,13 @@
 package au.com.codeka.carrot.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.resource.MemoryResourceLocator;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Helpers for rendering templates in tests.

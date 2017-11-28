@@ -10,10 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.google.common.io.LineReader;
-
 import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.resource.ResourcePointer;
 
 /**
  * Tests for {@link Tokenizer}.
@@ -31,12 +28,12 @@ public class TokenizerTest {
 	@Test
 	public void testParen() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("(foo) (bar)");
-		assertThat(tokenizer.require(TokenType.LEFT_PAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.LEFT_PARENTHESIS)).isNotNull();
 		assertThat(tokenizer.require(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-		assertThat(tokenizer.require(TokenType.RIGHT_PAREN)).isNotNull();
-		assertThat(tokenizer.require(TokenType.LEFT_PAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.RIGHT_PARENTHESIS)).isNotNull();
+		assertThat(tokenizer.require(TokenType.LEFT_PARENTHESIS)).isNotNull();
 		assertThat(tokenizer.require(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
-		assertThat(tokenizer.require(TokenType.RIGHT_PAREN)).isNotNull();
+		assertThat(tokenizer.require(TokenType.RIGHT_PARENTHESIS)).isNotNull();
 	}
 
 	@Test

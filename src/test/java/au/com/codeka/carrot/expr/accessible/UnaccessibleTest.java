@@ -1,25 +1,27 @@
 package au.com.codeka.carrot.expr.accessible;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.HashSet;
+
+import org.junit.Test;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.expr.Term;
-import org.junit.Test;
-
-import java.util.HashSet;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * @author Marten Gajda
  */
 public class UnaccessibleTest {
+
 	@Test
 	public void testEvaluate() throws Exception {
 		final Configuration testConfiguration = new Configuration.Builder().build();
-		final Scope testScope = new Scope(new EmptyBindings());
+		final Scope testScope = new Scope(EmptyBindings.INSTANCE);
 		final Object testResult = new Object();
 
 		assertThat(new Unaccessible(new Term() {
@@ -40,7 +42,7 @@ public class UnaccessibleTest {
 				fail("evaluate called");
 				return null;
 			}
-		}).callable(new Configuration.Builder().build(), new Scope(new EmptyBindings()))
+		}).callable(new Configuration.Builder().build(), new Scope(EmptyBindings.INSTANCE))
 				.call(new HashSet<>());
 	}
 

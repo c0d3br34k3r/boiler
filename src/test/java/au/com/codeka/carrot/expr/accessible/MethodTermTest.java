@@ -25,7 +25,7 @@ public class MethodTermTest {
 	public void testEvaluate() throws Exception {
 		final Iterable<Object> testParams = new ArrayList<>();
 		final Configuration testConfiguration = new Configuration.Builder().build();
-		final Scope testScope = new Scope(new EmptyBindings());
+		final Scope testScope = new Scope(EmptyBindings.INSTANCE);
 		final Object testResult = new Object();
 
 		assertThat(

@@ -12,7 +12,9 @@ import au.com.codeka.carrot.Bindings;
  *
  * @author Marten Gajda
  */
-public final class EmptyBindings implements Bindings, Iterable<EntryBindings> {
+public enum EmptyBindings implements Bindings, Iterable<EntryBindings> {
+
+	INSTANCE;
 
 	@Override
 	public Object resolve(@Nonnull String key) {
@@ -26,7 +28,7 @@ public final class EmptyBindings implements Bindings, Iterable<EntryBindings> {
 
 	@Override
 	public Iterator<EntryBindings> iterator() {
-		return Collections.<EntryBindings> emptyList().iterator();
+		return Collections.emptyIterator();
 	}
 
 }

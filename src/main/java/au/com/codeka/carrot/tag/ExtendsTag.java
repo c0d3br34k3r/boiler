@@ -1,10 +1,7 @@
 package au.com.codeka.carrot.tag;
 
-import static au.com.codeka.carrot.util.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +51,7 @@ import au.com.codeka.carrot.util.Log;
  * block.
  */
 public class ExtendsTag extends Tag {
+
 	private Term skeletonNameExpr;
 
 	@Override

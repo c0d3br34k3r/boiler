@@ -1,19 +1,21 @@
 package au.com.codeka.carrot.tmpl;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import java.io.StringReader;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import com.google.common.io.LineReader;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.resource.ResourcePointer;
 import au.com.codeka.carrot.tag.EchoTag;
 import au.com.codeka.carrot.tag.IfTag;
 import au.com.codeka.carrot.tmpl.parse.Tokenizer;
-import au.com.codeka.carrot.util.LineReader;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-import java.io.StringReader;
-
-import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Tests for {@link TemplateParser}.

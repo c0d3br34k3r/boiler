@@ -1,16 +1,17 @@
 package au.com.codeka.carrot.bindings;
 
-import au.com.codeka.carrot.expr.Identifier;
-import au.com.codeka.carrot.expr.Token;
-import au.com.codeka.carrot.expr.TokenType;
-import org.junit.Test;
+import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.google.common.truth.Truth.assertThat;
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import au.com.codeka.carrot.expr.Identifier;
+import au.com.codeka.carrot.expr.Token;
+import au.com.codeka.carrot.expr.TokenType;
 
 /**
  * @author Marten Gajda

@@ -31,8 +31,8 @@ public final class MethodTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("%s %s %s %s", method.toString(), TokenType.LEFT_PAREN,
-				arguments.toString(), TokenType.RIGHT_PAREN);
+		return String.format("%s %s %s %s", method.toString(), TokenType.LEFT_PARENTHESIS,
+				arguments.toString(), TokenType.RIGHT_PARENTHESIS);
 	}
 
 }

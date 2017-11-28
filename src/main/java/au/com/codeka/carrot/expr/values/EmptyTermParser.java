@@ -12,10 +12,13 @@ import au.com.codeka.carrot.expr.Tokenizer;
  *
  * @author Marten Gajda
  */
-public final class EmptyTermParser implements TermParser {
+public enum EmptyTermParser implements TermParser {
+
+	INSTANCE;
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		return EmptyTerm.INSTANCE;
 	}
+
 }

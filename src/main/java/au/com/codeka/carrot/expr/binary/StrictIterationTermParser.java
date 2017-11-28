@@ -18,6 +18,7 @@ import au.com.codeka.carrot.expr.Tokenizer;
  * @author Marten Gajda
  */
 public final class StrictIterationTermParser implements TermParser {
+	
 	private final TermParser termParser;
 
 	public StrictIterationTermParser(TermParser termParser) {
@@ -32,7 +33,7 @@ public final class StrictIterationTermParser implements TermParser {
 			return right == EmptyTerm.INSTANCE ? new IterationTerm(left)
 					: new BinaryTerm(left, BinaryOperators.ITERATION, right);
 		}
-		return left instanceof EmptyTerm ? left : new IterationTerm(left);
+		return left == EmptyTerm.INSTANCE ? left : new IterationTerm(left);
 	}
 
 }

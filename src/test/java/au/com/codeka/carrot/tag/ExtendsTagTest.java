@@ -1,21 +1,23 @@
 package au.com.codeka.carrot.tag;
 
-import au.com.codeka.carrot.CarrotEngine;
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.Bindings;
-import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.annotation.Nullable;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.TreeMap;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import au.com.codeka.carrot.Bindings;
+import au.com.codeka.carrot.CarrotEngine;
+import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.Configuration;
+import au.com.codeka.carrot.bindings.EmptyBindings;
+import au.com.codeka.carrot.resource.MemoryResourceLocator;
 
 /**
  * Tests for {@link ExtendsTag} (and, by extension, {@link BlockTag}).
@@ -27,7 +29,7 @@ public class ExtendsTagTest {
 		CarrotEngine engine = createEngine(
 				"skeleton", "Hello{% block \"foo\" %}blah blah{% end %}World",
 				"index", "{% extends \"skeleton\" %}{% block \"foo\" %}yada yada{% end %}");
-		String result = render(engine, "index", new EmptyBindings());
+		String result = render(engine, "index", EmptyBindings.INSTANCE);
 		assertThat(result).isEqualTo("Helloyada yadaWorld");
 	}
 
@@ -38,7 +40,7 @@ public class ExtendsTagTest {
 				"Hello{% block \"foo\" %}blah blah{% endblock %}World{% block \"bar\" %}{% endblock %}",
 				"index",
 				"{% extends \"skeleton\" %}{% block \"foo\" %}yada yada{% end %}{% block \"bar\" %}stuff{% endblock %}");
-		String result = render(engine, "index", new EmptyBindings());
+		String result = render(engine, "index", EmptyBindings.INSTANCE);
 		assertThat(result).isEqualTo("Helloyada yadaWorldstuff");
 	}
 
@@ -47,7 +49,7 @@ public class ExtendsTagTest {
 		CarrotEngine engine = createEngine(
 				"skeleton", "Hello{% block \"foo\" %}blah blah{% end %}World",
 				"index", "{% extends \"skeleton\" %}");
-		String result = render(engine, "index", new EmptyBindings());
+		String result = render(engine, "index", EmptyBindings.INSTANCE);
 		assertThat(result).isEqualTo("Helloblah blahWorld");
 	}
 
@@ -56,7 +58,7 @@ public class ExtendsTagTest {
 		CarrotEngine engine = createEngine(
 				"index", "{% extends \"skeleton\" %}");
 		try {
-			engine.process("index", new EmptyBindings());
+			engine.process("index", EmptyBindings.INSTANCE);
 			fail("Expected CarrotException.");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage())

@@ -16,6 +16,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * {@link ExtendsTag} for details.
  */
 public class BlockTag extends Tag {
+
 	private Term blockNameExpr;
 
 	@Override

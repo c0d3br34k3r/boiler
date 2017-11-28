@@ -1,21 +1,23 @@
 package au.com.codeka.carrot.expr;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Test;
+
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.EmptyBindings;
-import org.junit.Test;
-
-import static com.google.common.truth.Truth.assertThat;
 
 /**
  * @author Marten Gajda
  */
 public class EmptyTermTest {
+	
 	@Test
 	public void testEvaluate() throws Exception {
 		assertThat(((Iterable<?>) EmptyTerm.INSTANCE.evaluate(
 				new Configuration.Builder().build(),
-				new Scope(new EmptyBindings()))).iterator().hasNext()).isFalse();
+				new Scope(EmptyBindings.INSTANCE))).iterator().hasNext()).isFalse();
 	}
 
 	@Test

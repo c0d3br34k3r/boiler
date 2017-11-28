@@ -1,7 +1,5 @@
 package au.com.codeka.carrot.tag;
 
-import static au.com.codeka.carrot.util.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
@@ -34,6 +32,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * </pre>
  */
 public class IncludeTag extends Tag {
+
 	private Term templateNameExpr;
 	@Nullable
 	private List<Identifier> identifiers;
@@ -74,7 +73,7 @@ public class IncludeTag extends Tag {
 							identifiers,
 							evaluateIterable(expression, engine, scope)));
 		} else {
-			scope.push(new EmptyBindings());
+			scope.push(EmptyBindings.INSTANCE);
 		}
 
 		engine.process(writer, resourceName, scope);

@@ -1,14 +1,15 @@
 package au.com.codeka.carrot.tag;
 
-import au.com.codeka.carrot.CarrotException;
+import static au.com.codeka.carrot.util.RenderHelper.render;
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.Arrays;
-
-import static au.com.codeka.carrot.util.RenderHelper.render;
-import static com.google.common.truth.Truth.assertThat;
+import au.com.codeka.carrot.CarrotException;
 
 /**
  * Tests for {@link SetTag}.

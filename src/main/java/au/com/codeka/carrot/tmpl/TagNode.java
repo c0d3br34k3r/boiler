@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 
+import com.google.common.io.LineReader;
+
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
@@ -14,7 +16,6 @@ import au.com.codeka.carrot.resource.ResourcePointer;
 import au.com.codeka.carrot.tag.EndTag;
 import au.com.codeka.carrot.tag.Tag;
 import au.com.codeka.carrot.tmpl.parse.Token;
-import au.com.codeka.carrot.util.LineReader;
 
 /**
  * A {@link TagNode} represents a node of the form "{% tagname foo %}" where
@@ -58,7 +59,7 @@ public class TagNode extends Node {
 	 * @throws CarrotException if there's a problem parsing the token.
 	 */
 	public static TagNode create(Token token, Configuration config) throws CarrotException {
-		String content = token.getContent().trim();
+		String content = token.getValue().trim();
 
 		String tagName;
 		int space = content.indexOf(' ');
@@ -99,7 +100,6 @@ public class TagNode extends Node {
 			Tag nextTag = ((TagNode) nextNode).tag;
 			return tag.canChain(nextTag);
 		}
-
 		return false;
 	}
 

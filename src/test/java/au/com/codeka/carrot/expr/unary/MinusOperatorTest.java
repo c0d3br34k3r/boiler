@@ -1,8 +1,8 @@
 package au.com.codeka.carrot.expr.unary;
 
-import org.junit.Test;
-
 import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author Marten Gajda

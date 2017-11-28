@@ -1,12 +1,12 @@
 package au.com.codeka.carrot;
 
-import static au.com.codeka.carrot.util.Preconditions.checkNotNull;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 
 import au.com.codeka.carrot.bindings.Composite;
 
@@ -64,7 +64,7 @@ public class Scope {
 	 */
 	@Nullable
 	public Object resolve(@Nonnull String name) {
-		checkNotNull(name);
+		Preconditions.checkNotNull(name);
 		for (Bindings bindings : stack) {
 			Object value = bindings.resolve(name);
 			if (value != null) {

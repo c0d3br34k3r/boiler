@@ -32,4 +32,5 @@ public final class Unaccessible implements AccessibleTerm {
 			throws CarrotException {
 		throw new CarrotException("A Unaccessible adapter can not return a callable.");
 	}
+
 }

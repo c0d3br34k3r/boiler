@@ -3,7 +3,6 @@ package au.com.codeka.carrot;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -48,24 +47,24 @@ public class CarrotEngineTest {
 		assertThat(
 				render(
 						"{% for a in \"foo\", \"bar\", \"baz\" %}{{ a }}{{ !loop.last && \", \" || \"\" }}{% end %}",
-						new EmptyBindings()))
+						EmptyBindings.INSTANCE))
 								.isEqualTo("foo, bar, baz");
 	}
 
 	@Test
 	public void testOperatorPrecdence() {
-		assertThat(render("{{ 1 + 1 * 2 }}", new EmptyBindings())).isEqualTo("3");
-		assertThat(render("{{ 1 + 2 * 4 + 10 }}", new EmptyBindings())).isEqualTo("19");
-		assertThat(render("{{ 1 + 1 + 1 * 2 }}", new EmptyBindings())).isEqualTo("4");
-		assertThat(render("{{ (1 + 1) * 2 }}", new EmptyBindings())).isEqualTo("4");
-		assertThat(render("{{ 2 * 2 + 2 }}", new EmptyBindings())).isEqualTo("6");
-		assertThat(render("{{ 2 * (2 + 2) }}", new EmptyBindings())).isEqualTo("8");
+		assertThat(render("{{ 1 + 1 * 2 }}", EmptyBindings.INSTANCE)).isEqualTo("3");
+		assertThat(render("{{ 1 + 2 * 4 + 10 }}", EmptyBindings.INSTANCE)).isEqualTo("19");
+		assertThat(render("{{ 1 + 1 + 1 * 2 }}", EmptyBindings.INSTANCE)).isEqualTo("4");
+		assertThat(render("{{ (1 + 1) * 2 }}", EmptyBindings.INSTANCE)).isEqualTo("4");
+		assertThat(render("{{ 2 * 2 + 2 }}", EmptyBindings.INSTANCE)).isEqualTo("6");
+		assertThat(render("{{ 2 * (2 + 2) }}", EmptyBindings.INSTANCE)).isEqualTo("8");
 	}
 
 	@Test
 	public void testOperatorAssociativity() {
-		assertThat(render("{{ 1200 / 20 / 5 }}", new EmptyBindings())).isEqualTo("12");
-		assertThat(render("{{ 10 - 5 - 3 }}", new EmptyBindings())).isEqualTo("2");
+		assertThat(render("{{ 1200 / 20 / 5 }}", EmptyBindings.INSTANCE)).isEqualTo("12");
+		assertThat(render("{{ 10 - 5 - 3 }}", EmptyBindings.INSTANCE)).isEqualTo("2");
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class CarrotEngineTest {
 		assertThat(
 				render(
 						"{% set values = \"a\", \"b\", \"c\", \"d\" %}{{ values[2] }}",
-						new EmptyBindings()))
+						EmptyBindings.INSTANCE))
 								.isEqualTo("c");
 	}
 
@@ -120,21 +119,21 @@ public class CarrotEngineTest {
 
 	@Test
 	public void testAutoEscape() {
-		assertThat(render("{{ \"Some <b>HTML</b> here\" }}", new EmptyBindings()))
+		assertThat(render("{{ \"Some <b>HTML</b> here\" }}", EmptyBindings.INSTANCE))
 				.isEqualTo("Some &lt;b&gt;HTML&lt;/b&gt; here");
 
 		assertThat(
 				render(
 						new Configuration.Builder().setAutoEscape(false),
 						"{{ \"Some <b>HTML</b> here\" }}",
-						new EmptyBindings()))
+						EmptyBindings.INSTANCE))
 								.isEqualTo("Some <b>HTML</b> here");
 
 		assertThat(
 				render(
 						new Configuration.Builder().setAutoEscape(true),
 						"{{ \"Some <b>HTML</b> here\" }}",
-						new EmptyBindings()))
+						EmptyBindings.INSTANCE))
 								.isEqualTo("Some &lt;b&gt;HTML&lt;/b&gt; here");
 	}
 

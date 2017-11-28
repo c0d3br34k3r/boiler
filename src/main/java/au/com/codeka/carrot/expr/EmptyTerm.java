@@ -18,7 +18,7 @@ public enum EmptyTerm implements Term {
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
-		return Collections.emptyList();
+		return Collections.emptySet();
 	}
 
 	@Override

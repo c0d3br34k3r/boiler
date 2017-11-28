@@ -4,8 +4,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
-import au.com.codeka.carrot.resource.ResourceLocator;
-
 /**
  * The {@link Configuration} is used to configure various aspects of the carrot
  * engine.
@@ -13,11 +11,14 @@ import au.com.codeka.carrot.resource.ResourceLocator;
 public class Configuration {
 
 	public interface Logger {
-		int LEVEL_DEBUG = 1;
-		int LEVEL_INFO = 2;
-		int LEVEL_WARNING = 3;
 
-		void print(int level, String msg);
+		enum Level {
+			DEBUG,
+			INFO,
+			WARNING;
+		}
+
+		void print(Level level, String msg);
 	}
 
 	private final Charset charset;

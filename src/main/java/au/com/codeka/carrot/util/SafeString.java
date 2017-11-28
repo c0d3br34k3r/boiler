@@ -7,7 +7,9 @@ import au.com.codeka.carrot.Configuration;
  * HTML-escaping. This is only useful when {@link Configuration#getAutoEscape}
  * is not true.
  */
+@Deprecated
 public class SafeString {
+
 	private final String str;
 
 	public SafeString(String str) {
@@ -18,4 +20,5 @@ public class SafeString {
 	public String toString() {
 		return str;
 	}
+
 }

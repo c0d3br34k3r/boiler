@@ -1,5 +1,16 @@
 package au.com.codeka.carrot.tag;
 
+import static com.google.common.truth.Truth.assertThat;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.annotation.Nullable;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 import au.com.codeka.carrot.Bindings;
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
@@ -7,16 +18,6 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.bindings.SingletonBindings;
 import au.com.codeka.carrot.resource.MemoryResourceLocator;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.TreeMap;
-
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link IncludeTag}.
@@ -28,7 +29,7 @@ public class IncludeTagTest {
 		CarrotEngine engine = createEngine(
 				"foo", "Hello World",
 				"index", "Stuff{% include \"foo\" %}Blah");
-		String result = render(engine, "index", new EmptyBindings());
+		String result = render(engine, "index", EmptyBindings.INSTANCE);
 		assertThat(result).isEqualTo("StuffHello WorldBlah");
 	}
 
@@ -46,7 +47,7 @@ public class IncludeTagTest {
 		CarrotEngine engine = createEngine(
 				"foo", "Hello{{foo}}World",
 				"index", "Stuff{% include \"foo\" foo = \"Bar\" %}Blah");
-		String result = render(engine, "index", new EmptyBindings());
+		String result = render(engine, "index", EmptyBindings.INSTANCE);
 		assertThat(result).isEqualTo("StuffHelloBarWorldBlah");
 	}
 
@@ -55,7 +56,7 @@ public class IncludeTagTest {
 		CarrotEngine engine = createEngine(
 				"foo", "Hello{{foo}}World{{bar}}",
 				"index", "Stuff{% include \"foo\" foo, bar = (\"xyz\", 123) %}Blah");
-		String result = render(engine, "index", new EmptyBindings());
+		String result = render(engine, "index", EmptyBindings.INSTANCE);
 		assertThat(result).isEqualTo("StuffHelloxyzWorld123Blah");
 	}
 

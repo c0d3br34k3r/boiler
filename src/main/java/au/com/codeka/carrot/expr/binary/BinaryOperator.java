@@ -7,6 +7,7 @@ import au.com.codeka.carrot.expr.Lazy;
  * A generic binary operator.
  */
 public interface BinaryOperator {
+	
 	/**
 	 * Applies the binary operator to the given operands.
 	 *
@@ -21,4 +22,5 @@ public interface BinaryOperator {
 	 * @throws CarrotException if there's any error applying the operator.
 	 */
 	Object apply(Object left, Lazy right) throws CarrotException;
+	
 }

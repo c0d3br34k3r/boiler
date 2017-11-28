@@ -18,7 +18,7 @@ public class UnaryTermTest {
 	@Test
 	public void testEvaluate() throws Exception {
 		final Configuration testConfiguration = new Configuration.Builder().build();
-		final Scope testScope = new Scope(new EmptyBindings());
+		final Scope testScope = new Scope(EmptyBindings.INSTANCE);
 		final Object testValue = new Object();
 		final Object testResult = new Object();
 

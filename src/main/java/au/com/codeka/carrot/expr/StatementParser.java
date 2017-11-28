@@ -64,8 +64,8 @@ import au.com.codeka.carrot.tmpl.TagNode;
  *
  * <p>
  * The statement parser allows you to extract any sub-element from a string as
- * well (for example, the ForTag wants to pull off it's arguments an identifier
- * followed by the identifier "in" followed by a statement.
+ * well. For example, the ForTag wants to pull off its arguments: an identifier,
+ * followed by the identifier "in", followed by a statement.
  */
 public class StatementParser {
 
@@ -87,7 +87,7 @@ public class StatementParser {
 		 * deeper parsers have precedence over shallow factories.
 		 */
 
-		strictIdentifierParser = new IdentifierTermParser(new ErrorTermParser());
+		strictIdentifierParser = new IdentifierTermParser(ErrorTermParser.INSTANCE);
 
 		// @formatter:off
 		TermParser base = new BinaryTermParser(
@@ -121,11 +121,12 @@ public class StatementParser {
 			               }
 		                  })
 		                )
-		              ), 
-		            TokenType.NOT),
+		              ),
+		            TokenType.NOT, TokenType.PLUS, TokenType.MINUS),
 		          TokenType.MULTIPLY, TokenType.DIVIDE),
 		        TokenType.PLUS, TokenType.MINUS),
-		      TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
+		      TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, 
+		        TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
 		    TokenType.EQUAL, TokenType.NOT_EQUAL),
 		  TokenType.LOGICAL_AND),
 		TokenType.LOGICAL_OR);

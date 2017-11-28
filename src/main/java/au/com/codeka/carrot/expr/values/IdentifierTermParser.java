@@ -25,10 +25,8 @@ public final class IdentifierTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		if (!tokenizer.accept(TokenType.IDENTIFIER)) {
-			return delegate.parse(tokenizer);
-		}
-		return new IdentifierTerm(tokenizer.require(TokenType.IDENTIFIER));
+		Token token = tokenizer.expect(TokenType.IDENTIFIER);
+		return token != null ? new IdentifierTerm(token) : delegate.parse(tokenizer);
 	}
 
 	/**
@@ -52,6 +50,6 @@ public final class IdentifierTermParser implements TermParser {
 		public String toString() {
 			return token.getValue().toString();
 		}
-
 	}
+
 }

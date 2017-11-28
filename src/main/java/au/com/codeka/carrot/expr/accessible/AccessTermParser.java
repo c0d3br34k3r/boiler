@@ -29,19 +29,20 @@ public final class AccessTermParser implements TermParser {
 
 	public AccessTermParser(TermParser expressionTerm, TermParser identifierTerm,
 			TermParser iterationTerm) {
-		this.valueParser = new IdentifierTermParser(new EmptyTermParser());
+		this.valueParser = new IdentifierTermParser(EmptyTermParser.INSTANCE);
 		this.iterationTerm = iterationTerm;
 		this.expressionTerm = expressionTerm;
 		this.identifierTerm = identifierTerm;
 	}
 
 	private static final Set<TokenType> ACCESS_TYPE =
-			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET, TokenType.LEFT_PAREN);
+			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET,
+					TokenType.LEFT_PARENTHESIS);
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = valueParser.parse(tokenizer);
-		if (left instanceof EmptyTerm) {
+		if (left == EmptyTerm.INSTANCE) {
 			return left;
 		}
 		AccessibleTerm result = new Unaccessible(new Variable(left));
@@ -59,7 +60,7 @@ public final class AccessTermParser implements TermParser {
 					result = new AccessTerm(result, expressionTerm.parse(tokenizer),
 							TokenType.LEFT_BRACKET);
 					break;
-				case LEFT_PAREN:
+				case LEFT_PARENTHESIS:
 					// the accessor in () is supposed to be an iteration
 					result = new Unaccessible(
 							new MethodTerm(result, iterationTerm.parse(tokenizer)));

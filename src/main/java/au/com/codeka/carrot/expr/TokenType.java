@@ -25,10 +25,10 @@ public enum TokenType {
 	IDENTIFIER(true),
 
 	/** Right-parenthesis: {@code )} */
-	RIGHT_PAREN,
+	RIGHT_PARENTHESIS,
 
 	/** Left-parenthesis: {@code (} */
-	LEFT_PAREN(RIGHT_PAREN),
+	LEFT_PARENTHESIS(RIGHT_PARENTHESIS),
 
 	/** Right-square-bracket: {@code ]} */
 	RIGHT_BRACKET,

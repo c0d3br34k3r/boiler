@@ -9,6 +9,8 @@ import java.nio.file.Path;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.helpers.HtmlHelper;
 import au.com.codeka.carrot.resource.ResourceLocator;
@@ -16,7 +18,6 @@ import au.com.codeka.carrot.resource.ResourceName;
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TemplateParser;
 import au.com.codeka.carrot.tmpl.parse.Tokenizer;
-import au.com.codeka.carrot.util.Preconditions;
 
 /**
  * {@link CarrotEngine} is the root of the carrot system. You create an instance

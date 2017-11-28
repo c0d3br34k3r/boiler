@@ -144,14 +144,13 @@ public class Tokenizer {
 
 	private static final CharMatcher DIGIT = CharMatcher.inRange('0', '9');
 	private static final CharMatcher DIGIT_OR_DOT = DIGIT.or(CharMatcher.is('.'));
-	private static final CharMatcher IDENTIFIER_PART =
-			CharMatcher.forPredicate(new Predicate<Character>() {
+	private static final Predicate<Character> IDENTIFIER_PART = new Predicate<Character>() {
 
-				@Override
-				public boolean apply(Character input) {
-					return Character.isJavaIdentifierPart(input);
-				}
-			});
+		@Override
+		public boolean apply(Character input) {
+			return Character.isJavaIdentifierPart(input);
+		}
+	};
 
 	/**
 	 * Advance to the {@link Token}, storing it in the member variable token.
@@ -179,9 +178,9 @@ public class Tokenizer {
 		// TODO: Cache
 		switch (ch) {
 			case '(':
-				return Token.of(TokenType.LEFT_PAREN);
+				return Token.of(TokenType.LEFT_PARENTHESIS);
 			case ')':
-				return Token.of(TokenType.RIGHT_PAREN);
+				return Token.of(TokenType.RIGHT_PARENTHESIS);
 			case '[':
 				return Token.of(TokenType.LEFT_BRACKET);
 			case ']':
@@ -220,7 +219,8 @@ public class Tokenizer {
 				if (Character.isJavaIdentifierStart(ch)) {
 					return readIdentifier((char) ch);
 				}
-				throw new CarrotException("Unexpected character [" + (char) ch + "], " + Character.getName(ch));
+				throw new CarrotException(
+						"Unexpected character [" + (char) ch + "], " + Character.getName(ch));
 		}
 	}
 
@@ -266,7 +266,7 @@ public class Tokenizer {
 		}
 	}
 
-	private String readUntil(char first, CharMatcher matcher) throws IOException {
+	private String readUntil(char first, Predicate<Character> matcher) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		builder.append(first);
 		for (;;) {
@@ -274,7 +274,7 @@ public class Tokenizer {
 			if (next == -1) {
 				break;
 			}
-			if (!matcher.matches((char) next)) {
+			if (!matcher.apply((char) next)) {
 				reader.unread(next);
 				break;
 			}

@@ -5,10 +5,9 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-
-import au.com.codeka.carrot.util.Preconditions;
 
 /**
  * A {@link Token} is something pulled off the statement stream and represents a

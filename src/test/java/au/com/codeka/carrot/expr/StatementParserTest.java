@@ -3,16 +3,18 @@ package au.com.codeka.carrot.expr;
 import static com.google.common.truth.Truth.assertThat;
 
 import java.io.StringReader;
-import java.util.EnumSet;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.google.common.collect.ImmutableMap;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.bindings.EmptyBindings;
+import au.com.codeka.carrot.bindings.MapBindings;
 
 /**
  * Tests for {@link StatementParserTest}.
@@ -29,17 +31,21 @@ public class StatementParserTest {
 		assertThat(evaluate(createStatementParser("!1").parseTerm())).isEqualTo(false);
 		assertThat(evaluate(createStatementParser("!!1").parseTerm())).isEqualTo(true);
 		assertThat(evaluate(createStatementParser("!!!1").parseTerm())).isEqualTo(false);
+		assertThat(evaluate(createStatementParser("2 + 2 * 2").parseTerm())).isEqualTo(6);
+		assertThat(evaluate(createStatementParser("(2 + 2) * 2").parseTerm())).isEqualTo(8);
+		assertThat(evaluate(createStatementParser("foo[4 + 4]").parseTerm())).isEqualTo(7);
+		assertThat(evaluate(createStatementParser("foo[6]*2").parseTerm())).isEqualTo(14);
 	}
 
-//	@Test
-//	public void test() throws CarrotException {
-//		Tokenizer tokenizer = new Tokenizer(new StringReader("!1"));
-//		Token token;
-//		do {
-//			token = tokenizer.require(EnumSet.allOf(TokenType.class));
-//			System.out.println(token);
-//		} while (token.getType() != TokenType.EOF);
-//	}
+	// @Test
+	// public void test() throws CarrotException {
+	// Tokenizer tokenizer = new Tokenizer(new StringReader("!1"));
+	// Token token;
+	// do {
+	// token = tokenizer.require(EnumSet.allOf(TokenType.class));
+	// System.out.println(token);
+	// } while (token.getType() != TokenType.EOF);
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -62,6 +68,8 @@ public class StatementParserTest {
 	private Object evaluate(Term term) throws CarrotException {
 		return term.evaluate(
 				new Configuration.Builder().build(),
-				new Scope(new EmptyBindings()));
+				new Scope(new MapBindings(ImmutableMap.<String, Object> of("foo",
+						Collections.nCopies(10, 7)))));
 	}
+
 }
