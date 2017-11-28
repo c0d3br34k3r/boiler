@@ -18,6 +18,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * ElseTags.
  */
 public class IfTag extends Tag {
+
 	private Term expr;
 
 	@Override

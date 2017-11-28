@@ -124,7 +124,7 @@ public class Configuration {
 		public Configuration build() {
 			return new Configuration(
 					charset,
-					dir == null ? new MemoryResourceLocator.Builder()
+					dir == null ? null
 							: dir,
 					tagRegistryBuilder == null ? new TagRegistry.Builder() : tagRegistryBuilder,
 					logger,

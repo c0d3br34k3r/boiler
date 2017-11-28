@@ -10,9 +10,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.google.common.io.LineReader;
+
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.resource.ResourcePointer;
-import au.com.codeka.carrot.util.LineReader;
 
 /**
  * Tests for {@link Tokenizer}.
@@ -224,21 +225,18 @@ public class TokenizerTest {
 
 	@Test
 	public void testTokenEqualsToString() {
-		Token t1 = new Token(TokenType.ASSIGNMENT);
-		Token t2 = new Token(TokenType.EQUAL);
+		Token t1 = Token.of(TokenType.ASSIGNMENT);
+		Token t2 = Token.of(TokenType.EQUAL);
 		Token t3 = new Token(TokenType.IDENTIFIER, "foo");
 		Token t4 = new Token(TokenType.IDENTIFIER, "bar");
-		Token t5 = new Token(TokenType.IDENTIFIER, new String("bar") /*
-																		 * don't
-																		 * intern
-																		 */);
+		Token t5 = new Token(TokenType.IDENTIFIER, new String("bar"));
 
 		assertThat(t1).isNotEqualTo(t2);
 		assertThat(t2).isNotEqualTo(t1);
 		assertThat(t3).isNotEqualTo(new Object());
 		assertThat(t4).isEqualTo(t5);
 		assertThat(t3).isNotEqualTo(t4);
-		assertThat(t1).isEqualTo(new Token(TokenType.ASSIGNMENT));
+		assertThat(t1).isEqualTo(Token.of(TokenType.ASSIGNMENT));
 
 		assertThat(t1.toString()).isEqualTo("ASSIGNMENT");
 		assertThat(t2.toString()).isEqualTo("EQUAL");
@@ -251,6 +249,6 @@ public class TokenizerTest {
 	}
 
 	private static Tokenizer createTokenizer(String str) throws CarrotException {
-		return new Tokenizer(new LineReader(new ResourcePointer(null), new StringReader(str)));
+		return new Tokenizer(new StringReader(str));
 	}
 }

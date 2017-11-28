@@ -36,7 +36,6 @@ import au.com.codeka.carrot.CarrotException;
 public class Tokenizer {
 
 	private final PushbackReader reader;
-	private final TokenFactory tokenFactory;
 
 	/**
 	 * Construct a new {@link Tokenizer} with the given {@link LineReader}, and
@@ -58,8 +57,7 @@ public class Tokenizer {
 	 *        {@link Token} is used.
 	 */
 	public Tokenizer(Reader reader, @Nullable TokenFactory tokenFactory) {
-		this.reader = new PushbackReader(reader, 2);
-		this.tokenFactory = tokenFactory == null ? new DefaultTokenFactory() : tokenFactory;
+		this.reader = new PushbackReader(reader, 1);
 	}
 
 	/**
@@ -71,124 +69,11 @@ public class Tokenizer {
 	 */
 	@Nullable
 	public Token getNextToken() throws IOException, CarrotException {
-		TokenType tokenType = TokenType.UNKNOWN;
-		StringBuilder content = new StringBuilder();
-		for (;;) {
-			int i = reader.read();
-			if (i == -1) {
-				return tokenFactory.create(tokenType, content);
-			}
-			char ch = (char) i;
-			switch (ch) {
-				case '{':
-					i = reader.read();
-					if (i == -1) {
-						content.append(ch);
-						return tokenFactory.create(tokenType, content);
-					}
-					switch (i) {
-						case '%':
-							switch (tokenType) {
-								case UNKNOWN:
-									tokenType = TokenType.TAG;
-									break;
-								case FIXED:
-									reader.unread("{%".toCharArray());
-									return tokenFactory.create(tokenType, content);
-								default:
-									throw new CarrotException("Unexpected '{%'");
-							}
-							break;
-						case '{':
-							switch (tokenType) {
-								case UNKNOWN:
-									tokenType = TokenType.ECHO;
-									break;
-								case FIXED:
-									reader.unread("{{".toCharArray());
-									return tokenFactory.create(tokenType, content);
-								default:
-									throw new CarrotException("Unexpected '{{");
-							}
-							break;
-						case '#':
-							switch (tokenType) {
-								case UNKNOWN:
-									tokenType = TokenType.COMMENT;
-									break;
-								case FIXED:
-									reader.unread("{#".toCharArray());
-									return tokenFactory.create(tokenType, content);
-								default:
-									throw new CarrotException("Unexpected '{{");
-							}
-							break;
-						case '\\':
-						default:
-							if (tokenType == TokenType.UNKNOWN) {
-								tokenType = TokenType.FIXED;
-							}
-							content.append(ch);
-							// if it's a '\\' we just eat the backslash, it's an
-							// escape character
-							if (i != '\\') {
-								content.append((char) i);
-							}
-					}
-					break;
-				case '%':
-				case '}':
-				case '#':
-					i = reader.read();
-					if (i < 0) {
-						content.append(ch);
-						return tokenFactory.create(tokenType, content);
-					}
-
-					if ((char) i == '}') {
-						if (tokenType == TokenType.ECHO && ch != '}') {
-							throw new CarrotException("Expected '}}'");
-						} else if (tokenType == TokenType.TAG && ch != '%') {
-							throw new CarrotException("Expected '%}'");
-						} else if (tokenType == TokenType.COMMENT && ch != '#') {
-							throw new CarrotException("Expected '#}'");
-						} else if (tokenType == TokenType.FIXED) {
-							content.append(ch);
-							content.append((char) i);
-						} else {
-							return tokenFactory.create(tokenType, content);
-						}
-					} else {
-						content.append(ch);
-						content.append((char) i);
-					}
-					break;
-				default:
-					if (tokenType == TokenType.UNKNOWN) {
-						tokenType = TokenType.FIXED;
-					}
-					content.append(ch);
-					break;
-			}
-		}
-	}
-
-	public Token getNextToken2() throws IOException, CarrotException {
-		StringBuilder content = new StringBuilder();
-		int c = reader.read();
-		switch (c) {
-			case -1:
-				return new Token(TokenType.FIXED, "");
-			case '{':
-				int c2 = reader.read();
-				switch (c2) {
-					case -1:
-					case '{':
-					case '%':
-					case '#':
-				}
-		}
-		return null;
+		Token token;
+		do {
+			token = mode.parse(this);
+		} while (token != null && token.getValue().isEmpty());
+		return token;
 	}
 
 	private interface ParseMode {
@@ -224,6 +109,14 @@ public class Tokenizer {
 		}
 	};
 
+	private static final ParseMode END = new ParseMode() {
+
+		@Override
+		public Token parse(Tokenizer tokenizer) throws IOException {
+			return null;
+		}
+	};
+
 	private ParseMode mode = LITERAL;
 
 	private String parseTag(char end) throws IOException {
@@ -233,13 +126,13 @@ public class Tokenizer {
 			if (c == end) {
 				int c2 = reader.read();
 				if (c2 == '}') {
-					return content.toString();
+					return finishToken(content, LITERAL);
 				}
 				reader.unread(c2);
 			} else if (c == -1) {
-				return content.toString();
+				return finishToken(content, END);
 			}
-			content.append(c);
+			content.append((char) c);
 		}
 	}
 
@@ -249,36 +142,30 @@ public class Tokenizer {
 			int c = reader.read();
 			switch (c) {
 				case -1:
-					return content.toString();
+					return finishToken(content, END);
 				case '{':
 					int c2 = reader.read();
 					switch (c2) {
 						case -1:
-							return null;
+							return finishToken(content, END);
 						case '{':
+							return finishToken(content, ECHO);
 						case '%':
+							return finishToken(content, TAG);
 						case '#':
-							mode = null;
-							return content.toString();
+							return finishToken(content, COMMENT);
 						default:
 							reader.unread(c2);
 					}
 				default:
-					content.append(c);
+					content.append((char) c);
 			}
 		}
 	}
 
-	private class DefaultTokenFactory implements TokenFactory {
-		@Override
-		public Token create(TokenType type, StringBuilder content) {
-			switch (type) {
-				case UNKNOWN:
-					return null;
-				default:
-					return new Token(type, content.toString());
-			}
-		}
+	private String finishToken(StringBuilder content, ParseMode newMode) {
+		this.mode = newMode;
+		return content.toString();
 	}
 
 }

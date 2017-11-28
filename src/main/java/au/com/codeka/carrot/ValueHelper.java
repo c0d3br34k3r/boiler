@@ -51,6 +51,7 @@ public class ValueHelper {
 		if (value instanceof CharSequence) {
 			return ((CharSequence) value).length() > 0;
 		}
+		// these truthy values deviate from JavaScript
 		if (value instanceof Collection) {
 			return !((Collection<?>) value).isEmpty();
 		}
@@ -69,13 +70,12 @@ public class ValueHelper {
 	}
 
 	/**
-	 * Returns the "negative" of the given value. For example, if you pass in
-	 * "1" then "-1" is returned, etc.
+	 * Returns the negative of the given value. For example, if you pass in 1
+	 * then -1 is returned, etc.
 	 *
 	 * @param value The value to negate.
 	 * @return The negated value.
-	 * @throws CarrotException Thrown if the value can't be converted to a
-	 *         number.
+	 * @throws CarrotException if the value can't be converted to a number
 	 */
 	public static Number negate(Object value) throws CarrotException {
 		Number num = toNumber(value);
@@ -220,7 +220,7 @@ public class ValueHelper {
 		if (iterable.getClass().isArray()) {
 			final int length = Array.getLength(iterable);
 			return new AbstractList<Object>() {
-				
+
 				@Override
 				public Object get(int index) {
 					return Array.get(iterable, index);

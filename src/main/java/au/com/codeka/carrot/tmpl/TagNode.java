@@ -44,7 +44,7 @@ public class TagNode extends Node {
 	 * @throws CarrotException if there's a problem parsing the token.
 	 */
 	public static TagNode createEcho(Token token, Configuration config) throws CarrotException {
-		return create("echo", token.getContent(), config, token.getPointer());
+		return create("echo", token.getValue(), config, token.getPointer());
 	}
 
 	/**

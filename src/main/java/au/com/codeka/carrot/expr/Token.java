@@ -1,8 +1,14 @@
 package au.com.codeka.carrot.expr;
 
+import java.util.EnumMap;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
+import au.com.codeka.carrot.util.Preconditions;
 
 /**
  * A {@link Token} is something pulled off the statement stream and represents a
@@ -13,14 +19,38 @@ public class Token {
 	private final TokenType tokenType;
 	private final @Nullable Object value;
 
-	public Token(TokenType tokenType) {
+	private static final ImmutableMap<TokenType, Token> CACHE;
+
+	static {
+		EnumMap<TokenType, Token> map = new EnumMap<>(TokenType.class);
+		for (TokenType type : TokenType.values()) {
+			if (!type.hasValue()) {
+				map.put(type, new Token(type));
+			}
+		}
+		CACHE = Maps.immutableEnumMap(map);
+	}
+
+	private Token(TokenType tokenType) {
 		this.tokenType = tokenType;
 		this.value = null;
 	}
 
-	public Token(TokenType tokenType, Object value) {
-		this.tokenType = tokenType;
-		this.value = value;
+	public static Token of(TokenType type) {
+		return Preconditions.checkNotNull(CACHE.get(type));
+	}
+
+	public Token(TokenType type, String value) {
+		this(type, (Object) value);
+	}
+
+	public Token(TokenType type, Number value) {
+		this(type, (Object) value);
+	}
+
+	private Token(TokenType type, Object value) {
+		this.tokenType = Preconditions.checkNotNull(type);
+		this.value = Preconditions.checkNotNull(value);
 	}
 
 	public TokenType getType() {
@@ -56,4 +86,5 @@ public class Token {
 		}
 		return tokenType.hashCode();
 	}
+
 }

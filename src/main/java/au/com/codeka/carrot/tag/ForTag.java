@@ -22,10 +22,10 @@ import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TagNode;
 
 /**
- * The "for" tag iterates through a loop and execute it's black for each
- * element0.
+ * The "for" tag iterates through a loop and execute its block for each element.
  */
 public class ForTag extends Tag {
+
 	private List<Identifier> loopIdentifiers;
 	private Term loopExpression;
 

@@ -22,6 +22,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * string value of the contents of the set block.
  */
 public class SetTag extends Tag {
+	
 	private List<Identifier> identifiers;
 	@Nullable
 	private Term expression;
