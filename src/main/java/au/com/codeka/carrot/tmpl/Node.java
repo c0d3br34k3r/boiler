@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.resource.ResourcePointer;
 
 /**
  * Base class for nodes in the abstract syntax tree.
@@ -19,10 +18,8 @@ public abstract class Node {
 
 	private final @Nullable List<Node> children;
 	private @Nullable Node nextNode;
-	private ResourcePointer ptr;
 
-	protected Node(ResourcePointer ptr, boolean isBlockNode) {
-		this.ptr = ptr;
+	protected Node(boolean isBlockNode) {
 		if (isBlockNode) {
 			children = new ArrayList<>();
 		} else {
@@ -95,14 +92,6 @@ public abstract class Node {
 	}
 
 	/**
-	 * @return The {@link ResourcePointer} that point to this {@link Node}'s
-	 *         position in the resource. Useful for logging errors and whatnot.
-	 */
-	public ResourcePointer getPointer() {
-		return ptr;
-	}
-
-	/**
 	 * Render this node to the given {@link Writer}.
 	 *
 	 * @param engine The {@link CarrotEngine} we're running inside of.
@@ -131,17 +120,7 @@ public abstract class Node {
 			throw new IllegalStateException("Cannot call renderChildren on non-block node.");
 		}
 		for (Node child : children) {
-			try {
-				child.render(engine, writer, scope);
-			} catch (Exception e) {
-				if (e instanceof CarrotException) {
-					if (((CarrotException) e).getPointer() == null) {
-						throw new CarrotException(e, child.getPointer());
-					}
-					throw e;
-				}
-				throw new CarrotException(e, child.getPointer());
-			}
+			child.render(engine, writer, scope);
 		}
 	}
 

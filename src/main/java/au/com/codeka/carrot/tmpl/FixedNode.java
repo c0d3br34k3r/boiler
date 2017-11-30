@@ -5,7 +5,6 @@ import java.io.Writer;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.resource.ResourcePointer;
 import au.com.codeka.carrot.tmpl.parse.Token;
 
 /**
@@ -16,13 +15,13 @@ public class FixedNode extends Node {
 
 	private String content;
 
-	private FixedNode(ResourcePointer ptr, String content) {
-		super(ptr, false /* isBlockNode */);
+	private FixedNode(String content) {
+		super(false);
 		this.content = content;
 	}
 
 	public static FixedNode create(Token token) {
-		return new FixedNode(token.getPointer(), token.getContent());
+		return new FixedNode(token.getValue());
 	}
 
 	public String getContent() {

@@ -10,6 +10,7 @@ import au.com.codeka.carrot.tmpl.parse.Tokenizer;
  * Parses a stream of {@link Token}s into a tree of {@link Node}s.
  */
 public class TemplateParser {
+	
 	private final Configuration config;
 
 	public TemplateParser(Configuration config) {
@@ -17,7 +18,7 @@ public class TemplateParser {
 	}
 
 	public Node parse(Tokenizer tokenizer) throws CarrotException {
-		Node root = new RootNode(tokenizer.getPointer());
+		Node root = new RootNode();
 		parse(tokenizer, root);
 		return root;
 	}
@@ -56,7 +57,6 @@ public class TemplateParser {
 			} else {
 				throw new IllegalStateException("Unknown token type: " + token.getType());
 			}
-
 			if (childNode != null) {
 				if (childNode.isBlockNode()) {
 					parse(tokenizer, childNode);

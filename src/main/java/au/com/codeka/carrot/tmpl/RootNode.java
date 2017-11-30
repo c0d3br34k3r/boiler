@@ -6,15 +6,14 @@ import java.io.Writer;
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.resource.ResourcePointer;
 
 /**
  * Special node that represents the root of the syntax tree.
  */
 public class RootNode extends Node {
 
-	public RootNode(ResourcePointer ptr) {
-		super(ptr, true /* isBlockNode */);
+	public RootNode() {
+		super(true);
 	}
 
 	@Override

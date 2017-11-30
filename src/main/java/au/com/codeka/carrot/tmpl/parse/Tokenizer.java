@@ -44,19 +44,6 @@ public class Tokenizer {
 	 * @param reader
 	 */
 	public Tokenizer(Reader reader) {
-		this(reader, null);
-	}
-
-	/**
-	 * Construct a new {@link Tokenizer} with the given {@link LineReader} and
-	 * {@link TokenFactory}.
-	 *
-	 * @param reader
-	 * @param tokenFactory A {@link TokenFactory} for creating the tokens. If
-	 *        null, a default token factory that just creates instances of
-	 *        {@link Token} is used.
-	 */
-	public Tokenizer(Reader reader, @Nullable TokenFactory tokenFactory) {
 		this.reader = new PushbackReader(reader, 1);
 	}
 

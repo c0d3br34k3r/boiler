@@ -84,10 +84,6 @@ public class Tokenizer {
 		return tryGet(type) != null;
 	}
 
-	public boolean tryConsume(Set<TokenType> types) throws CarrotException {
-		return tryGet(types) != null;
-	}
-
 	/**
 	 * Returns true if the token at the given offset from the current is of the
 	 * given {@link TokenType}. The 0th token is the current one, the 1st is the

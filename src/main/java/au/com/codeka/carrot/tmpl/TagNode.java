@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 
-import com.google.common.io.LineReader;
+import com.google.common.base.Supplier;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
@@ -12,7 +12,6 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Tokenizer;
-import au.com.codeka.carrot.resource.ResourcePointer;
 import au.com.codeka.carrot.tag.EndTag;
 import au.com.codeka.carrot.tag.Tag;
 import au.com.codeka.carrot.tmpl.parse.Token;
@@ -24,13 +23,11 @@ import au.com.codeka.carrot.tmpl.parse.Token;
  * Tags are represented by the {@link Tag} class, which is extensible.
  */
 public class TagNode extends Node {
-	
-	private final ResourcePointer ptr;
+
 	private final Tag tag;
 
-	public TagNode(ResourcePointer ptr, Tag tag) {
-		super(ptr, tag.isBlockTag() /* isBlockNode */);
-		this.ptr = ptr;
+	public TagNode(Tag tag) {
+		super(tag.isBlockTag());
 		this.tag = tag;
 	}
 
@@ -45,7 +42,7 @@ public class TagNode extends Node {
 	 * @throws CarrotException if there's a problem parsing the token.
 	 */
 	public static TagNode createEcho(Token token, Configuration config) throws CarrotException {
-		return create("echo", token.getValue(), config, token.getPointer());
+		return create("echo", token.getValue(), config);
 	}
 
 	/**
@@ -60,7 +57,6 @@ public class TagNode extends Node {
 	 */
 	public static TagNode create(Token token, Configuration config) throws CarrotException {
 		String content = token.getValue().trim();
-
 		String tagName;
 		int space = content.indexOf(' ');
 		if (space <= 0) {
@@ -70,29 +66,42 @@ public class TagNode extends Node {
 			tagName = content.substring(0, space);
 			content = content.substring(space).trim();
 		}
-
-		return create(tagName, content, config, token.getPointer());
+		return create(tagName, content, config);
 	}
 
-	private static TagNode create(
-			String tagName, String content, Configuration config, ResourcePointer ptr)
+	private static TagNode create(String tagName, String content, Configuration config)
 			throws CarrotException {
 		Tag tag = config.getTagRegistry().createTag(tagName);
 		if (tag == null) {
-			throw new CarrotException(String.format("Invalid tag '%s'", tagName), ptr);
+			throw new CarrotException(String.format("Invalid tag '%s'", tagName));
 		}
-
 		try {
-			StatementParser stmtParser = new StatementParser(
-					new Tokenizer(new LineReader(ptr, new StringReader(content))));
+			StatementParser stmtParser =
+					new StatementParser(new Tokenizer(new StringReader(content)));
 			tag.parseStatement(stmtParser);
 		} catch (CarrotException e) {
 			throw new CarrotException(
 					"Exception parsing statement for '" + tagName + "' [" + content + "]", e);
 		}
-
-		return new TagNode(ptr, tag);
+		return new TagNode(tag);
 	}
+	
+//	private static TagNode create(Supplier<Tag> creator, String content, Configuration config)
+//			throws CarrotException {
+//		Tag tag = config.getTagRegistry().createTag(tagName);
+//		if (tag == null) {
+//			throw new CarrotException(String.format("Invalid tag '%s'", tagName));
+//		}
+//		try {
+//			StatementParser stmtParser =
+//					new StatementParser(new Tokenizer(new StringReader(content)));
+//			tag.parseStatement(stmtParser);
+//		} catch (CarrotException e) {
+//			throw new CarrotException(
+//					"Exception parsing statement for '" + tagName + "' [" + content + "]", e);
+//		}
+//		return new TagNode(tag);
+//	}
 
 	@Override
 	public boolean canChain(Node nextNode) {
@@ -111,7 +120,9 @@ public class TagNode extends Node {
 		return tag instanceof EndTag;
 	}
 
-	/** @return The {@link Tag} for this node. */
+	/**
+	 * @return The {@link Tag} for this node.
+	 */
 	public Tag getTag() {
 		return tag;
 	}
@@ -121,4 +132,5 @@ public class TagNode extends Node {
 			throws CarrotException, IOException {
 		tag.render(engine, writer, this, scope);
 	}
+
 }

@@ -27,6 +27,7 @@ public class EchoTag extends Tag {
 	public void render(CarrotEngine engine, Writer writer, TagNode tagNode, Scope scope)
 			throws CarrotException, IOException {
 		Object value = expr.evaluate(engine.getConfig(), scope);
+		// TODO: configurable escaper
 		if (engine.getConfig().getAutoEscape()) {
 			value = ValueHelper.escape(value);
 		}

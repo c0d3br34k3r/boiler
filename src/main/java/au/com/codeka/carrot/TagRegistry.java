@@ -123,4 +123,67 @@ public class TagRegistry {
 		}
 	}
 
+	private enum BaseTags implements Supplier<Tag> {
+		ECHO("echo") {
+			@Override
+			public Tag get() {
+				return new EchoTag();
+			}
+		},
+		IF("if") {
+			@Override
+			public Tag get() {
+				return new IfTag();
+			}
+		},
+		FOR("for") {
+			@Override
+			public Tag get() {
+				return new ForTag();
+			}
+		},
+		ELSE("else") {
+			@Override
+			public Tag get() {
+				return new ElseTag();
+			}
+		},
+		EXTENDS("extends") {
+			@Override
+			public Tag get() {
+				return new ExtendsTag();
+			}
+		},
+		BLOCK("block") {
+			@Override
+			public Tag get() {
+				return new BlockTag();
+			}
+		},
+		SET("set") {
+			@Override
+			public Tag get() {
+				return new SetTag();
+			}
+		},
+		INCLUDE("include") {
+			@Override
+			public Tag get() {
+				return new IncludeTag();
+			}
+		},
+		END("end") {
+			@Override
+			public Tag get() {
+				return new EndTag();
+			}
+		};
+
+		private final String tagName;
+
+		BaseTags(String tagName) {
+			this.tagName = tagName;
+		}
+	}
+
 }

@@ -32,7 +32,7 @@ public class IfTag extends Tag {
 	 */
 	@Override
 	public boolean canChain(Tag nextTag) {
-		return (nextTag instanceof ElseTag);
+		return nextTag instanceof ElseTag;
 	}
 
 	@Override
@@ -53,4 +53,5 @@ public class IfTag extends Tag {
 			}
 		}
 	}
+
 }

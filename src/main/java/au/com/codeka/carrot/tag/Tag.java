@@ -19,6 +19,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * </p>
  */
 public abstract class Tag {
+	
 	/**
 	 * Parse the statement that appears after the tag in the markup. This is
 	 * guaranteed to be called before {@link #isBlockTag()} or
