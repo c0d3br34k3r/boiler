@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
@@ -19,7 +17,6 @@ import com.google.gson.JsonPrimitive;
 
 import au.com.codeka.carrot.bindings.JsonArrayBindings;
 import au.com.codeka.carrot.bindings.JsonObjectBindings;
-import au.com.codeka.carrot.util.SafeString;
 
 /**
  * Various helpers for working with {@link Object}s.
@@ -108,6 +105,9 @@ public class ValueHelper {
 		}
 		if (value instanceof String) {
 			return parseNumber((String) value);
+		}
+		if (value instanceof Boolean) {
+			return (Boolean) value ? 1 : 0;
 		}
 		throw new CarrotException("Cannot convert '" + value + "' to a number.");
 	}
@@ -277,26 +277,6 @@ public class ValueHelper {
 			return Integer.compare(n1.intValue(), n2.intValue());
 		}
 		throw new CarrotException("Unknown number type.");
-	}
-
-	/**
-	 * Performs HTML-escaping of the given value.
-	 *
-	 * @param value The value to escape. If the value is {@link SafeString},
-	 *        then no escaping will be done.
-	 * @return The HTML-escaped version of the string.
-	 */
-	// TODO: without pulling in any other deps (e.g. Jakarta Commons) is this as
-	// comprehensive as it needs to be?
-	public static String escape(@Nullable Object value) {
-		if (value == null) {
-			return "";
-		}
-		if (value instanceof SafeString) {
-			return value.toString();
-		}
-		String unescaped = value.toString();
-		return unescaped.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
 
 	public static Object jsonHelper(Object object) {

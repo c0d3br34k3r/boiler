@@ -9,6 +9,7 @@ import au.com.codeka.carrot.util.SafeString;
  * Registered in the global {@link Scope} as "html", contains a bunch of
  * functions you can call from your script related to HTML and HTML processing.
  */
+@Deprecated
 public class HtmlHelper {
 	/**
 	 * Mark the given string as "safe" for direct outputting.

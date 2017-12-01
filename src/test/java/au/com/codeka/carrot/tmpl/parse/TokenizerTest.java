@@ -13,81 +13,81 @@ import org.junit.runners.JUnit4;
 import au.com.codeka.carrot.CarrotException;
 
 /**
- * Tests for {@link Tokenizer}.
+ * Tests for {@link ContentParser}.
  */
 @RunWith(JUnit4.class)
 public class TokenizerTest {
 	@Test
 	public void testEmpty() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("");
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("");
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleFixed() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("Hello World!");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "Hello World!"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("Hello World!");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "Hello World!"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleTag() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("{% Hello World! %}");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.TAG, " Hello World! "));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("{% Hello World! %}");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.TAG, " Hello World! "));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleEcho() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("{{ Hello World! }}");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.ECHO, " Hello World! "));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("{{ Hello World! }}");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.ECHO, " Hello World! "));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleComment() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("{# Hello World! #}");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.COMMENT, " Hello World! "));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("{# Hello World! #}");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.COMMENT, " Hello World! "));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedTagFixed() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("Hello {% foo %} world");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "Hello "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.TAG, " foo "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, " world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("Hello {% foo %} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "Hello "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.TAG, " foo "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, " world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagEchoFixed() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("{% foo %}{{ bar }} world");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.TAG, " foo "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.ECHO, " bar "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, " world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("{% foo %}{{ bar }} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.TAG, " foo "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.ECHO, " bar "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, " world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagEchoComment() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("{% foo %}{{ bar }}{# baz #}");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.TAG, " foo "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.ECHO, " bar "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.COMMENT, " baz "));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("{% foo %}{{ bar }}{# baz #}");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.TAG, " foo "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.ECHO, " bar "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.COMMENT, " baz "));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagInvalidEnd() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("stuff {% foo }} baz");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "stuff "));
+		ContentParser tokenizer = createTokenizer("stuff {% foo }} baz");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "stuff "));
 		try {
-			Token token = tokenizer.getNextToken();
+			Content token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
 		} catch (CarrotException e) {
 			assertThat(e.getMessage())
@@ -95,9 +95,9 @@ public class TokenizerTest {
 		}
 
 		tokenizer = createTokenizer("blah {% foo #} baz");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "blah "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "blah "));
 		try {
-			Token token = tokenizer.getNextToken();
+			Content token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
 		} catch (CarrotException e) {
 			assertThat(e.getMessage())
@@ -107,10 +107,10 @@ public class TokenizerTest {
 
 	@Test
 	public void testEchoInvalidEnd() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("stuff {{ foo %} baz");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "stuff "));
+		ContentParser tokenizer = createTokenizer("stuff {{ foo %} baz");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "stuff "));
 		try {
-			Token token = tokenizer.getNextToken();
+			Content token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
 		} catch (CarrotException e) {
 			assertThat(e.getMessage())
@@ -118,9 +118,9 @@ public class TokenizerTest {
 		}
 
 		tokenizer = createTokenizer("blah {{ foo #} baz");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "blah "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "blah "));
 		try {
-			Token token = tokenizer.getNextToken();
+			Content token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
 		} catch (CarrotException e) {
 			assertThat(e.getMessage())
@@ -130,95 +130,95 @@ public class TokenizerTest {
 
 	@Test
 	public void testTagInnerOpenBrace() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello {% yada { yada %} world");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "hello "));
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.TAG, " yada { yada "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, " world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello {% yada { yada %} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "hello "));
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.TAG, " yada { yada "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, " world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagInnerCloseBrace() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello {% yada } yada %} world");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "hello "));
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.TAG, " yada } yada "));
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, " world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello {% yada } yada %} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "hello "));
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.TAG, " yada } yada "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, " world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerOpenBrace() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello { world");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "hello { world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello { world");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "hello { world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerCloseBrace() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello } world");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "hello } world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello } world");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "hello } world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerCloseTag() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello %} world");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "hello %} world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello %} world");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "hello %} world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerCloseEcho() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello }} world");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "hello }} world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello }} world");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "hello }} world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testEscapedOpenTag() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello {\\{ world");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "hello {{ world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello {\\{ world");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "hello {{ world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testDoubleEscapedOpenTag() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello {\\\\{ world");
-		assertThat(tokenizer.getNextToken())
-				.isEqualTo(new Token(TokenType.FIXED, "hello {\\{ world"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello {\\\\{ world");
+		assertThat(tokenizer.getNext())
+				.isEqualTo(new Content(ContentType.FIXED, "hello {\\{ world"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testOpenTagEndOfInput() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello {");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "hello {"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello {");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "hello {"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testCloseTagEndOfInput() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello }");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "hello }"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello }");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "hello }"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testPercentEndOfInput() throws CarrotException, IOException {
-		Tokenizer tokenizer = createTokenizer("hello %");
-		assertThat(tokenizer.getNextToken()).isEqualTo(new Token(TokenType.FIXED, "hello %"));
-		assertThat(tokenizer.getNextToken()).isNull();
+		ContentParser tokenizer = createTokenizer("hello %");
+		assertThat(tokenizer.getNext()).isEqualTo(new Content(ContentType.FIXED, "hello %"));
+		assertThat(tokenizer.getNext()).isNull();
 	}
 
-	private static Tokenizer createTokenizer(String content) {
-		return new Tokenizer(new StringReader(content));
+	private static ContentParser createTokenizer(String content) {
+		return new ContentParser(new StringReader(content));
 	}
 
 }

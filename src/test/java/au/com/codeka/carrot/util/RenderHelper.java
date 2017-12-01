@@ -17,8 +17,8 @@ public class RenderHelper {
 		CarrotEngine engine = new CarrotEngine(new Configuration.Builder()
 				.setLogger(new Configuration.Logger() {
 					@Override
-					public void print(int level, String msg) {
-						if (level > Configuration.Logger.LEVEL_DEBUG) {
+					public void print(Configuration.Logger.Level level, String msg) {
+						if (level.compareTo(Configuration.Logger.Level.DEBUG) > 0) {
 							System.err.println(msg);
 						}
 					}

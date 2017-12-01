@@ -31,7 +31,7 @@ public final class StrictIterationTermParser implements TermParser {
 		if (tokenizer.tryConsume(TokenType.COMMA)) {
 			Term right = this.parse(tokenizer);
 			return right == EmptyTerm.INSTANCE ? new IterationTerm(left)
-					: new BinaryTerm(left, BinaryOperators.ITERATION, right);
+					: new BinaryTerm(left, BinaryOperators.ITERATE, right);
 		}
 		return left == EmptyTerm.INSTANCE ? left : new IterationTerm(left);
 	}

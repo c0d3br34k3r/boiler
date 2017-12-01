@@ -18,28 +18,28 @@ import au.com.codeka.carrot.expr.accessible.Access;
 
 public enum BinaryOperators implements BinaryOperator {
 
-	ADDITION {
+	PLUS {
 		@Override
 		public Object apply(Object left, Lazy right) throws CarrotException {
 			return ValueHelper.add(left, right.value());
 		}
 	},
 
-	SUBTRACTION {
+	MINUS {
 		@Override
 		public Object apply(Object left, Lazy right) throws CarrotException {
 			return ValueHelper.add(left, ValueHelper.negate(right.value()));
 		}
 	},
 
-	MULTIPLICATION {
+	MULTIPLY {
 		@Override
 		public Object apply(Object left, Lazy right) throws CarrotException {
 			return ValueHelper.multiply(left, right.value());
 		}
 	},
 
-	DIVISION {
+	DIVIDE {
 		@Override
 		public Object apply(Object left, Lazy right) throws CarrotException {
 			return ValueHelper.divide(left, right.value());
@@ -59,11 +59,32 @@ public enum BinaryOperators implements BinaryOperator {
 			return ValueHelper.compare(left, right.value()) < 0;
 		}
 	},
+	
+	GREATER_THAN_OR_EQUAL {
+		@Override
+		public Object apply(Object left, Lazy right) throws CarrotException {
+			return ValueHelper.compare(left, right.value()) >= 0;
+		}
+	},
 
-	EQUALS {
+	LESS_THAN_OR_EQUAL {
+		@Override
+		public Object apply(Object left, Lazy right) throws CarrotException {
+			return ValueHelper.compare(left, right.value()) <= 0;
+		}
+	},
+
+	EQUAL {
 		@Override
 		public Object apply(Object left, Lazy right) throws CarrotException {
 			return ValueHelper.isEqual(left, right.value());
+		}
+	},
+
+	NOT_EQUAL {
+		@Override
+		public Object apply(Object left, Lazy right) throws CarrotException {
+			return !ValueHelper.isEqual(left, right.value());
 		}
 	},
 
@@ -102,7 +123,7 @@ public enum BinaryOperators implements BinaryOperator {
 		}
 	},
 
-	ITERATION {
+	ITERATE {
 		@Override
 		public Object apply(Object left, Lazy right) throws CarrotException {
 			return Iterables.concat(Collections.singleton(left), new LazyIterable(right));
@@ -127,6 +148,7 @@ public enum BinaryOperators implements BinaryOperator {
 			this.value = value;
 		}
 
+		// TODO:
 		@SuppressWarnings("unchecked")
 		@Nonnull
 		@Override

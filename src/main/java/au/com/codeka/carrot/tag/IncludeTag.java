@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Preconditions;
+
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
@@ -60,14 +62,14 @@ public class IncludeTag extends Tag {
 				engine.getConfig().getResourceLocator().findResource(null, templateName);
 
 		if (identifiers != null && identifiers.size() == 1) {
-			checkNotNull(expression);
-			String identifier = checkNotNull(identifiers.get(0).evaluate());
+			Preconditions.checkNotNull(expression);
+			String identifier = Preconditions.checkNotNull(identifiers.get(0).evaluate());
 			scope.push(
 					new SingletonBindings(
 							identifier,
 							expression.evaluate(engine.getConfig(), scope)));
 		} else if (identifiers != null) {
-			checkNotNull(expression);
+			Preconditions.checkNotNull(expression);
 			scope.push(
 					new IterableExpansionBindings(
 							identifiers,

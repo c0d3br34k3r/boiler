@@ -11,11 +11,11 @@ import com.google.common.io.LineReader;
 import au.com.codeka.carrot.CarrotException;
 
 /**
- * The {@link Tokenizer} takes an input stream of character and turns it into a
- * stream of {@link Token}s.
+ * The {@link ContentParser} takes an input stream of character and turns it into a
+ * stream of {@link Content}s.
  *
  * <p>
- * Each {@link Token} represents a high-level component of the template. For
+ * Each {@link Content} represents a high-level component of the template. For
  * example, the following template:
  *
  * <p>
@@ -33,30 +33,30 @@ import au.com.codeka.carrot.CarrotException;
  *TokenType=TAG, Content=" end "</code>
  * </pre>
  */
-public class Tokenizer {
+public class ContentParser {
 
 	private final PushbackReader reader;
 
 	/**
-	 * Construct a new {@link Tokenizer} with the given {@link LineReader}, and
+	 * Construct a new {@link ContentParser} with the given {@link LineReader}, and
 	 * a default {@link TokenFactory}.
 	 *
 	 * @param reader
 	 */
-	public Tokenizer(Reader reader) {
+	public ContentParser(Reader reader) {
 		this.reader = new PushbackReader(reader, 1);
 	}
 
 	/**
 	 * Gets the next token from the stream, or null if there's no tokens left.
 	 *
-	 * @return The next {@link Token} in the stream, or null if we're at the end
+	 * @return The next {@link Content} in the stream, or null if we're at the end
 	 *         of the stream.
 	 * @throws CarrotException when there's an error parsing the tokens.
 	 */
 	@Nullable
-	public Token getNextToken() throws IOException, CarrotException {
-		Token token;
+	public Content getNext() throws IOException, CarrotException {
+		Content token;
 		do {
 			token = mode.parse(this);
 		} while (token != null && token.getValue().isEmpty());
@@ -65,41 +65,41 @@ public class Tokenizer {
 
 	private interface ParseMode {
 
-		Token parse(Tokenizer tokenizer) throws IOException;
+		Content parse(ContentParser tokenizer) throws IOException;
 	}
 
 	private static class TagParseMode implements ParseMode {
 
 		private final char end;
-		private final TokenType type;
+		private final ContentType type;
 
-		private TagParseMode(char end, TokenType type) {
+		private TagParseMode(char end, ContentType type) {
 			this.end = end;
 			this.type = type;
 		}
 
 		@Override
-		public Token parse(Tokenizer tokenizer) throws IOException {
-			return new Token(type, tokenizer.parseTag(end));
+		public Content parse(ContentParser tokenizer) throws IOException {
+			return new Content(type, tokenizer.parseTag(end));
 		}
 	}
 
-	private static final ParseMode TAG = new TagParseMode('%', TokenType.TAG);
-	private static final ParseMode ECHO = new TagParseMode('}', TokenType.ECHO);
-	private static final ParseMode COMMENT = new TagParseMode('#', TokenType.COMMENT);
+	private static final ParseMode TAG = new TagParseMode('%', ContentType.TAG);
+	private static final ParseMode ECHO = new TagParseMode('}', ContentType.ECHO);
+	private static final ParseMode COMMENT = new TagParseMode('#', ContentType.COMMENT);
 
 	private static final ParseMode LITERAL = new ParseMode() {
 
 		@Override
-		public Token parse(Tokenizer tokenizer) throws IOException {
-			return new Token(TokenType.FIXED, tokenizer.parseLiteral());
+		public Content parse(ContentParser tokenizer) throws IOException {
+			return new Content(ContentType.FIXED, tokenizer.parseLiteral());
 		}
 	};
 
 	private static final ParseMode END = new ParseMode() {
 
 		@Override
-		public Token parse(Tokenizer tokenizer) throws IOException {
+		public Content parse(ContentParser tokenizer) throws IOException {
 			return null;
 		}
 	};

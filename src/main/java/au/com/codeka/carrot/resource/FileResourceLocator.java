@@ -74,7 +74,7 @@ public class FileResourceLocator implements ResourceLocator {
 		try {
 			return new InputStreamReader(
 					new FileInputStream(((FileResourceName) resourceName).getFile()),
-					config.getEncoding());
+					config.getCharset());
 		} catch (IOException e) {
 			throw new CarrotException(e);
 		}

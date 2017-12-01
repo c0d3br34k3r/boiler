@@ -5,6 +5,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
+
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
@@ -74,7 +76,7 @@ public class ExtendsTag extends Tag {
 		// just render the template instead.
 		Map<String, TagNode> blockTags = new HashMap<>();
 
-		checkNotNull(tagNode.getChildren());
+		Preconditions.checkNotNull(tagNode.getChildren());
 		for (Node childNode : tagNode.getChildren()) {
 			if (!(childNode instanceof TagNode)) {
 				Log.warning(engine.getConfig(), "Unexpected node inside {%% extends %%}: %s",

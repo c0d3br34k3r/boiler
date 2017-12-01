@@ -3,10 +3,11 @@ package au.com.codeka.carrot.tag;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.google.common.html.HtmlEscapers;
+
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.ValueHelper;
 import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.tmpl.TagNode;
@@ -29,7 +30,7 @@ public class EchoTag extends Tag {
 		Object value = expr.evaluate(engine.getConfig(), scope);
 		// TODO: configurable escaper
 		if (engine.getConfig().getAutoEscape()) {
-			value = ValueHelper.escape(value);
+			value = HtmlEscapers.htmlEscaper().escape(value.toString());
 		}
 		writer.write(value.toString());
 	}

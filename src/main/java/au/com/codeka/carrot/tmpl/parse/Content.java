@@ -3,29 +3,29 @@ package au.com.codeka.carrot.tmpl.parse;
 import java.util.Objects;
 
 /**
- * Represents a token in a stream of tokens from the {@link Tokenizer}.
+ * Represents a token in a stream of tokens from the {@link ContentParser}.
  */
-public class Token {
+public class Content {
 
-	private final TokenType type;
+	private final ContentType type;
 	private final String value;
 
 	/**
-	 * Create a new {@link Token}.
+	 * Create a new {@link Content}.
 	 *
-	 * @param type The {@link TokenType} of the token to create.
+	 * @param type The {@link ContentType} of the token to create.
 	 * @param content The content to include in the token.
-	 * @return A new {@link Token}.
+	 * @return A new {@link Content}.
 	 */
-	public Token(TokenType type, String value) {
+	public Content(ContentType type, String value) {
 		this.type = type;
 		this.value = value;
 	}
 
 	/**
-	 * @return The {@link TokenType} of this token.
+	 * @return The {@link ContentType} of this token.
 	 */
-	public TokenType getType() {
+	public ContentType getType() {
 		return type;
 	}
 
@@ -38,9 +38,9 @@ public class Token {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Token) {
-			return ((Token) other).type == type
-					&& ((Token) other).value.equals(value);
+		if (other instanceof Content) {
+			return ((Content) other).type == type
+					&& ((Content) other).value.equals(value);
 		}
 		return false;
 	}

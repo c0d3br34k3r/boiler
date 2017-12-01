@@ -80,10 +80,7 @@ public class Token {
 
 	@Override
 	public int hashCode() {
-		if (tokenType.hasValue()) {
-			return Objects.hash(tokenType, value);
-		}
-		return tokenType.hashCode();
+		return Objects.hash(tokenType, value);
 	}
 
 }

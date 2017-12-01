@@ -2,7 +2,6 @@ package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.expr.binary.BinaryOperator;
 import au.com.codeka.carrot.expr.binary.BinaryOperators;
-import au.com.codeka.carrot.expr.binary.Complement;
 import au.com.codeka.carrot.expr.unary.UnaryOperator;
 import au.com.codeka.carrot.expr.unary.UnaryOperators;
 
@@ -40,50 +39,50 @@ public enum TokenType {
 	ASSIGNMENT,
 
 	/** Comma: {@code ,} */
-	COMMA(BinaryOperators.ITERATION),
-	
+	COMMA(BinaryOperators.ITERATE),
+
 	/** Dot: {@code .} */
 	DOT,
-	
+
 	/** Not: {@code !} */
 	NOT(UnaryOperators.NOT),
-	
+
 	/** Logical and: {@code &&} */
 	LOGICAL_AND(BinaryOperators.AND),
-	
+
 	/** Logical or: {@code ||} */
 	LOGICAL_OR(BinaryOperators.OR),
-	
+
 	/** Equal: {@code ==} */
-	EQUAL(BinaryOperators.EQUALS),
-	
+	EQUAL(BinaryOperators.EQUAL),
+
 	/** Not equal: {@code !=} */
-	NOT_EQUAL(new Complement(BinaryOperators.EQUALS)),
-	
+	NOT_EQUAL(BinaryOperators.NOT_EQUAL),
+
 	/** Less than: {@code <} */
 	LESS_THAN(BinaryOperators.LESS_THAN),
-	
+
 	/** Greater than: {@code >} */
 	GREATER_THAN(BinaryOperators.GREATER_THAN),
-	
+
 	/** Less than or equal: {@code <=} */
-	LESS_THAN_OR_EQUAL(new Complement(GREATER_THAN.binaryOperator)),
-	
+	LESS_THAN_OR_EQUAL(BinaryOperators.LESS_THAN_OR_EQUAL),
+
 	/** Greater than or equal: {@code >=} */
-	GREATER_THAN_OR_EQUAL(new Complement(LESS_THAN.binaryOperator)),
-	
+	GREATER_THAN_OR_EQUAL(BinaryOperators.GREATER_THAN_OR_EQUAL),
+
 	/** Plus: {@code +} */
-	PLUS(BinaryOperators.ADDITION, UnaryOperators.PLUS),
-	
+	PLUS(BinaryOperators.PLUS, UnaryOperators.PLUS),
+
 	/** Minus : {@code -} */
-	MINUS(BinaryOperators.SUBTRACTION, UnaryOperators.MINUS),
-	
+	MINUS(BinaryOperators.MINUS, UnaryOperators.MINUS),
+
 	/** Multiply: {@code *} */
-	MULTIPLY(BinaryOperators.MULTIPLICATION),
-	
+	MULTIPLY(BinaryOperators.MULTIPLY),
+
 	/** Divide: {@code /} */
-	DIVIDE(BinaryOperators.DIVISION),
-	
+	DIVIDE(BinaryOperators.DIVIDE),
+
 	/** In: {@code in} */
 	IN(BinaryOperators.IN);
 

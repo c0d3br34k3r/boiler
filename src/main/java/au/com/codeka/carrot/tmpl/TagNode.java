@@ -14,7 +14,7 @@ import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Tokenizer;
 import au.com.codeka.carrot.tag.EndTag;
 import au.com.codeka.carrot.tag.Tag;
-import au.com.codeka.carrot.tmpl.parse.Token;
+import au.com.codeka.carrot.tmpl.parse.Content;
 
 /**
  * A {@link TagNode} represents a node of the form "{% tagname foo %}" where
@@ -34,28 +34,28 @@ public class TagNode extends Node {
 	/**
 	 * Creates a special {@link TagNode} for an echo token.
 	 *
-	 * @param token The {@link Token} the echo node is going to created from,
-	 *        must have {@link Token#getType()} of
-	 *        {@link au.com.codeka.carrot.tmpl.parse.TokenType#ECHO}.
+	 * @param token The {@link Content} the echo node is going to created from,
+	 *        must have {@link Content#getType()} of
+	 *        {@link au.com.codeka.carrot.tmpl.parse.ContentType#ECHO}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
 	 * @throws CarrotException if there's a problem parsing the token.
 	 */
-	public static TagNode createEcho(Token token, Configuration config) throws CarrotException {
+	public static TagNode createEcho(Content token, Configuration config) throws CarrotException {
 		return create("echo", token.getValue(), config);
 	}
 
 	/**
-	 * Creates a {@link TagNode} for the given {@link Token}.
+	 * Creates a {@link TagNode} for the given {@link Content}.
 	 *
-	 * @param token The {@link Token} the node is going to created from, must
-	 *        have {@link Token#getType()} of
-	 *        {@link au.com.codeka.carrot.tmpl.parse.TokenType#TAG}.
+	 * @param token The {@link Content} the node is going to created from, must
+	 *        have {@link Content#getType()} of
+	 *        {@link au.com.codeka.carrot.tmpl.parse.ContentType#TAG}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
 	 * @throws CarrotException if there's a problem parsing the token.
 	 */
-	public static TagNode create(Token token, Configuration config) throws CarrotException {
+	public static TagNode create(Content token, Configuration config) throws CarrotException {
 		String content = token.getValue().trim();
 		String tagName;
 		int space = content.indexOf(' ');

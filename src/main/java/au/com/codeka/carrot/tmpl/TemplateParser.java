@@ -2,12 +2,12 @@ package au.com.codeka.carrot.tmpl;
 
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.tmpl.parse.Token;
-import au.com.codeka.carrot.tmpl.parse.TokenType;
-import au.com.codeka.carrot.tmpl.parse.Tokenizer;
+import au.com.codeka.carrot.tmpl.parse.Content;
+import au.com.codeka.carrot.tmpl.parse.ContentType;
+import au.com.codeka.carrot.tmpl.parse.ContentParser;
 
 /**
- * Parses a stream of {@link Token}s into a tree of {@link Node}s.
+ * Parses a stream of {@link Content}s into a tree of {@link Node}s.
  */
 public class TemplateParser {
 	
@@ -17,17 +17,17 @@ public class TemplateParser {
 		this.config = config;
 	}
 
-	public Node parse(Tokenizer tokenizer) throws CarrotException {
+	public Node parse(ContentParser tokenizer) throws CarrotException {
 		Node root = new RootNode();
 		parse(tokenizer, root);
 		return root;
 	}
 
 	/** Parse tokens into the given {@link Node}. */
-	private void parse(Tokenizer tokenizer, Node node) throws CarrotException {
+	private void parse(ContentParser tokenizer, Node node) throws CarrotException {
 		Node current = node;
 		while (true) {
-			Token token = tokenizer.getNextToken();
+			Content token = tokenizer.getNext();
 			if (token == null) {
 				// Note if there's any open blocks right now, we just assume
 				// they end at the end of the file.
@@ -35,12 +35,12 @@ public class TemplateParser {
 			}
 
 			Node childNode;
-			if (token.getType() == TokenType.COMMENT) {
+			if (token.getType() == ContentType.COMMENT) {
 				// Just ignore this token.
 				childNode = null;
-			} else if (token.getType() == TokenType.ECHO) {
+			} else if (token.getType() == ContentType.ECHO) {
 				childNode = TagNode.createEcho(token, config);
-			} else if (token.getType() == TokenType.TAG) {
+			} else if (token.getType() == ContentType.TAG) {
 				TagNode tagNode = TagNode.create(token, config);
 				if (tagNode.isEndBlock()) {
 					return;
@@ -52,7 +52,7 @@ public class TemplateParser {
 				} else {
 					childNode = tagNode;
 				}
-			} else if (token.getType() == TokenType.FIXED) {
+			} else if (token.getType() == ContentType.FIXED) {
 				childNode = FixedNode.create(token);
 			} else {
 				throw new IllegalStateException("Unknown token type: " + token.getType());
