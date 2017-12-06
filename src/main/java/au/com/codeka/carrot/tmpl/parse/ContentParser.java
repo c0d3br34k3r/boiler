@@ -55,7 +55,7 @@ public class ContentParser {
 	 * @throws CarrotException when there's an error parsing the tokens.
 	 */
 	@Nullable
-	public Content getNext() throws IOException, CarrotException {
+	public Content getNext() throws IOException {
 		Content token;
 		do {
 			token = mode.parse(this);
