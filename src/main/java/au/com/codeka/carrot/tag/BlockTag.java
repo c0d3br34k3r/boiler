@@ -15,6 +15,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * The {% block %} tag is used in conjunction with {% extends %}. See
  * {@link ExtendsTag} for details.
  */
+@Deprecated
 public class BlockTag extends Tag {
 
 	private Term blockNameExpr;

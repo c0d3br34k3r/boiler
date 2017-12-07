@@ -52,6 +52,7 @@ import au.com.codeka.carrot.util.Log;
  * file, and the "content" block will be replaced with the content inside the
  * block.
  */
+@Deprecated
 public class ExtendsTag extends Tag {
 
 	private Term skeletonNameExpr;

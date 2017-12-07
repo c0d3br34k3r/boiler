@@ -289,4 +289,44 @@ public class Tokenizer {
 		return Token.of(ifNotMatch);
 	}
 
+	private char readEscapeCharacter() throws IOException, CarrotException {
+		int ch = reader.read();
+		switch (ch) {
+			case -1:
+				throw new CarrotException("");
+			case 'u':
+				return readUnicode();
+			case 't':
+				return '\t';
+			case 'b':
+				return '\b';
+			case 'n':
+				return '\n';
+			case 'r':
+				return '\r';
+			case 'f':
+				return '\f';
+			case '\n':
+			case '\'':
+			case '"':
+			case '\\':
+			case '/':
+				return (char) ch;
+			default:
+				throw new CarrotException("");
+		}
+	}
+
+	private char readUnicode() throws IOException, CarrotException {
+		StringBuilder buf = new StringBuilder();
+		for (int i = 0; i < 4; i++) {
+			int ch = reader.read();
+			if (ch == -1) {
+				throw new CarrotException("");
+			}
+			buf.append((char) ch);
+		}
+		return (char) Integer.parseInt(buf.toString());
+	}
+
 }

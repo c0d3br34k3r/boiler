@@ -1,8 +1,8 @@
 package au.com.codeka.carrot.tmpl.parse;
 
-public enum ContentType {
+public enum SegmentType {
 
-	UNKNOWN,
+//	UNKNOWN,
 	FIXED,
 	TAG,
 	ECHO,

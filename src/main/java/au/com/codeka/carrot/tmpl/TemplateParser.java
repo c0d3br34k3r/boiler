@@ -4,24 +4,18 @@ import java.io.IOException;
 
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.tmpl.parse.Content;
-import au.com.codeka.carrot.tmpl.parse.ContentType;
-import au.com.codeka.carrot.tmpl.parse.ContentParser;
+import au.com.codeka.carrot.tmpl.parse.Segment;
+import au.com.codeka.carrot.tmpl.parse.SegmentParser;
 
 /**
- * Parses a stream of {@link Content}s into a tree of {@link Node}s.
+ * Parses a stream of {@link Segment}s into a tree of {@link Node}s.
  */
 public class TemplateParser {
 
-	private final Configuration config;
-
-	public TemplateParser(Configuration config) {
-		this.config = config;
-	}
-
-	public Node parse(ContentParser tokenizer) throws IOException, CarrotException {
+	public static Node parse(SegmentParser parser, Configuration config)
+			throws IOException, CarrotException {
 		Node root = new RootNode();
-		parse(tokenizer, root);
+		parse(parser, root, config);
 		return root;
 	}
 
@@ -31,42 +25,48 @@ public class TemplateParser {
 	 * @throws IOException
 	 * @throws CarrotException
 	 */
-	private void parse(ContentParser tokenizer, Node node) throws IOException, CarrotException {
+	private static void parse(SegmentParser parser, Node node, Configuration config)
+			throws IOException, CarrotException {
 		Node current = node;
 		for (;;) {
-			Content token = tokenizer.getNext();
+			Segment token = parser.getNext();
 			if (token == null) {
 				// Note if there's any open blocks right now, we just assume
 				// they end at the end of the file.
-				return;
+				break;
 			}
 
 			Node childNode;
-			if (token.getType() == ContentType.COMMENT) {
-				// Just ignore this token.
-				childNode = null;
-			} else if (token.getType() == ContentType.ECHO) {
-				childNode = TagNode.createEcho(token, config);
-			} else if (token.getType() == ContentType.TAG) {
-				TagNode tagNode = TagNode.create(token, config);
-				if (tagNode.isEndBlock()) {
-					return;
-				} else if (current.canChain(tagNode)) {
-					// If we can chain to the given node, then instead of adding
-					// it as child, we'll chain to it instead.
-					current = current.chain(tagNode);
+			switch (token.getType()) {
+				case COMMENT:
 					childNode = null;
-				} else {
-					childNode = tagNode;
-				}
-			} else if (token.getType() == ContentType.FIXED) {
-				childNode = FixedNode.create(token);
-			} else {
-				throw new IllegalStateException("Unknown token type: " + token.getType());
+					break;
+				case ECHO:
+					childNode = TagNode.createEcho(token, config);
+					break;
+				case TAG:
+					TagNode tagNode = TagNode.create(token, config);
+					if (tagNode.isEndBlock()) {
+						return;
+					} else if (current.canChain(tagNode)) {
+						/*
+						 * If we can chain to the given node, then instead of
+						 * adding it as child, we'll chain to it instead.
+						 */
+						current = current.chain(tagNode);
+						childNode = null;
+					} else {
+						childNode = tagNode;
+					}
+				case FIXED:
+					childNode = FixedNode.create(token);
+					break;
+				default:
+					throw new IllegalStateException("Unknown token type: " + token.getType());
 			}
 			if (childNode != null) {
 				if (childNode.isBlockNode()) {
-					parse(tokenizer, childNode);
+					parse(parser, childNode, config);
 				}
 				current.add(childNode);
 			}

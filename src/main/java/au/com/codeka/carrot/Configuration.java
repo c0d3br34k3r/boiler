@@ -4,6 +4,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import com.google.common.escape.Escaper;
+import com.google.common.escape.Escapers;
+
 /**
  * The {@link Configuration} is used to configure various aspects of the carrot
  * engine.
@@ -25,19 +28,19 @@ public class Configuration {
 	private final Path dir;
 	private final TagRegistry tagRegistry;
 	private final Logger logger;
-	private final boolean autoEscape;
+	private final Escaper escaper;
 
 	private Configuration(
 			Charset charset,
 			Path root,
 			TagRegistry.Builder tagRegistryBuilder,
 			Logger logger,
-			boolean autoEscape) {
+			Escaper escaper) {
 		this.charset = charset;
 		this.dir = root;
 		this.tagRegistry = tagRegistryBuilder.build(this);
 		this.logger = logger;
-		this.autoEscape = autoEscape;
+		this.escaper = escaper;
 	}
 
 	public Charset getCharset() {
@@ -52,12 +55,8 @@ public class Configuration {
 		return tagRegistry;
 	}
 
-	/**
-	 * @return Whether or not variables are automatically HTML-escaped. True by
-	 *         default.
-	 */
-	public boolean getAutoEscape() {
-		return autoEscape;
+	public Escaper getEscaper() {
+		return escaper;
 	}
 
 	public Logger getLogger() {
@@ -70,11 +69,11 @@ public class Configuration {
 		private Path dir;
 		private TagRegistry.Builder tagRegistryBuilder;
 		private Logger logger;
-		private boolean autoEscape;
+		private Escaper escaper;
 
 		public Builder() {
 			charset = StandardCharsets.UTF_8;
-			autoEscape = true;
+			escaper = Escapers.nullEscaper();
 		}
 
 		public Builder setCharset(Charset charset) {
@@ -112,8 +111,8 @@ public class Configuration {
 		 *        <code>html.safe()</code> by default.
 		 * @return The current {@link Builder}.
 		 */
-		public Builder setAutoEscape(boolean value) {
-			this.autoEscape = value;
+		public Builder setEscaper(Escaper escaper) {
+			this.escaper = escaper;
 			return this;
 		}
 
@@ -129,7 +128,8 @@ public class Configuration {
 							: dir,
 					tagRegistryBuilder == null ? new TagRegistry.Builder() : tagRegistryBuilder,
 					logger,
-					autoEscape);
+					escaper);
 		}
 	}
+
 }

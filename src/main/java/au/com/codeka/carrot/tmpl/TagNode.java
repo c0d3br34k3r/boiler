@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 
-import com.google.common.base.Supplier;
-
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
@@ -14,7 +12,7 @@ import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Tokenizer;
 import au.com.codeka.carrot.tag.EndTag;
 import au.com.codeka.carrot.tag.Tag;
-import au.com.codeka.carrot.tmpl.parse.Content;
+import au.com.codeka.carrot.tmpl.parse.Segment;
 
 /**
  * A {@link TagNode} represents a node of the form "{% tagname foo %}" where
@@ -32,31 +30,31 @@ public class TagNode extends Node {
 	}
 
 	/**
-	 * Creates a special {@link TagNode} for an echo token.
+	 * Creates a special {@link TagNode} for an echo segment.
 	 *
-	 * @param token The {@link Content} the echo node is going to created from,
-	 *        must have {@link Content#getType()} of
-	 *        {@link au.com.codeka.carrot.tmpl.parse.ContentType#ECHO}.
+	 * @param segment The {@link Segment} the echo node is going to created from,
+	 *        must have {@link Segment#getType()} of
+	 *        {@link au.com.codeka.carrot.tmpl.parse.SegmentType#ECHO}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
-	 * @throws CarrotException if there's a problem parsing the token.
+	 * @throws CarrotException if there's a problem parsing the segment.
 	 */
-	public static TagNode createEcho(Content token, Configuration config) throws CarrotException {
-		return create("echo", token.getValue(), config);
+	public static TagNode createEcho(Segment segment, Configuration config) throws CarrotException {
+		return create("echo", segment.getContent(), config);
 	}
 
 	/**
-	 * Creates a {@link TagNode} for the given {@link Content}.
+	 * Creates a {@link TagNode} for the given {@link Segment}.
 	 *
-	 * @param token The {@link Content} the node is going to created from, must
-	 *        have {@link Content#getType()} of
-	 *        {@link au.com.codeka.carrot.tmpl.parse.ContentType#TAG}.
+	 * @param segment The {@link Segment} the node is going to created from, must
+	 *        have {@link Segment#getType()} of
+	 *        {@link au.com.codeka.carrot.tmpl.parse.SegmentType#TAG}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
-	 * @throws CarrotException if there's a problem parsing the token.
+	 * @throws CarrotException if there's a problem parsing the segment.
 	 */
-	public static TagNode create(Content token, Configuration config) throws CarrotException {
-		String content = token.getValue().trim();
+	public static TagNode create(Segment segment, Configuration config) throws CarrotException {
+		String content = segment.getContent().trim();
 		String tagName;
 		int space = content.indexOf(' ');
 		if (space <= 0) {
@@ -85,23 +83,25 @@ public class TagNode extends Node {
 		}
 		return new TagNode(tag);
 	}
-	
-//	private static TagNode create(Supplier<Tag> creator, String content, Configuration config)
-//			throws CarrotException {
-//		Tag tag = config.getTagRegistry().createTag(tagName);
-//		if (tag == null) {
-//			throw new CarrotException(String.format("Invalid tag '%s'", tagName));
-//		}
-//		try {
-//			StatementParser stmtParser =
-//					new StatementParser(new Tokenizer(new StringReader(content)));
-//			tag.parseStatement(stmtParser);
-//		} catch (CarrotException e) {
-//			throw new CarrotException(
-//					"Exception parsing statement for '" + tagName + "' [" + content + "]", e);
-//		}
-//		return new TagNode(tag);
-//	}
+
+	// private static TagNode create(Supplier<Tag> creator, String content,
+	// Configuration config)
+	// throws CarrotException {
+	// Tag tag = config.getTagRegistry().createTag(tagName);
+	// if (tag == null) {
+	// throw new CarrotException(String.format("Invalid tag '%s'", tagName));
+	// }
+	// try {
+	// StatementParser stmtParser =
+	// new StatementParser(new Tokenizer(new StringReader(content)));
+	// tag.parseStatement(stmtParser);
+	// } catch (CarrotException e) {
+	// throw new CarrotException(
+	// "Exception parsing statement for '" + tagName + "' [" + content + "]",
+	// e);
+	// }
+	// return new TagNode(tag);
+	// }
 
 	@Override
 	public boolean canChain(Node nextNode) {
@@ -113,7 +113,7 @@ public class TagNode extends Node {
 	}
 
 	/**
-	 * @return True if this is an end block (that is, if it ends it's parent's
+	 * @return True if this is an end block (that is, if it ends its parent's
 	 *         block).
 	 */
 	public boolean isEndBlock() {

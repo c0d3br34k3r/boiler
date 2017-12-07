@@ -13,6 +13,7 @@ import au.com.codeka.carrot.expr.Term;
  * @author Marten Gajda
  */
 public final class BinaryTerm implements Term {
+
 	private final Term left;
 	private final BinaryOperator operation;
 	private final Term right;
@@ -32,4 +33,5 @@ public final class BinaryTerm implements Term {
 	public String toString() {
 		return String.format("%s %s %s", left.toString(), operation.toString(), right.toString());
 	}
+
 }
