@@ -11,15 +11,15 @@ public class PlusOperatorTest {
 
 	@Test
 	public void testApply() throws Exception {
-		assertThat(UnaryOperators.PLUS.apply(1)).isEqualTo(1);
-		assertThat(UnaryOperators.PLUS.apply(-1)).isEqualTo(-1);
-		assertThat(UnaryOperators.PLUS.apply(10.65)).isEqualTo(10.65);
-		assertThat(UnaryOperators.PLUS.apply(-10.13)).isEqualTo(-10.13);
+		assertThat(UnaryOperator.PLUS.apply(1)).isEqualTo(1);
+		assertThat(UnaryOperator.PLUS.apply(-1)).isEqualTo(-1);
+		assertThat(UnaryOperator.PLUS.apply(10.65)).isEqualTo(10.65);
+		assertThat(UnaryOperator.PLUS.apply(-10.13)).isEqualTo(-10.13);
 	}
 
 	@Test
 	public void testToString() throws Exception {
-		assertThat(UnaryOperators.PLUS.toString()).isEqualTo("PLUS");
+		assertThat(UnaryOperator.PLUS.toString()).isEqualTo("PLUS");
 	}
 
 }

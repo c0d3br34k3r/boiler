@@ -24,6 +24,7 @@ public class StatementParserTest {
 
 	@Test
 	public void testBinaryOperation() throws CarrotException {
+		assertThat(evaluate(createStatementParser("+true").parseTerm())).isEqualTo(1);
 		assertThat(evaluate(createStatementParser("1+1").parseTerm())).isEqualTo(2);
 		assertThat(evaluate(createStatementParser("1+1+1").parseTerm())).isEqualTo(3);
 		assertThat(evaluate(createStatementParser("1+1+1+1").parseTerm())).isEqualTo(4);
@@ -35,6 +36,9 @@ public class StatementParserTest {
 		assertThat(evaluate(createStatementParser("(2 + 2) * 2").parseTerm())).isEqualTo(8);
 		assertThat(evaluate(createStatementParser("foo[4 + 4]").parseTerm())).isEqualTo(7);
 		assertThat(evaluate(createStatementParser("foo[6]*2").parseTerm())).isEqualTo(14);
+		assertThat(evaluate(createStatementParser("'1' + 1").parseTerm())).isEqualTo("11");
+		assertThat(evaluate(createStatementParser(" 'foo' + 'bar' ").parseTerm())).isEqualTo("foobar");
+		
 	}
 
 	// @Test

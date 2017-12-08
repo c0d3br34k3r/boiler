@@ -11,17 +11,17 @@ public class NotOperatorTest {
 	
 	@Test
 	public void testApply() throws Exception {
-		assertThat(UnaryOperators.NOT.apply(true)).isEqualTo(false);
-		assertThat(UnaryOperators.NOT.apply(false)).isEqualTo(true);
-		assertThat(UnaryOperators.NOT.apply(10.65)).isEqualTo(false);
-		assertThat(UnaryOperators.NOT.apply(0)).isEqualTo(true);
-		assertThat(UnaryOperators.NOT.apply("xyz")).isEqualTo(false);
-		assertThat(UnaryOperators.NOT.apply("")).isEqualTo(true);
+		assertThat(UnaryOperator.NOT.apply(true)).isEqualTo(false);
+		assertThat(UnaryOperator.NOT.apply(false)).isEqualTo(true);
+		assertThat(UnaryOperator.NOT.apply(10.65)).isEqualTo(false);
+		assertThat(UnaryOperator.NOT.apply(0)).isEqualTo(true);
+		assertThat(UnaryOperator.NOT.apply("xyz")).isEqualTo(false);
+		assertThat(UnaryOperator.NOT.apply("")).isEqualTo(true);
 	}
 
 	@Test
 	public void testToString() throws Exception {
-		assertThat(UnaryOperators.NOT.toString()).isEqualTo("NOT");
+		assertThat(UnaryOperator.NOT.toString()).isEqualTo("NOT");
 	}
 
 }

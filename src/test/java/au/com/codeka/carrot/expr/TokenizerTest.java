@@ -40,26 +40,26 @@ public class TokenizerTest {
 	public void testBooleanOperands() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("a && b");
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_AND)).isNotNull();
+		assertThat(tokenizer.get(TokenType.LOGICAL_AND));
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a and b");
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_AND)).isNotNull();
+		assertThat(tokenizer.get(TokenType.LOGICAL_AND));
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a || b");
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_OR)).isNotNull();
+		assertThat(tokenizer.get(TokenType.LOGICAL_OR));
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a or b");
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_OR)).isNotNull();
+		assertThat(tokenizer.get(TokenType.LOGICAL_OR));
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("not a");
-		assertThat(tokenizer.get(TokenType.NOT)).isNotNull();
+		assertThat(tokenizer.get(TokenType.NOT));
 		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
 
 		try {

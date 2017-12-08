@@ -12,6 +12,7 @@ import au.com.codeka.carrot.CarrotException;
  * @author Marten Gajda
  */
 public interface Callable {
+
 	/**
 	 * Calls the {@link Callable} with the given parameters.
 	 *
@@ -22,4 +23,5 @@ public interface Callable {
 	 */
 	@Nullable
 	Object call(@Nonnull Iterable<?> params) throws CarrotException;
+
 }

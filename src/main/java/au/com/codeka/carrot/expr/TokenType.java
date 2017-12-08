@@ -1,9 +1,9 @@
 package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.expr.binary.BinaryOperator;
-import au.com.codeka.carrot.expr.binary.BinaryOperators;
+import au.com.codeka.carrot.expr.binary.BinaryOperator;
 import au.com.codeka.carrot.expr.unary.UnaryOperator;
-import au.com.codeka.carrot.expr.unary.UnaryOperators;
+import au.com.codeka.carrot.expr.unary.UnaryOperator;
 
 /**
  * An enumeration of the different types of {@link Token}s we can pull off the
@@ -39,52 +39,52 @@ public enum TokenType {
 	ASSIGNMENT,
 
 	/** Comma: {@code ,} */
-	COMMA(BinaryOperators.ITERATE),
+	COMMA(BinaryOperator.ITERATE),
 
 	/** Dot: {@code .} */
 	DOT,
 
 	/** Not: {@code !} */
-	NOT(UnaryOperators.NOT),
+	NOT(UnaryOperator.NOT),
 
 	/** Logical and: {@code &&} */
-	LOGICAL_AND(BinaryOperators.AND),
+	LOGICAL_AND(BinaryOperator.AND),
 
 	/** Logical or: {@code ||} */
-	LOGICAL_OR(BinaryOperators.OR),
+	LOGICAL_OR(BinaryOperator.OR),
 
 	/** Equal: {@code ==} */
-	EQUAL(BinaryOperators.EQUAL),
+	EQUAL(BinaryOperator.EQUAL),
 
 	/** Not equal: {@code !=} */
-	NOT_EQUAL(BinaryOperators.NOT_EQUAL),
+	NOT_EQUAL(BinaryOperator.NOT_EQUAL),
 
 	/** Less than: {@code <} */
-	LESS_THAN(BinaryOperators.LESS_THAN),
+	LESS_THAN(BinaryOperator.LESS_THAN),
 
 	/** Greater than: {@code >} */
-	GREATER_THAN(BinaryOperators.GREATER_THAN),
+	GREATER_THAN(BinaryOperator.GREATER_THAN),
 
 	/** Less than or equal: {@code <=} */
-	LESS_THAN_OR_EQUAL(BinaryOperators.LESS_THAN_OR_EQUAL),
+	LESS_THAN_OR_EQUAL(BinaryOperator.LESS_THAN_OR_EQUAL),
 
 	/** Greater than or equal: {@code >=} */
-	GREATER_THAN_OR_EQUAL(BinaryOperators.GREATER_THAN_OR_EQUAL),
+	GREATER_THAN_OR_EQUAL(BinaryOperator.GREATER_THAN_OR_EQUAL),
 
 	/** Plus: {@code +} */
-	PLUS(BinaryOperators.PLUS, UnaryOperators.PLUS),
+	PLUS(BinaryOperator.PLUS, UnaryOperator.PLUS),
 
 	/** Minus : {@code -} */
-	MINUS(BinaryOperators.MINUS, UnaryOperators.MINUS),
+	MINUS(BinaryOperator.MINUS, UnaryOperator.MINUS),
 
 	/** Multiply: {@code *} */
-	MULTIPLY(BinaryOperators.MULTIPLY),
+	MULTIPLY(BinaryOperator.MULTIPLY),
 
 	/** Divide: {@code /} */
-	DIVIDE(BinaryOperators.DIVIDE),
+	DIVIDE(BinaryOperator.DIVIDE),
 
 	/** In: {@code in} */
-	IN(BinaryOperators.IN);
+	IN(BinaryOperator.IN);
 
 	private final boolean hasValue;
 	private final BinaryOperator binaryOperator;

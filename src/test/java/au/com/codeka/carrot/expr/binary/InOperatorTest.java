@@ -19,43 +19,43 @@ import au.com.codeka.carrot.util.MockLazyTerm;
 public class InOperatorTest {
 	@Test
 	public void testApply() throws Exception {
-		assertThat(BinaryOperators.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "1", "2"))))
+		assertThat(BinaryOperator.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "1", "2"))))
 				.isEqualTo(true);
-		assertThat(BinaryOperators.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "3", "2"))))
+		assertThat(BinaryOperator.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "3", "2"))))
 				.isEqualTo(false);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(new HashSet<>(Arrays.asList("0", "1", "2"))))).isEqualTo(true);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(new HashSet<>(Arrays.asList("0", "3", "2"))))).isEqualTo(false);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(ImmutableMap.of("0", "a", "1", "b", "2", "c")))).isEqualTo(true);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(ImmutableMap.of("0", "a", "3", "b", "2", "c")))).isEqualTo(false);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(ImmutableMap.of("0", "a", "3", "1", "2", "c")))).isEqualTo(false);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(new Composite(new SingletonBindings("0", "a"),
 						new SingletonBindings("1", "b"), new SingletonBindings("2", "c")))))
 								.isEqualTo(true);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(new Composite(new SingletonBindings("0", "a"),
 						new SingletonBindings("3", "b"), new SingletonBindings("2", "c")))))
 								.isEqualTo(false);
-		assertThat(BinaryOperators.IN.apply("1",
+		assertThat(BinaryOperator.IN.apply("1",
 				new MockLazyTerm(new Composite(new SingletonBindings("0", "a"),
 						new SingletonBindings("3", "1"), new SingletonBindings("2", "c")))))
 								.isEqualTo(false);
 		assertThat(
-				BinaryOperators.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "1", "2"))))
+				BinaryOperator.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "1", "2"))))
 						.isEqualTo(true);
 		assertThat(
-				BinaryOperators.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "3", "2"))))
+				BinaryOperator.IN.apply("1", new MockLazyTerm(Arrays.asList("0", "3", "2"))))
 						.isEqualTo(false);
 	}
 
 	@Test
 	public void testToString() throws Exception {
-		assertThat(BinaryOperators.IN.toString()).isEqualTo("IN");
+		assertThat(BinaryOperator.IN.toString()).isEqualTo("IN");
 	}
 
 }

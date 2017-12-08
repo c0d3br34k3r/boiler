@@ -22,10 +22,16 @@ public final class Variable implements Term {
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
 		String value = term.evaluate(config, scope).toString();
-		if (value.equalsIgnoreCase("null")) {
-			return null;
+		switch (value) {
+			case "null":
+				return null;
+			case "true":
+				return true;
+			case "false":
+				return false;
+			default:
+				return scope.resolve(value);
 		}
-		return scope.resolve(value);
 	}
 
 	@Override

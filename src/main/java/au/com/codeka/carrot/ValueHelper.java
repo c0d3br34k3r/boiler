@@ -27,10 +27,10 @@ public class ValueHelper {
 	 * Does the given value represent "true". For example, it's a Boolean that's
 	 * true, a non-zero integer, etc.
 	 *
-	 * @param value The value to test.
-	 * @return True if the value is "true-ish", false otherwise.
-	 * @throws CarrotException When the value cannot be determined to be true or
-	 *         false.
+	 * @param value the value to test
+	 * @return true if the value is thruthy, false otherwise
+	 * @throws CarrotException when the value cannot be determined to be true or
+	 *         false
 	 */
 	public static boolean isTrue(Object value) throws CarrotException {
 		if (value == null) {
@@ -77,16 +77,16 @@ public class ValueHelper {
 	public static Number negate(Object value) throws CarrotException {
 		Number num = toNumber(value);
 		if (num instanceof Integer) {
-			return -((Integer) num);
-		}
-		if (num instanceof Long) {
-			return -((Long) num);
-		}
-		if (num instanceof Float) {
-			return -((Float) num);
+			return -num.intValue();
 		}
 		if (num instanceof Double) {
-			return -((Double) num);
+			return -num.doubleValue();
+		}
+		if (num instanceof Long) {
+			return -num.longValue();
+		}
+		if (num instanceof Float) {
+			return -num.floatValue();
 		}
 		throw new CarrotException("Value '" + value + "' cannot be negated.");
 	}
@@ -116,7 +116,7 @@ public class ValueHelper {
 		if (value.contains(".")) {
 			return Double.parseDouble(value);
 		}
-		return Long.parseLong(value);
+		return Integer.parseInt(value);
 	}
 
 	/**
@@ -130,17 +130,23 @@ public class ValueHelper {
 	 * @throws CarrotException Thrown is either of the values can't be converted
 	 *         to a number.
 	 */
-	public static Number add(Object o1, Object o2) throws CarrotException {
+	public static Object add(Object o1, Object o2) throws CarrotException {
+		if (o1 instanceof String || o2 instanceof String) {
+			return o1.toString() + o2.toString();
+		}
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return n1.intValue() + n2.intValue();
+		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return n1.doubleValue() + n2.doubleValue();
-		} else if (n1 instanceof Float || n2 instanceof Float) {
+		}
+		if (n1 instanceof Long || n2 instanceof Long) {
+			return n1.longValue() + n2.longValue();
+		}
+		if (n1 instanceof Float || n2 instanceof Float) {
 			return n1.floatValue() + n2.floatValue();
-		} else if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() + n2.longValue();
-		} else if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() + n2.longValue();
 		}
 		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
 	}
@@ -158,14 +164,17 @@ public class ValueHelper {
 	public static Number divide(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return n1.longValue() / n2.longValue();
+		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return n1.doubleValue() / n2.doubleValue();
-		} else if (n1 instanceof Float || n2 instanceof Float) {
+		}
+		if (n1 instanceof Long || n2 instanceof Long) {
+			return n1.longValue() / n2.longValue();
+		}
+		if (n1 instanceof Float || n2 instanceof Float) {
 			return n1.floatValue() / n2.floatValue();
-		} else if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() / n2.longValue();
-		} else if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() / n2.longValue();
 		}
 		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
 	}
@@ -183,14 +192,17 @@ public class ValueHelper {
 	public static Number multiply(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return n1.intValue() * n2.intValue();
+		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return n1.doubleValue() * n2.doubleValue();
-		} else if (n1 instanceof Float || n2 instanceof Float) {
+		}
+		if (n1 instanceof Long || n2 instanceof Long) {
+			return n1.longValue() * n2.longValue();
+		}
+		if (n1 instanceof Float || n2 instanceof Float) {
 			return n1.floatValue() * n2.floatValue();
-		} else if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() * n2.longValue();
-		} else if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() * n2.longValue();
 		}
 		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
 	}
@@ -264,17 +276,17 @@ public class ValueHelper {
 	public static int compare(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return Integer.compare(n1.intValue(), n2.intValue());
+		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return Double.compare(n1.doubleValue(), n2.doubleValue());
-		}
-		if (n1 instanceof Float || n2 instanceof Float) {
-			return Float.compare(n1.floatValue(), n2.floatValue());
 		}
 		if (n1 instanceof Long || n2 instanceof Long) {
 			return Long.compare(n1.longValue(), n2.longValue());
 		}
-		if (n1 instanceof Integer || n2 instanceof Integer) {
-			return Integer.compare(n1.intValue(), n2.intValue());
+		if (n1 instanceof Float || n2 instanceof Float) {
+			return Float.compare(n1.floatValue(), n2.floatValue());
 		}
 		throw new CarrotException("Unknown number type.");
 	}
