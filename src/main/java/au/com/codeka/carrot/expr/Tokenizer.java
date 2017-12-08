@@ -232,7 +232,7 @@ public class Tokenizer {
 		if (numberStr.contains(".")) {
 			value = Double.parseDouble(numberStr);
 		} else {
-			value = Long.parseLong(numberStr);
+			value = Integer.parseInt(numberStr);
 		}
 		return new Token(TokenType.NUMBER_LITERAL, value);
 	}

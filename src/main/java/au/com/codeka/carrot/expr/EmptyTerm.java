@@ -23,7 +23,7 @@ public enum EmptyTerm implements Term {
 
 	@Override
 	public String toString() {
-		return "";
+		return "EMPTY";
 	}
 
 }

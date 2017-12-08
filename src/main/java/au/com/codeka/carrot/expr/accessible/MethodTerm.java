@@ -13,6 +13,7 @@ import au.com.codeka.carrot.expr.TokenType;
  *
  * @author Marten Gajda
  */
+@Deprecated
 public final class MethodTerm implements Term {
 
 	private final AccessibleTerm method;

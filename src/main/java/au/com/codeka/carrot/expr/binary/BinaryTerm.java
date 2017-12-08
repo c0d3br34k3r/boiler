@@ -31,7 +31,7 @@ public final class BinaryTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("%s %s %s", left.toString(), operation.toString(), right.toString());
+		return String.format("[%s %s %s]", left, operation, right);
 	}
 
 }

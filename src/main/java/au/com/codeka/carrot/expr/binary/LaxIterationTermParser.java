@@ -32,7 +32,8 @@ public final class LaxIterationTermParser implements TermParser {
 			// We're in an iteration, parse all remaining elements with the
 			// strict parser
 			Term right = iterationTermParser.parse(tokenizer);
-			return right instanceof EmptyTerm ? new IterationTerm(left)
+			return right == EmptyTerm.INSTANCE
+					? new IterationTerm(left)
 					: new BinaryTerm(left, BinaryOperator.ITERATE, right);
 		}
 		return left;

@@ -23,7 +23,7 @@ import au.com.codeka.carrot.util.Log;
  * @author Marten Gajda
  */
 public final class AccessTerm implements AccessibleTerm {
-	
+
 	private final AccessibleTerm left;
 	private final Term right;
 	private final TokenType accessorToken;
@@ -232,10 +232,8 @@ public final class AccessTerm implements AccessibleTerm {
 					right.toString());
 		}
 		return String.format(
-				"%s %s %s %s",
+				"[%s ACCESS %s]",
 				left.toString(),
-				accessorToken.toString(),
-				right.toString(),
-				accessorToken.closingType().toString());
+				right.toString());
 	}
 }

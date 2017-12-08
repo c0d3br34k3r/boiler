@@ -33,4 +33,11 @@ public final class Unaccessible implements AccessibleTerm {
 		throw new CarrotException("A Unaccessible adapter can not return a callable.");
 	}
 
+	@Override
+	public String toString() {
+		return delegate.toString();
+	}
+	
+	
+
 }

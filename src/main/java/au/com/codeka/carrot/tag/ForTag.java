@@ -56,7 +56,7 @@ public class ForTag extends Tag {
 			IOException {
 
 		Collection<?> objects =
-				ValueHelper.iterate(loopExpression.evaluate(engine.getConfig(), scope));
+				ValueHelper.toCollection(loopExpression.evaluate(engine.getConfig(), scope));
 		int i = 0;
 		for (Object current : objects) {
 			Bindings loopIdentifierBindings;

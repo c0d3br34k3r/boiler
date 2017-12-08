@@ -28,7 +28,7 @@ public final class UnaryTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("%s %s", operation, term);
+		return String.format("[%s %s]", operation, term);
 	}
 
 }

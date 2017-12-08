@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
@@ -136,19 +137,19 @@ public class ValueHelper {
 		}
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.intValue() + n2.intValue();
-		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return n1.doubleValue() + n2.doubleValue();
 		}
-		if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() + n2.longValue();
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return n1.intValue() + n2.intValue();
 		}
-		if (n1 instanceof Float || n2 instanceof Float) {
-			return n1.floatValue() + n2.floatValue();
-		}
-		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
+//		if (n1 instanceof Long || n2 instanceof Long) {
+//			return n1.longValue() + n2.longValue();
+//		}
+//		if (n1 instanceof Float || n2 instanceof Float) {
+//			return n1.floatValue() + n2.floatValue();
+//		}
+		throw new CarrotException("Unknown number type " + o1 + " (" + o1.getClass() + ") or " + o2 + " (" + o2.getClass() + ")");
 	}
 
 	/**
@@ -164,18 +165,18 @@ public class ValueHelper {
 	public static Number divide(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() / n2.longValue();
-		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return n1.doubleValue() / n2.doubleValue();
 		}
-		if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() / n2.longValue();
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return n1.intValue() / n2.intValue();
 		}
-		if (n1 instanceof Float || n2 instanceof Float) {
-			return n1.floatValue() / n2.floatValue();
-		}
+//		if (n1 instanceof Long || n2 instanceof Long) {
+//			return n1.longValue() / n2.longValue();
+//		}
+//		if (n1 instanceof Float || n2 instanceof Float) {
+//			return n1.floatValue() / n2.floatValue();
+//		}
 		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
 	}
 
@@ -192,18 +193,18 @@ public class ValueHelper {
 	public static Number multiply(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.intValue() * n2.intValue();
-		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return n1.doubleValue() * n2.doubleValue();
 		}
-		if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() * n2.longValue();
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return n1.intValue() * n2.intValue();
 		}
-		if (n1 instanceof Float || n2 instanceof Float) {
-			return n1.floatValue() * n2.floatValue();
-		}
+//		if (n1 instanceof Long || n2 instanceof Long) {
+//			return n1.longValue() * n2.longValue();
+//		}
+//		if (n1 instanceof Float || n2 instanceof Float) {
+//			return n1.floatValue() * n2.floatValue();
+//		}
 		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
 	}
 
@@ -212,30 +213,30 @@ public class ValueHelper {
 	 * If the value is itself an array or a list then it's just returned
 	 * in-place. Otherwise it will be converted to an {@link ArrayList}.
 	 *
-	 * @param iterable The value to "iterate".
+	 * @param collection The value to "iterate".
 	 * @return A {@link List} that can actually be iterated.
 	 * @throws CarrotException If the value is not iterable.
 	 */
-	public static Collection<?> iterate(final Object iterable) throws CarrotException {
-		if (iterable == null) {
+	public static Collection<?> toCollection(final Object collection) throws CarrotException {
+		if (collection == null) {
 			return Collections.emptySet();
 		}
-		if (iterable instanceof Collection) {
-			return (Collection<?>) iterable;
+		if (collection instanceof Collection) {
+			return (Collection<?>) collection;
 		}
-		if (iterable instanceof Iterable) {
-			return Lists.newArrayList((Iterable<?>) iterable);
+		if (collection instanceof Iterable) {
+			return ImmutableList.copyOf((Iterable<?>) collection);
 		}
-		if (iterable instanceof Map) {
-			return ((Map<?, ?>) iterable).keySet();
+		if (collection instanceof Map) {
+			return ((Map<?, ?>) collection).keySet();
 		}
-		if (iterable.getClass().isArray()) {
-			final int length = Array.getLength(iterable);
+		if (collection.getClass().isArray()) {
+			final int length = Array.getLength(collection);
 			return new AbstractList<Object>() {
 
 				@Override
 				public Object get(int index) {
-					return Array.get(iterable, index);
+					return Array.get(collection, index);
 				}
 
 				@Override
@@ -244,7 +245,7 @@ public class ValueHelper {
 				}
 			};
 		}
-		throw new CarrotException("Unable to iterate '" + iterable + "'");
+		throw new CarrotException("Unable to iterate '" + collection + "'");
 	}
 
 	/**
@@ -276,18 +277,18 @@ public class ValueHelper {
 	public static int compare(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer || n2 instanceof Integer) {
-			return Integer.compare(n1.intValue(), n2.intValue());
-		}
 		if (n1 instanceof Double || n2 instanceof Double) {
 			return Double.compare(n1.doubleValue(), n2.doubleValue());
 		}
-		if (n1 instanceof Long || n2 instanceof Long) {
-			return Long.compare(n1.longValue(), n2.longValue());
+		if (n1 instanceof Integer || n2 instanceof Integer) {
+			return Integer.compare(n1.intValue(), n2.intValue());
 		}
-		if (n1 instanceof Float || n2 instanceof Float) {
-			return Float.compare(n1.floatValue(), n2.floatValue());
-		}
+//		if (n1 instanceof Long || n2 instanceof Long) {
+//			return Long.compare(n1.longValue(), n2.longValue());
+//		}
+//		if (n1 instanceof Float || n2 instanceof Float) {
+//			return Float.compare(n1.floatValue(), n2.floatValue());
+//		}
 		throw new CarrotException("Unknown number type.");
 	}
 

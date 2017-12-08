@@ -13,10 +13,8 @@ import au.com.codeka.carrot.expr.binary.LaxIterationTermParser;
 import au.com.codeka.carrot.expr.binary.StrictIterationTermParser;
 import au.com.codeka.carrot.expr.unary.UnaryTermParser;
 import au.com.codeka.carrot.expr.values.ErrorTermParser;
-import au.com.codeka.carrot.expr.values.ExpressionTermParser;
 import au.com.codeka.carrot.expr.values.IdentifierTermParser;
-import au.com.codeka.carrot.expr.values.NumberTermParser;
-import au.com.codeka.carrot.expr.values.StringTermParser;
+import au.com.codeka.carrot.expr.values.ValueParser;
 import au.com.codeka.carrot.tag.Tag;
 import au.com.codeka.carrot.tmpl.TagNode;
 
@@ -92,43 +90,41 @@ public class StatementParser {
 		// @formatter:off
 		TermParser base = new BinaryTermParser(
 		new BinaryTermParser(
-		  new BinaryTermParser(
-		    new BinaryTermParser(
-		      new BinaryTermParser(
-		        new BinaryTermParser(
-		          new UnaryTermParser(
-		            new NumberTermParser(
-		              new StringTermParser(
-		                new ExpressionTermParser(
-		                  new AccessTermParser(
-		                    new TermParser() {
-			                 @Override
-			                 public Term parse(Tokenizer tokenizer) throws CarrotException {
-				              return expressionParser.parse(tokenizer);
-			                 }
-		                    }, 
-		                    strictIdentifierParser,
-		                    new TermParser() {
-			                 @Override
-			                 public Term parse(Tokenizer tokenizer) throws CarrotException {
-				              return iterableParser.parse(tokenizer);
-			                 }
-		                    }),
-		                  new TermParser() {
-			               @Override
-			               public Term parse(Tokenizer tokenizer) throws CarrotException {
-				            return expressionParser.parse(tokenizer);
-			               }
-		                  })
-		                )
-		              ),
-		            TokenType.NOT, TokenType.PLUS, TokenType.MINUS),
-		          TokenType.MULTIPLY, TokenType.DIVIDE),
-		        TokenType.PLUS, TokenType.MINUS),
-		      TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, 
-		        TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
-		    TokenType.EQUAL, TokenType.NOT_EQUAL),
-		  TokenType.LOGICAL_AND),
+		new BinaryTermParser(
+		new BinaryTermParser(
+		new BinaryTermParser(
+		new BinaryTermParser(
+		  new UnaryTermParser(
+		    new ValueParser(
+		      new AccessTermParser(
+		        new TermParser() {
+			      @Override
+			      public Term parse(Tokenizer tokenizer) throws CarrotException {
+				    return expressionParser.parse(tokenizer);
+			      }
+		        }, 
+		        strictIdentifierParser,
+		        new TermParser() {
+			      @Override
+			      public Term parse(Tokenizer tokenizer) throws CarrotException {
+				    return iterableParser.parse(tokenizer);
+			      }
+		        }
+		      ), 
+		      new TermParser() {
+			    @Override
+			    public Term parse(Tokenizer tokenizer) throws CarrotException {
+				  return expressionParser.parse(tokenizer);
+			    }
+		      }
+		    ),
+		  TokenType.NOT, TokenType.PLUS, TokenType.MINUS),
+		TokenType.MULTIPLY, TokenType.DIVIDE),
+		TokenType.PLUS, TokenType.MINUS),
+		TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, 
+		TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
+		TokenType.EQUAL, TokenType.NOT_EQUAL),
+		TokenType.LOGICAL_AND),
 		TokenType.LOGICAL_OR);
 		// @formatter:on
 
@@ -148,7 +144,7 @@ public class StatementParser {
 	 *         statement.
 	 */
 	public void parseEnd() throws CarrotException {
-		tokenizer.end();
+		tokenizer.get(TokenType.EOF);
 	}
 
 	/**
@@ -200,7 +196,9 @@ public class StatementParser {
 	}
 
 	public Term parseTerm() throws CarrotException {
-		return expressionParser.parse(tokenizer);
+		Term term = expressionParser.parse(tokenizer);
+		tokenizer.get(TokenType.EOF);
+		return term;
 	}
 
 	// TODO: at present we keep this only to test the result, check if the

@@ -1,8 +1,6 @@
 package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.expr.binary.BinaryOperator;
-import au.com.codeka.carrot.expr.binary.BinaryOperator;
-import au.com.codeka.carrot.expr.unary.UnaryOperator;
 import au.com.codeka.carrot.expr.unary.UnaryOperator;
 
 /**
@@ -11,7 +9,7 @@ import au.com.codeka.carrot.expr.unary.UnaryOperator;
  */
 public enum TokenType {
 
-	/** An unknown token, or the end of the stream. */
+	/** The end of the stream. */
 	EOF,
 
 	/** A string literal {@code "like this"}. */
