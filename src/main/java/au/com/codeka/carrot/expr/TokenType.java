@@ -128,7 +128,7 @@ public enum TokenType {
 	public BinaryOperator binaryOperator() {
 		if (binaryOperator == null) {
 			throw new UnsupportedOperationException(
-					String.format("%s is not a binary operator", this.toString()));
+					String.format("%s is not a binary operator", this));
 		}
 		return binaryOperator;
 	}
@@ -136,7 +136,7 @@ public enum TokenType {
 	public UnaryOperator unaryOperator() {
 		if (unaryOperator == null) {
 			throw new UnsupportedOperationException(
-					String.format("%s is not an unary operator", this.toString()));
+					String.format("%s is not an unary operator", this));
 		}
 		return unaryOperator;
 	}

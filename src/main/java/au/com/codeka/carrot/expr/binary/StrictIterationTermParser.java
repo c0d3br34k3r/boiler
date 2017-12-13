@@ -17,6 +17,7 @@ import au.com.codeka.carrot.expr.Tokenizer;
  *
  * @author Marten Gajda
  */
+@Deprecated
 public final class StrictIterationTermParser implements TermParser {
 	
 	private final TermParser termParser;

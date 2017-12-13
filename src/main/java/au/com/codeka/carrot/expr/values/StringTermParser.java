@@ -47,7 +47,7 @@ public final class StringTermParser implements TermParser {
 
 		@Override
 		public String toString() {
-			return "\"" + token.getValue().toString() + "\"";
+			return "\"" + token.getValue() + "\"";
 		}
 	}
 

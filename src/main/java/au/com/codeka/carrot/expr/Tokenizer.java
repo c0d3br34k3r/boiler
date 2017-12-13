@@ -84,32 +84,6 @@ public class Tokenizer {
 		return tryGet(type) != null;
 	}
 
-	/**
-	 * Returns true if the token at the given offset from the current is of the
-	 * given {@link TokenType}. The 0th token is the current one, the 1st is the
-	 * after that and so on. This can be used to "look ahead" into the token
-	 * stream.
-	 *
-	 * @param offset The offset from "current" that we want to peek. 0 is the
-	 *        current token, 1 is the next and so on.
-	 * @param type The {@link TokenType} we want to accept.
-	 * @return True, if the current token is of the given type, or false it's
-	 *         not.
-	 * @throws CarrotException If there's an error parsing the tokens.
-	 * @throws IOException
-	 */
-	@Deprecated
-	public boolean accept(int offset, TokenType type) throws CarrotException {
-		throw new AssertionError();
-		// if (offset == 0) {
-		// return accept(type);
-		// }
-		// while (tokens.size() <= offset) {
-		// next();
-		// }
-		// return Iterators.get(tokens.iterator(), offset).getType() == type;
-	}
-
 	private Token advance() throws CarrotException {
 		Token token = next;
 		next();
@@ -152,10 +126,6 @@ public class Tokenizer {
 			do {
 				ch = reader.read();
 			} while (Character.isWhitespace(ch));
-			if (ch == -1) {
-				next = Token.of(TokenType.EOF);
-				return;
-			}
 			next = getToken(ch);
 		} catch (IOException e) {
 			throw new CarrotException(e);
@@ -163,8 +133,9 @@ public class Tokenizer {
 	}
 
 	private Token getToken(int ch) throws CarrotException, IOException {
-		// TODO: Cache
 		switch (ch) {
+			case -1:
+				return Token.of(TokenType.EOF);
 			case '(':
 				return Token.of(TokenType.LEFT_PARENTHESIS);
 			case ')':

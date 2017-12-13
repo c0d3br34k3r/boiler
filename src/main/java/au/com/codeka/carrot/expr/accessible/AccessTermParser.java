@@ -25,12 +25,9 @@ public final class AccessTermParser implements TermParser {
 	private final TermParser valueParser;
 	private final TermParser expressionTerm;
 	private final TermParser identifierTerm;
-	private final TermParser iterationTerm;
 
-	public AccessTermParser(TermParser expressionTerm, TermParser identifierTerm,
-			TermParser iterationTerm) {
+	public AccessTermParser(TermParser expressionTerm, TermParser identifierTerm) {
 		this.valueParser = new IdentifierTermParser(EmptyTermParser.INSTANCE);
-		this.iterationTerm = iterationTerm;
 		this.expressionTerm = expressionTerm;
 		this.identifierTerm = identifierTerm;
 	}
@@ -43,7 +40,7 @@ public final class AccessTermParser implements TermParser {
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = valueParser.parse(tokenizer);
 		if (left == EmptyTerm.INSTANCE) {
-			return left;
+			return EmptyTerm.INSTANCE;
 		}
 		AccessibleTerm result = new Unaccessible(new Variable(left));
 		for (;;) {
@@ -60,11 +57,11 @@ public final class AccessTermParser implements TermParser {
 					result = new AccessTerm(result, expressionTerm.parse(tokenizer),
 							TokenType.LEFT_BRACKET);
 					break;
-				case LEFT_PARENTHESIS:
-					// the accessor in () is supposed to be an iteration
-					result = new Unaccessible(
-							new MethodTerm(result, iterationTerm.parse(tokenizer)));
-					break;
+				// case LEFT_PARENTHESIS:
+				// // the accessor in () is supposed to be an iteration
+				// result = new Unaccessible(
+				// new MethodTerm(result, iterationTerm.parse(tokenizer)));
+				// break;
 				default:
 			}
 			if (token.getType().closingType() != null) {

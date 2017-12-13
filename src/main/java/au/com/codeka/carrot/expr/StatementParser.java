@@ -1,5 +1,24 @@
 package au.com.codeka.carrot.expr;
 
+import static au.com.codeka.carrot.expr.TokenType.ASSIGNMENT;
+import static au.com.codeka.carrot.expr.TokenType.COMMA;
+import static au.com.codeka.carrot.expr.TokenType.DIVIDE;
+import static au.com.codeka.carrot.expr.TokenType.EOF;
+import static au.com.codeka.carrot.expr.TokenType.EQUAL;
+import static au.com.codeka.carrot.expr.TokenType.GREATER_THAN;
+import static au.com.codeka.carrot.expr.TokenType.GREATER_THAN_OR_EQUAL;
+import static au.com.codeka.carrot.expr.TokenType.IDENTIFIER;
+import static au.com.codeka.carrot.expr.TokenType.IN;
+import static au.com.codeka.carrot.expr.TokenType.LESS_THAN;
+import static au.com.codeka.carrot.expr.TokenType.LESS_THAN_OR_EQUAL;
+import static au.com.codeka.carrot.expr.TokenType.LOGICAL_AND;
+import static au.com.codeka.carrot.expr.TokenType.LOGICAL_OR;
+import static au.com.codeka.carrot.expr.TokenType.MINUS;
+import static au.com.codeka.carrot.expr.TokenType.MULTIPLY;
+import static au.com.codeka.carrot.expr.TokenType.NOT;
+import static au.com.codeka.carrot.expr.TokenType.NOT_EQUAL;
+import static au.com.codeka.carrot.expr.TokenType.PLUS;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,8 +28,6 @@ import javax.annotation.Nullable;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.expr.accessible.AccessTermParser;
 import au.com.codeka.carrot.expr.binary.BinaryTermParser;
-import au.com.codeka.carrot.expr.binary.LaxIterationTermParser;
-import au.com.codeka.carrot.expr.binary.StrictIterationTermParser;
 import au.com.codeka.carrot.expr.unary.UnaryTermParser;
 import au.com.codeka.carrot.expr.values.ErrorTermParser;
 import au.com.codeka.carrot.expr.values.IdentifierTermParser;
@@ -68,72 +85,9 @@ import au.com.codeka.carrot.tmpl.TagNode;
 public class StatementParser {
 
 	private final Tokenizer tokenizer;
-	private final TermParser expressionParser;
-	private final TermParser iterableParser;
-	private final TermParser strictIdentifierParser;
 
 	public StatementParser(Tokenizer tokenizer) {
 		this.tokenizer = tokenizer;
-
-		/*
-		 * Build a TermParser tree. Each TermParser receives a parser for the
-		 * "sub-term" and a list of acceptable TokenTypes.
-		 *
-		 * This reflects the upper part of the grammar above.
-		 *
-		 * Operation precedence is given by the nesting level of a parser,
-		 * deeper parsers have precedence over shallow factories.
-		 */
-
-		strictIdentifierParser = new IdentifierTermParser(ErrorTermParser.INSTANCE);
-
-		// @formatter:off
-		TermParser base = new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		new BinaryTermParser(
-		  new UnaryTermParser(
-		    new ValueParser(
-		      new AccessTermParser(
-		        new TermParser() {
-			      @Override
-			      public Term parse(Tokenizer tokenizer) throws CarrotException {
-				    return expressionParser.parse(tokenizer);
-			      }
-		        }, 
-		        strictIdentifierParser,
-		        new TermParser() {
-			      @Override
-			      public Term parse(Tokenizer tokenizer) throws CarrotException {
-				    return iterableParser.parse(tokenizer);
-			      }
-		        }
-		      ), 
-		      new TermParser() {
-			    @Override
-			    public Term parse(Tokenizer tokenizer) throws CarrotException {
-				  return expressionParser.parse(tokenizer);
-			    }
-		      }
-		    ),
-		  TokenType.NOT, TokenType.PLUS, TokenType.MINUS),
-		TokenType.MULTIPLY, TokenType.DIVIDE),
-		TokenType.PLUS, TokenType.MINUS),
-		TokenType.LESS_THAN, TokenType.LESS_THAN_OR_EQUAL, 
-		TokenType.GREATER_THAN, TokenType.GREATER_THAN_OR_EQUAL, TokenType.IN),
-		TokenType.EQUAL, TokenType.NOT_EQUAL),
-		TokenType.LOGICAL_AND),
-		TokenType.LOGICAL_OR);
-		// @formatter:on
-
-		// the generic expression uses a lax iteration parser
-		expressionParser = new LaxIterationTermParser(base);
-
-		// a special parser which enforces all results to be an iterable, even
-		// if it's not an iteration
-		iterableParser = new StrictIterationTermParser(base);
 	}
 
 	/**
@@ -144,7 +98,7 @@ public class StatementParser {
 	 *         statement.
 	 */
 	public void parseEnd() throws CarrotException {
-		tokenizer.get(TokenType.EOF);
+		tokenizer.get(EOF);
 	}
 
 	/**
@@ -157,7 +111,7 @@ public class StatementParser {
 	 */
 	@Nullable
 	public Identifier tryParseIdentifier() throws CarrotException {
-		Token token = tokenizer.tryGet(TokenType.IDENTIFIER);
+		Token token = tokenizer.tryGet(IDENTIFIER);
 		return token != null ? new Identifier((String) token.getValue()) : null;
 	}
 
@@ -174,37 +128,62 @@ public class StatementParser {
 	 *         parse an identifier.
 	 * @throws CarrotException if there's some error parsing the identifiers.
 	 */
+	@Deprecated
 	public List<Identifier> tryParseIdentifierList() throws CarrotException {
-		if (tokenizer.check(TokenType.IDENTIFIER)) {
+		if (tokenizer.check(IDENTIFIER)) {
 			return parseIdentifierList();
 		}
 		return null;
 	}
 
+	@Deprecated
 	public List<Identifier> parseIdentifierList() throws CarrotException {
 		// TODO: most efficient?
 		List<Identifier> result = new LinkedList<>();
 		// first token of a list is always an identifier
 		do {
-			result.add(new Identifier((String) tokenizer.get(TokenType.IDENTIFIER).getValue()));
-		} while (tokenizer.tryConsume(TokenType.COMMA));
+			result.add(new Identifier((String) tokenizer.get(IDENTIFIER).getValue()));
+		} while (tokenizer.tryConsume(COMMA));
 		return result;
 	}
 
 	public boolean isAssignment() throws CarrotException {
-		return tokenizer.tryConsume(TokenType.ASSIGNMENT);
+		return tokenizer.tryConsume(ASSIGNMENT);
 	}
 
 	public Term parseTerm() throws CarrotException {
-		Term term = expressionParser.parse(tokenizer);
-		tokenizer.get(TokenType.EOF);
-		return term;
+		return EXPRESSION_PARSER.parse(tokenizer);
 	}
 
-	// TODO: at present we keep this only to test the result, check if the
-	// current tests are sufficient
-	public Term parseTermsIterable() throws CarrotException {
-		return iterableParser.parse(tokenizer);
-	}
+	private static final TermParser EXPRESSION_PARSER = new TermParser() {
+
+		private final TermParser parser =
+		// @formatter:off
+		new BinaryTermParser(
+		  new BinaryTermParser(
+		    new BinaryTermParser(
+		      new BinaryTermParser(
+		        new BinaryTermParser(
+		          new BinaryTermParser(
+		            new UnaryTermParser(
+		              new ValueParser(
+		                new AccessTermParser(
+		                  this,
+		                  new IdentifierTermParser(ErrorTermParser.INSTANCE)), 
+		                this),
+		              NOT, PLUS, MINUS),
+		            MULTIPLY, DIVIDE),
+		          PLUS, MINUS),
+		        LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, IN),
+		      EQUAL, NOT_EQUAL),
+		    LOGICAL_AND),
+		  LOGICAL_OR);
+		// @formatter:on
+
+		@Override
+		public Term parse(Tokenizer tokenizer) throws CarrotException {
+			return parser.parse(tokenizer);
+		}
+	};
 
 }

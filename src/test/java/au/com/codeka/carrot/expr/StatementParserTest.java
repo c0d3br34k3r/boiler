@@ -4,7 +4,9 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.io.StringReader;
 import java.util.Collections;
+import java.util.EnumSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -41,24 +43,8 @@ public class StatementParserTest {
 		assertThat(evaluate(createParser("'foo' + 'bar'").parseTerm())).isEqualTo("foobar");
 	}
 
-	@Test
-	public void negativeTest() throws CarrotException {
-		Term term = createParser("2 2").parseTerm();
-		System.out.println(term);
-		evaluate(term);
-	}
-
-	// @Test
-	// public void test() throws CarrotException {
-	// Tokenizer tokenizer = new Tokenizer(new StringReader("!1"));
-	// Token token;
-	// do {
-	// token = tokenizer.require(EnumSet.allOf(TokenType.class));
-	// System.out.println(token);
-	// } while (token.getType() != TokenType.EOF);
-	// }
-
 	@SuppressWarnings("unchecked")
+	@Ignore
 	@Test
 	public void testIterableTerms() throws CarrotException {
 		assertThat((Iterable<Object>) evaluate(createParser("1, 2").parseTermsIterable()))

@@ -35,6 +35,7 @@ public class Token {
 		this.value = null;
 	}
 
+	// TODO: type is always known
 	public static Token of(TokenType type) {
 		return Preconditions.checkNotNull(CACHE.get(type));
 	}

@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.expr.Identifier;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TermParser;
 import au.com.codeka.carrot.expr.Token;
@@ -32,8 +31,8 @@ public final class ValueParser implements TermParser {
 
 	private static final Set<TokenType> TOKENS = Sets.immutableEnumSet(
 			TokenType.NUMBER_LITERAL,
-			TokenType.STRING_LITERAL, 
-//			TokenType.IDENTIFIER, 
+			TokenType.STRING_LITERAL,
+			// TokenType.IDENTIFIER,
 			TokenType.LEFT_PARENTHESIS);
 
 	@Override
@@ -45,15 +44,15 @@ public final class ValueParser implements TermParser {
 		// System.out.println(token);
 		switch (token.getType()) {
 			case NUMBER_LITERAL:
-				return new ValueTerm(token.getValue());
 			case STRING_LITERAL:
 				return new ValueTerm(token.getValue());
-//			case IDENTIFIER:
-//				return new ValueTerm(new Identifier((String) token.getValue()));
+			// case IDENTIFIER:
+			// return new ValueTerm(new Identifier((String) token.getValue()));
 			case LEFT_PARENTHESIS:
 				Term term = expressionParser.parse(tokenizer);
 				tokenizer.get(TokenType.RIGHT_PARENTHESIS);
 				return term;
+			// TODO: Arrays and objects?
 			default:
 				throw new AssertionError();
 		}
