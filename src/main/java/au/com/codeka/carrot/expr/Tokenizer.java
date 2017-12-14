@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Predicate;
 
 import au.com.codeka.carrot.CarrotException;
 
@@ -26,14 +25,38 @@ public class Tokenizer {
 		next();
 	}
 
+	/**
+	 * Returns true if the next token matches the given type. Leaves the token
+	 * in place.
+	 *
+	 * @param type the type to match against
+	 * @return true if the next token matches the given type
+	 */
+	@Deprecated
 	public boolean check(TokenType type) {
 		return type == next.getType();
 	}
 
+	/**
+	 * Returns true if the next token matches one of the given types. Leaves the
+	 * token in place.
+	 *
+	 * @param types the types to match against
+	 * @return true if the next token matches one of the given types
+	 */
+	@Deprecated
 	public boolean check(Set<TokenType> types) {
 		return types.contains(next.getType());
 	}
 
+	/**
+	 * Returns the next token and asserts that it matches the given type.
+	 *
+	 * @param type the type to match against
+	 * @return the next token
+	 * @throws CarrotException if there's an error parsing the token, or if it
+	 *         doesn't match the given type
+	 */
 	@Nonnull
 	public Token get(TokenType type) throws CarrotException {
 		Token token = tryGet(type);
@@ -45,14 +68,13 @@ public class Tokenizer {
 	}
 
 	/**
-	 * Returns a {@link Token} if it's one of the given types, or throws a
-	 * {@link CarrotException} if it's not.
+	 * Returns the next token and asserts that it matches one of the given
+	 * types.
 	 *
-	 * @param types The {@link TokenType}s we want to accept one of.
-	 * @return The next {@link Token}, if it's of the given type.
-	 * @throws CarrotException If there's an error parsing the token, or if it's
-	 *         not of the given type.
-	 * @throws IOException
+	 * @param types the types to match against
+	 * @return the next token
+	 * @throws CarrotException if there's an error parsing the token, or if it
+	 *         doesn't matches any of the given types
 	 */
 	@Nonnull
 	public Token get(Set<TokenType> types) throws CarrotException {
@@ -64,6 +86,14 @@ public class Tokenizer {
 		return token;
 	}
 
+	/**
+	 * Returns the next token if it matches the given type, or else leaves it in
+	 * place and returns null.
+	 *
+	 * @param type the type to match against
+	 * @return the next token
+	 * @throws CarrotException if there's an error parsing the token
+	 */
 	@Nullable
 	public Token tryGet(TokenType type) throws CarrotException {
 		if (type == next.getType()) {
@@ -72,6 +102,14 @@ public class Tokenizer {
 		return null;
 	}
 
+	/**
+	 * Returns the next token if it matches one of the given types, or else
+	 * leaves it in place and returns null.
+	 *
+	 * @param types the types to match against
+	 * @return the next token
+	 * @throws CarrotException if there's an error parsing the token
+	 */
 	@Nullable
 	public Token tryGet(Set<TokenType> types) throws CarrotException {
 		if (types.contains(next.getType())) {
@@ -80,6 +118,14 @@ public class Tokenizer {
 		return null;
 	}
 
+	/**
+	 * Consumes the next token and returns true if it matches the given type, or
+	 * else returns false.
+	 *
+	 * @param type the type to match against
+	 * @return true if the next token matches the given type
+	 * @throws CarrotException if there's an error parsing the token
+	 */
 	public boolean tryConsume(TokenType type) throws CarrotException {
 		return tryGet(type) != null;
 	}
@@ -90,42 +136,25 @@ public class Tokenizer {
 		return token;
 	}
 
-	/**
-	 * @throws CarrotException unless we're at the end of the tokens.
-	 * @throws IOException
-	 */
-	public void end() throws CarrotException {
-		get(TokenType.EOF);
+	private static final CharMatcher NUMBER;
+	private static final CharMatcher IDENTIFIER_START;
+	private static final CharMatcher IDENTIFIER_PART;
+
+	static {
+		CharMatcher digit = CharMatcher.inRange('0', '9');
+		NUMBER = digit.or(CharMatcher.anyOf("."));
+		IDENTIFIER_START = CharMatcher.inRange('a', 'z')
+				.or(CharMatcher.inRange('A', 'Z'))
+				.or(CharMatcher.anyOf("$_"));
+		IDENTIFIER_PART = IDENTIFIER_START.or(digit);
 	}
-
-	/**
-	 * Creates a {@link CarrotException} with the given message, populated with
-	 * our current state.
-	 *
-	 * @param msg The message to create the exception with.
-	 * @return A {@link CarrotException} with the given message (presumably
-	 *         because we got an unexpected token).
-	 */
-	public CarrotException unexpected(String msg) {
-		return new CarrotException(String.format("%s, found: %s", msg, next));
-	}
-
-	private static final CharMatcher DIGIT = CharMatcher.inRange('0', '9');
-	private static final CharMatcher DIGIT_OR_DOT = DIGIT.or(CharMatcher.is('.'));
-	private static final Predicate<Character> IDENTIFIER_PART = new Predicate<Character>() {
-
-		@Override
-		public boolean apply(Character input) {
-			return Character.isJavaIdentifierPart(input);
-		}
-	};
 
 	private void next() throws CarrotException {
 		try {
 			int ch;
 			do {
 				ch = reader.read();
-			} while (Character.isWhitespace(ch));
+			} while (CharMatcher.whitespace().matches((char) ch));
 			next = getToken(ch);
 		} catch (IOException e) {
 			throw new CarrotException(e);
@@ -134,53 +163,39 @@ public class Tokenizer {
 
 	private Token getToken(int ch) throws CarrotException, IOException {
 		switch (ch) {
-			case -1:
-				return Token.of(TokenType.EOF);
-			case '(':
-				return Token.of(TokenType.LEFT_PARENTHESIS);
-			case ')':
-				return Token.of(TokenType.RIGHT_PARENTHESIS);
-			case '[':
-				return Token.of(TokenType.LEFT_BRACKET);
-			case ']':
-				return Token.of(TokenType.RIGHT_BRACKET);
-			case ',':
-				return Token.of(TokenType.COMMA);
-			case '.':
-				return Token.of(TokenType.DOT);
-			case '+':
-				return Token.of(TokenType.PLUS);
-			case '-':
-				return Token.of(TokenType.MINUS);
-			case '*':
-				return Token.of(TokenType.MULTIPLY);
-			case '/':
-				return Token.of(TokenType.DIVIDE);
-			case '&':
-				return required('&', TokenType.LOGICAL_AND);
-			case '|':
-				return required('|', TokenType.LOGICAL_OR);
-			case '=':
-				return either('=', TokenType.EQUAL, TokenType.ASSIGNMENT);
-			case '!':
-				return either('=', TokenType.NOT_EQUAL, TokenType.NOT);
-			case '<':
-				return either('=', TokenType.LESS_THAN_OR_EQUAL, TokenType.LESS_THAN);
-			case '>':
-				return either('=', TokenType.GREATER_THAN_OR_EQUAL, TokenType.GREATER_THAN);
+			// @formatter:off
+			case -1:  return Token.EOF;
+			case '(': return Token.LEFT_PARENTHESIS;
+			case ')': return Token.RIGHT_PARENTHESIS;
+			case '[': return Token.LEFT_BRACKET;
+			case ']': return Token.RIGHT_BRACKET;
+			case ',': return Token.COMMA;
+			case ';': return Token.SEMICOLON;
+			case '.': return Token.DOT;
+			case '+': return Token.PLUS;
+			case '-': return Token.MINUS;
+			case '*': return Token.MULTIPLY;
+			case '/': return Token.DIVIDE;
+			case '&': return required('&', Token.LOGICAL_AND);
+			case '|': return required('|', Token.LOGICAL_OR);
+			case '=': return either('=', Token.EQUAL, Token.ASSIGNMENT);
+			case '!': return either('=', Token.NOT_EQUAL, Token.NOT);
+			case '<': return either('=', Token.LESS_THAN_OR_EQUAL, Token.LESS_THAN);
+			case '>': return either('=', Token.GREATER_THAN_OR_EQUAL, Token.GREATER_THAN);
+			// @formatter:on
 			case '"':
 			case '\'':
 				return readString((char) ch);
 			default:
-				if (DIGIT.matches((char) ch)) {
-					return readNumber((char) ch);
-				}
-				if (Character.isJavaIdentifierStart(ch)) {
-					return readIdentifier((char) ch);
-				}
-				throw new CarrotException(
-						"Unexpected character [" + (char) ch + "], " + Character.getName(ch));
 		}
+		if (NUMBER.matches((char) ch)) {
+			return readNumber((char) ch);
+		}
+		if (IDENTIFIER_START.matches((char) ch)) {
+			return readIdentifier((char) ch);
+		}
+		throw new CarrotException(
+				"unexpected char " + (char) ch + ", (" + Character.getName(ch) + ")");
 	}
 
 	private Token readString(char end) throws CarrotException, IOException {
@@ -191,14 +206,14 @@ public class Tokenizer {
 				return new Token(TokenType.STRING_LITERAL, builder.toString());
 			}
 			if (next == -1) {
-				throw new CarrotException("Unexpected end-of-file waiting for " + end);
+				throw new CarrotException("unexpected EOF waiting for closing " + end);
 			}
 			builder.append((char) next);
 		}
 	}
 
 	private Token readNumber(char first) throws IOException {
-		String numberStr = readUntil(first, DIGIT_OR_DOT);
+		String numberStr = readUntil(first, NUMBER);
 		Number value;
 		if (numberStr.contains(".")) {
 			value = Double.parseDouble(numberStr);
@@ -210,22 +225,20 @@ public class Tokenizer {
 
 	private Token readIdentifier(char first) throws IOException {
 		String identifier = readUntil(first, IDENTIFIER_PART);
-		// TODO: is this okay?
 		switch (identifier) {
-			case "or":
-				return Token.of(TokenType.LOGICAL_OR);
-			case "and":
-				return Token.of(TokenType.LOGICAL_AND);
-			case "not":
-				return Token.of(TokenType.NOT);
+			case "true":
+				return Token.TRUE;
+			case "false":
+				return Token.FALSE;
+			// case "null":
 			case "in":
-				return Token.of(TokenType.IN);
+				return Token.IN;
 			default:
 				return new Token(TokenType.IDENTIFIER, identifier);
 		}
 	}
 
-	private String readUntil(char first, Predicate<Character> matcher) throws IOException {
+	private String readUntil(char first, CharMatcher matcher) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		builder.append(first);
 		for (;;) {
@@ -233,7 +246,7 @@ public class Tokenizer {
 			if (next == -1) {
 				break;
 			}
-			if (!matcher.apply((char) next)) {
+			if (!matcher.matches((char) next)) {
 				reader.unread(next);
 				break;
 			}
@@ -242,62 +255,62 @@ public class Tokenizer {
 		return builder.toString();
 	}
 
-	private Token required(char required, TokenType type) throws IOException, CarrotException {
+	private Token required(char required, Token token) throws IOException, CarrotException {
 		if (reader.read() != required) {
 			throw new CarrotException("expected " + required);
 		}
-		return Token.of(type);
+		return token;
 	}
 
-	private Token either(char match, TokenType ifMatch, TokenType ifNotMatch) throws IOException {
+	private Token either(char match, Token ifMatch, Token ifNotMatch) throws IOException {
 		int ch = reader.read();
 		if (ch == match) {
-			return Token.of(ifMatch);
+			return ifMatch;
 		}
 		if (ch != -1) {
 			reader.unread(ch);
 		}
-		return Token.of(ifNotMatch);
+		return ifNotMatch;
 	}
 
-	private char readEscapeCharacter() throws IOException, CarrotException {
-		int ch = reader.read();
-		switch (ch) {
-			case -1:
-				throw new CarrotException("");
-			case 'u':
-				return readUnicode();
-			case 't':
-				return '\t';
-			case 'b':
-				return '\b';
-			case 'n':
-				return '\n';
-			case 'r':
-				return '\r';
-			case 'f':
-				return '\f';
-			case '\n':
-			case '\'':
-			case '"':
-			case '\\':
-			case '/':
-				return (char) ch;
-			default:
-				throw new CarrotException("");
-		}
-	}
-
-	private char readUnicode() throws IOException, CarrotException {
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < 4; i++) {
-			int ch = reader.read();
-			if (ch == -1) {
-				throw new CarrotException("");
-			}
-			buf.append((char) ch);
-		}
-		return (char) Integer.parseInt(buf.toString());
-	}
+	// private char readEscapeCharacter() throws IOException, CarrotException {
+	// int ch = reader.read();
+	// switch (ch) {
+	// case -1:
+	// throw new CarrotException("");
+	// case 'u':
+	// return readUnicode();
+	// case 't':
+	// return '\t';
+	// case 'b':
+	// return '\b';
+	// case 'n':
+	// return '\n';
+	// case 'r':
+	// return '\r';
+	// case 'f':
+	// return '\f';
+	// case '\n':
+	// case '\'':
+	// case '"':
+	// case '\\':
+	// case '/':
+	// return (char) ch;
+	// default:
+	// throw new CarrotException("");
+	// }
+	// }
+	//
+	// private char readUnicode() throws IOException, CarrotException {
+	// StringBuilder buf = new StringBuilder();
+	// for (int i = 0; i < 4; i++) {
+	// int ch = reader.read();
+	// if (ch == -1) {
+	// throw new CarrotException("");
+	// }
+	// buf.append((char) ch);
+	// }
+	// return (char) Integer.parseInt(buf.toString());
+	// }
 
 }

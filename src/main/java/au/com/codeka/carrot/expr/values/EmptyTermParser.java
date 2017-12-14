@@ -18,7 +18,7 @@ public enum EmptyTermParser implements TermParser {
 
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
-		return EmptyTerm.INSTANCE;
+		return EmptyTerm.EMPTY;
 	}
 
 }

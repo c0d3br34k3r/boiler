@@ -32,8 +32,8 @@ public class TagNode extends Node {
 	/**
 	 * Creates a special {@link TagNode} for an echo segment.
 	 *
-	 * @param segment The {@link Segment} the echo node is going to created from,
-	 *        must have {@link Segment#getType()} of
+	 * @param segment The {@link Segment} the echo node is going to created
+	 *        from, must have {@link Segment#getType()} of
 	 *        {@link au.com.codeka.carrot.tmpl.parse.SegmentType#ECHO}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
@@ -46,8 +46,8 @@ public class TagNode extends Node {
 	/**
 	 * Creates a {@link TagNode} for the given {@link Segment}.
 	 *
-	 * @param segment The {@link Segment} the node is going to created from, must
-	 *        have {@link Segment#getType()} of
+	 * @param segment The {@link Segment} the node is going to created from,
+	 *        must have {@link Segment#getType()} of
 	 *        {@link au.com.codeka.carrot.tmpl.parse.SegmentType#TAG}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.

@@ -37,7 +37,7 @@ public class IfTag extends Tag {
 
 	@Override
 	public void parseStatement(StatementParser stmtParser) throws CarrotException {
-		expr = stmtParser.parseTerm();
+		expr = stmtParser.parseExpression();
 	}
 
 	@Override

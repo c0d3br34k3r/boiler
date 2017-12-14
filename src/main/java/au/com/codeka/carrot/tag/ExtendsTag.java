@@ -64,7 +64,7 @@ public class ExtendsTag extends Tag {
 
 	@Override
 	public void parseStatement(StatementParser stmtParser) throws CarrotException {
-		skeletonNameExpr = stmtParser.parseTerm();
+		skeletonNameExpr = stmtParser.parseExpression();
 	}
 
 	@Override

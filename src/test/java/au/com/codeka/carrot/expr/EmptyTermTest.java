@@ -15,14 +15,14 @@ public class EmptyTermTest {
 	
 	@Test
 	public void testEvaluate() throws Exception {
-		assertThat(((Iterable<?>) EmptyTerm.INSTANCE.evaluate(
+		assertThat(((Iterable<?>) EmptyTerm.EMPTY.evaluate(
 				new Configuration.Builder().build(),
 				new Scope(EmptyBindings.INSTANCE))).iterator().hasNext()).isFalse();
 	}
 
 	@Test
 	public void testToString() throws Exception {
-		assertThat(EmptyTerm.INSTANCE.toString()).isEqualTo("");
+		assertThat(EmptyTerm.EMPTY.toString()).isEqualTo("");
 	}
 
 }

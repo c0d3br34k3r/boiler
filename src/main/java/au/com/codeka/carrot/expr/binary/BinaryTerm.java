@@ -15,23 +15,23 @@ import au.com.codeka.carrot.expr.Term;
 public final class BinaryTerm implements Term {
 
 	private final Term left;
-	private final BinaryOperator operation;
+	private final BinaryOperator operator;
 	private final Term right;
 
 	public BinaryTerm(Term left, BinaryOperator operation, Term right) {
 		this.left = left;
-		this.operation = operation;
+		this.operator = operation;
 		this.right = right;
 	}
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
-		return operation.apply(left.evaluate(config, scope), new LazyTerm(config, scope, right));
+		return operator.apply(left.evaluate(config, scope), new LazyTerm(config, scope, right));
 	}
 
 	@Override
 	public String toString() {
-		return String.format("[%s %s %s]", left, operation, right);
+		return String.format("[%s %s %s]", left, operator, right);
 	}
 
 }

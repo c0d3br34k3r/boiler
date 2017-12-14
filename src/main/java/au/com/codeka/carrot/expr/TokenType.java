@@ -18,6 +18,9 @@ public enum TokenType {
 	/** A number literal, like {@code 12} or {@code 12.34}. */
 	NUMBER_LITERAL(true),
 
+	/** A number literal, like {@code 12} or {@code 12.34}. */
+	BOOLEAN_LITERAL(true),
+
 	/** A Java-style identifier like {@code foo} or {@code bar}. */
 	IDENTIFIER(true),
 
@@ -37,7 +40,10 @@ public enum TokenType {
 	ASSIGNMENT,
 
 	/** Comma: {@code ,} */
-	COMMA(BinaryOperator.ITERATE),
+	COMMA,
+
+	/** Semicolon: {@code ;} */
+	SEMICOLON,
 
 	/** Dot: {@code .} */
 	DOT,
@@ -72,7 +78,7 @@ public enum TokenType {
 	/** Plus: {@code +} */
 	PLUS(BinaryOperator.PLUS, UnaryOperator.PLUS),
 
-	/** Minus : {@code -} */
+	/** Minus: {@code -} */
 	MINUS(BinaryOperator.MINUS, UnaryOperator.MINUS),
 
 	/** Multiply: {@code *} */

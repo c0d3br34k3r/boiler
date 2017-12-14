@@ -24,7 +24,7 @@ public final class Access {
 			return null;
 		}
 		if (value instanceof Map) {
-			return ((Map<?, ?>) value).get(accessor);
+			return ((Map<?, ?>) value).get(accessor.toString());
 		}
 		if (value instanceof Bindings) {
 			return ((Bindings) value).resolve(accessor.toString());

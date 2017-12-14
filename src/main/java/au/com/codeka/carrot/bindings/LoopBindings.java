@@ -10,12 +10,12 @@ import au.com.codeka.carrot.Bindings;
  *
  * @author Marten Gajda
  */
-public final class LoopVarBindings implements Bindings {
+public final class LoopBindings implements Bindings {
 
 	private final int count;
 	private final int current;
 
-	public LoopVarBindings(int count, int current) {
+	public LoopBindings(int count, int current) {
 		this.count = count;
 		this.current = current;
 	}

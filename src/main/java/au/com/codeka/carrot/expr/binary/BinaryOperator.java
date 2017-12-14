@@ -1,14 +1,9 @@
 package au.com.codeka.carrot.expr.binary;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 
 import au.com.codeka.carrot.Bindings;
 import au.com.codeka.carrot.CarrotException;
@@ -118,15 +113,8 @@ public enum BinaryOperator {
 			if (rightValue instanceof Iterable) {
 				return Iterables.contains(((Iterable<?>) rightValue), left);
 			}
-			// TODO: throw exception?
-			return false;
-		}
-	},
-
-	ITERATE {
-		@Override
-		public Object apply(Object left, Lazy right) throws CarrotException {
-			return Iterables.concat(Collections.singleton(left), new LazyIterable(right));
+			throw new CarrotException("rightValue "
+					+ rightValue + "(" + rightValue.getClass() + ") is not a container");
 		}
 	},
 
@@ -138,45 +126,17 @@ public enum BinaryOperator {
 	};
 
 	/**
-	 * An {@link Iterable} which flattens the value of the right hand side of an
-	 * IterableOperator.
-	 */
-	private final class LazyIterable implements Iterable<Object> {
-		private final Lazy value;
-
-		public LazyIterable(Lazy value) {
-			this.value = value;
-		}
-
-		// TODO:
-		@SuppressWarnings("unchecked")
-		@Nonnull
-		@Override
-		public Iterator<Object> iterator() {
-			Object val;
-			try {
-				val = value.value();
-			} catch (CarrotException e) {
-				// TODO: find more appropriate exception
-				throw new IllegalStateException("can't iterate elements", e);
-			}
-			return val instanceof Iterable ? ((Iterable<Object>) val).iterator()
-					: Iterators.singletonIterator(val);
-		}
-	}
-
-	/**
 	 * Applies the binary operator to the given operands.
-	 *
 	 * <p>
 	 * Note that the right operand is passed as a {@link Lazy} because some
 	 * operands may not need to evaluate it, depending on the left operand (e.g.
-	 * boolean `and` and `or` operators).
+	 * && and || operators).
 	 *
-	 * @param left The left operand.
-	 * @param right The {@link Lazy} right operand.
-	 * @return The result of the operation.
-	 * @throws CarrotException if there's any error applying the operator.
+	 * @param left the left operand.
+	 * @param right the {@link Lazy} right operand.
+	 * @return the result of the operation.
+	 * @throws CarrotException if the operands are invalid for the given
+	 *         operation
 	 */
 	public abstract Object apply(Object left, Lazy right) throws CarrotException;
 

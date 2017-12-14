@@ -13,30 +13,21 @@ import au.com.codeka.carrot.expr.Term;
  */
 public final class Variable implements Term {
 
-	private final Term term;
+	// TODO: What???
+	private final String name;
 
-	public Variable(Term term) {
-		this.term = term;
+	public Variable(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
-		String value = term.evaluate(config, scope).toString();
-		switch (value) {
-			case "null":
-				return null;
-			case "true":
-				return true;
-			case "false":
-				return false;
-			default:
-				return scope.resolve(value);
-		}
+		return scope.resolve(name);
 	}
 
 	@Override
 	public String toString() {
-		return term.toString();
+		return name;
 	}
 
 }

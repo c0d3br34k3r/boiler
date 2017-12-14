@@ -17,6 +17,7 @@ import au.com.codeka.carrot.CarrotException;
  */
 @RunWith(JUnit4.class)
 public class TokenizerTest {
+	
 	@Test
 	public void testIdentifier() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("foo bar baz");

@@ -1,13 +1,23 @@
 package au.com.codeka.carrot;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListenableFutureTask;
 
 import au.com.codeka.carrot.tmpl.Node;
+import au.com.codeka.carrot.tmpl.TemplateParser;
+import au.com.codeka.carrot.tmpl.parse.SegmentParser;
 
 /**
  * Helper class used to cache parsed template files.
@@ -15,45 +25,40 @@ import au.com.codeka.carrot.tmpl.Node;
 public class ParseCache {
 
 	private static final long DEFAULT_SIZE = 256;
-	private final Configuration config;
-	private final Cache<Path, CacheEntry> cache;
 
-	public ParseCache(Configuration config) {
-		this.config = config;
-		cache = CacheBuilder.newBuilder().maximumSize(DEFAULT_SIZE).build();
+	private final LoadingCache<Path, CacheEntry> cache;
+
+	// TODO: Dammit
+	public ParseCache(final Configuration config) {
+		cache = CacheBuilder.newBuilder().maximumSize(DEFAULT_SIZE)
+				.build(new CacheLoader<Path, CacheEntry>() {
+
+					@Override
+					public CacheEntry load(Path key) throws IOException, CarrotException {
+						try (Reader reader = Files.newBufferedReader(key, config.getCharset())) {
+							return new CacheEntry(
+									TemplateParser.parse(new SegmentParser(reader), config),
+									Files.getLastModifiedTime(key));
+						}
+					}
+				});
 	}
 
-	public Node getNode(Path path) throws CarrotException {
-		CacheEntry entry = cache.getIfPresent(path);
-		if (entry != null) {
-			long modifiedTime;
-			try {
-				modifiedTime = Files.getLastModifiedTime(path).toMillis();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if (modifiedTime != entry.modifiedTime) {
-				cache.invalidate(path);
-				return null;
-			}
-			return entry.node;
+	public Node getDocument(Path path) throws CarrotException {
+		try {
+			return cache.get(path).node;
+		} catch (ExecutionException e) {
+			throw new CarrotException(e);
 		}
-		return null;
-	}
-
-	public void addNode(Path resourceName, Node node) throws CarrotException {
-		long modifiedTime = config.getResourceLocator().getModifiedTime(resourceName);
-		cache.put(resourceName, new CacheEntry(node, modifiedTime));
 	}
 
 	private static class CacheEntry {
 		Node node;
-		long modifiedTime;
+		FileTime modified;
 
-		public CacheEntry(Node node, long modifiedTime) {
+		public CacheEntry(Node node, FileTime modifiedTime) {
 			this.node = node;
-			this.modifiedTime = modifiedTime;
+			this.modified = modifiedTime;
 		}
 	}
 }

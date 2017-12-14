@@ -27,7 +27,7 @@ public class BlockTag extends Tag {
 
 	@Override
 	public void parseStatement(StatementParser statementParser) throws CarrotException {
-		blockNameExpr = statementParser.parseTerm();
+		blockNameExpr = statementParser.parseExpression();
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package au.com.codeka.carrot.expr;
 
-import static au.com.codeka.carrot.expr.TokenType.ASSIGNMENT;
-import static au.com.codeka.carrot.expr.TokenType.COMMA;
 import static au.com.codeka.carrot.expr.TokenType.DIVIDE;
 import static au.com.codeka.carrot.expr.TokenType.EOF;
 import static au.com.codeka.carrot.expr.TokenType.EQUAL;
@@ -19,18 +17,13 @@ import static au.com.codeka.carrot.expr.TokenType.NOT;
 import static au.com.codeka.carrot.expr.TokenType.NOT_EQUAL;
 import static au.com.codeka.carrot.expr.TokenType.PLUS;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.expr.accessible.AccessTermParser;
 import au.com.codeka.carrot.expr.binary.BinaryTermParser;
 import au.com.codeka.carrot.expr.unary.UnaryTermParser;
 import au.com.codeka.carrot.expr.values.ErrorTermParser;
-import au.com.codeka.carrot.expr.values.IdentifierTermParser;
 import au.com.codeka.carrot.expr.values.ValueParser;
 import au.com.codeka.carrot.tag.Tag;
 import au.com.codeka.carrot.tmpl.TagNode;
@@ -101,57 +94,26 @@ public class StatementParser {
 		tokenizer.get(EOF);
 	}
 
-	/**
-	 * Tries to parse an identifier from the stream and returns it if we parsed
-	 * it, otherwise returns null.
-	 *
-	 * @return The {@link Identifier} we parsed, or null if we couldn't parse an
-	 *         identifier.
-	 * @throws CarrotException if there's some error parsing the identifer.
-	 */
-	@Nullable
-	public Identifier tryParseIdentifier() throws CarrotException {
-		Token token = tokenizer.tryGet(IDENTIFIER);
-		return token != null ? new Identifier((String) token.getValue()) : null;
-	}
-
 	@Nonnull
-	public Token parseToken(@Nonnull TokenType type) throws CarrotException {
+	public Token get(@Nonnull TokenType type) throws CarrotException {
 		return tokenizer.get(type);
 	}
 
-	/**
-	 * Attempts to parse an identifier list. If there's no identifier to begin
-	 * the list, returns null.
-	 *
-	 * @return The list of {@link Identifier}s we parsed, or null if we couldn't
-	 *         parse an identifier.
-	 * @throws CarrotException if there's some error parsing the identifiers.
-	 */
-	@Deprecated
-	public List<Identifier> tryParseIdentifierList() throws CarrotException {
-		if (tokenizer.check(IDENTIFIER)) {
-			return parseIdentifierList();
-		}
-		return null;
+	public boolean tryConsume(TokenType type) throws CarrotException {
+		return tokenizer.tryConsume(type);
 	}
 
-	@Deprecated
-	public List<Identifier> parseIdentifierList() throws CarrotException {
-		// TODO: most efficient?
-		List<Identifier> result = new LinkedList<>();
-		// first token of a list is always an identifier
-		do {
-			result.add(new Identifier((String) tokenizer.get(IDENTIFIER).getValue()));
-		} while (tokenizer.tryConsume(COMMA));
-		return result;
+	public String parseIdentifier() throws CarrotException {
+		return (String) tokenizer.get(IDENTIFIER).getValue();
 	}
 
-	public boolean isAssignment() throws CarrotException {
-		return tokenizer.tryConsume(ASSIGNMENT);
+	@Nullable
+	public String tryParseIdentifier() throws CarrotException {
+		Token token = tokenizer.tryGet(IDENTIFIER);
+		return token != null ? (String) token.getValue() : null;
 	}
 
-	public Term parseTerm() throws CarrotException {
+	public Term parseExpression() throws CarrotException {
 		return EXPRESSION_PARSER.parse(tokenizer);
 	}
 
@@ -166,11 +128,7 @@ public class StatementParser {
 		        new BinaryTermParser(
 		          new BinaryTermParser(
 		            new UnaryTermParser(
-		              new ValueParser(
-		                new AccessTermParser(
-		                  this,
-		                  new IdentifierTermParser(ErrorTermParser.INSTANCE)), 
-		                this),
+		              new ValueParser(ErrorTermParser.INSTANCE, this),
 		              NOT, PLUS, MINUS),
 		            MULTIPLY, DIVIDE),
 		          PLUS, MINUS),
