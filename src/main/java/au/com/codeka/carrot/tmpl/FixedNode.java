@@ -5,7 +5,6 @@ import java.io.Writer;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.tmpl.parse.Segment;
 
 /**
  * A {@link FixedNode} represents the text outside of the {% ... %} tags: the
@@ -15,13 +14,9 @@ public class FixedNode extends Node {
 
 	private String content;
 
-	private FixedNode(String content) {
+	public FixedNode(String content) {
 		super(false);
 		this.content = content;
-	}
-
-	public static FixedNode create(Segment token) {
-		return new FixedNode(token.getContent());
 	}
 
 	public String getContent() {

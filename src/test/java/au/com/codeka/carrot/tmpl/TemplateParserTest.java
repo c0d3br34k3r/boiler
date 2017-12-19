@@ -15,7 +15,7 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.resource.ResourcePointer;
 import au.com.codeka.carrot.tag.EchoTag;
 import au.com.codeka.carrot.tag.IfTag;
-import au.com.codeka.carrot.tmpl.parse.SegmentParser;
+import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Tests for {@link TemplateParser}.
@@ -82,7 +82,7 @@ public class TemplateParserTest {
 		TemplateParser templateParser = new TemplateParser(new Configuration.Builder().build());
 		try {
 			Node node =
-					templateParser.parse(new SegmentParser(
+					templateParser.parse(new Parser(
 							new LineReader(new ResourcePointer(null), new StringReader(input))));
 			assertThat(node).isNotNull();
 			return node;

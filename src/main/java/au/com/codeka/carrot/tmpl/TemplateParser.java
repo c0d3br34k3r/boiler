@@ -5,14 +5,14 @@ import java.io.IOException;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.tmpl.parse.Segment;
-import au.com.codeka.carrot.tmpl.parse.SegmentParser;
+import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Parses a stream of {@link Segment}s into a tree of {@link Node}s.
  */
 public class TemplateParser {
 
-	public static Node parse(SegmentParser parser, Configuration config)
+	public static Node parse(Parser parser, Configuration config)
 			throws IOException, CarrotException {
 		Node root = new RootNode();
 		parse(parser, root, config);
@@ -25,7 +25,7 @@ public class TemplateParser {
 	 * @throws IOException
 	 * @throws CarrotException
 	 */
-	private static void parse(SegmentParser parser, Node node, Configuration config)
+	private static void parse(Parser parser, Node node, Configuration config)
 			throws IOException, CarrotException {
 		Node current = node;
 		for (;;) {
@@ -39,8 +39,7 @@ public class TemplateParser {
 			Node childNode;
 			switch (token.getType()) {
 				case COMMENT:
-					childNode = null;
-					break;
+					continue;
 				case ECHO:
 					childNode = TagNode.createEcho(token, config);
 					break;
@@ -64,12 +63,10 @@ public class TemplateParser {
 				default:
 					throw new IllegalStateException("Unknown token type: " + token.getType());
 			}
-			if (childNode != null) {
-				if (childNode.isBlockNode()) {
-					parse(parser, childNode, config);
-				}
-				current.add(childNode);
+			if (childNode.isBlockNode()) {
+				parse(parser, childNode, config);
 			}
+			current.add(childNode);
 		}
 	}
 

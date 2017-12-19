@@ -17,7 +17,7 @@ import au.com.codeka.carrot.resource.ResourceLocator;
 import au.com.codeka.carrot.resource.ResourceName;
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TemplateParser;
-import au.com.codeka.carrot.tmpl.parse.SegmentParser;
+import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * {@link CarrotEngine} is the root of the carrot system. You create an instance
@@ -103,7 +103,7 @@ public class CarrotEngine {
 		Node node = parseCache.getNode(file);
 		if (node == null) {
 			Reader reader = Files.newBufferedReader(file, config.getCharset());
-			node = TemplateParser.parse(new SegmentParser(reader), config);
+			node = TemplateParser.parse(new Parser(reader), config);
 			parseCache.addNode(file, node);
 		}
 		try {

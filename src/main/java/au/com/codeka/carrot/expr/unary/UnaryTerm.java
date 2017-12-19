@@ -13,22 +13,22 @@ import au.com.codeka.carrot.expr.Term;
  */
 public final class UnaryTerm implements Term {
 
-	private final UnaryOperator operation;
+	private final UnaryOperator operator;
 	private final Term term;
 
 	public UnaryTerm(UnaryOperator operation, Term term) {
-		this.operation = operation;
+		this.operator = operation;
 		this.term = term;
 	}
 
 	@Override
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
-		return operation.apply(term.evaluate(config, scope));
+		return operator.apply(term.evaluate(config, scope));
 	}
 
 	@Override
 	public String toString() {
-		return String.format("[%s %s]", operation, term);
+		return String.format("[%s %s]", operator, term);
 	}
 
 }

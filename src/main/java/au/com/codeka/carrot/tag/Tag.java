@@ -2,6 +2,10 @@ package au.com.codeka.carrot.tag;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
@@ -69,4 +73,86 @@ public abstract class Tag {
 	 */
 	public void render(CarrotEngine engine, Writer writer, TagNode tagNode, Scope scope)
 			throws CarrotException, IOException {}
+
+	private static final Map<String, TagCreator> LOOKUP;
+
+	static {
+		Builder<String, TagCreator> builder = ImmutableMap.builder();
+		for (TagCreator type : TagCreator.values()) {
+			builder.put(type.tagName, type);
+		}
+		LOOKUP = builder.build();
+	}
+
+	public static Tag create(String name) {
+		return LOOKUP.get(name).create();
+	}
+
+	enum TagCreator {
+
+		ECHO("echo") {
+
+			@Override
+			Tag create() {
+				return new EchoTag();
+			}
+		},
+
+		IF("if") {
+
+			@Override
+			Tag create() {
+				return new IfTag();
+			}
+		},
+
+		FOR("for") {
+
+			@Override
+			Tag create() {
+				return new ForTag();
+			}
+		},
+
+		ELSE("else") {
+
+			@Override
+			Tag create() {
+				return new ElseTag();
+			}
+		},
+
+		SET("set") {
+
+			@Override
+			Tag create() {
+				return new SetTag();
+			}
+		},
+
+		INCLUDE("include") {
+
+			@Override
+			Tag create() {
+				return new IncludeTag();
+			}
+		},
+
+		END("end") {
+
+			@Override
+			Tag create() {
+				return EndTag.END;
+			}
+		};
+
+		private final String tagName;
+
+		TagCreator(String tagName) {
+			this.tagName = tagName;
+		}
+
+		abstract Tag create();
+	}
+
 }

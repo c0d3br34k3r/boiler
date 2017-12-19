@@ -30,7 +30,7 @@ public final class UnaryTermParser implements TermParser {
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Token token = tokenizer.tryGet(tokenTypes);
 		if (token != null) {
-			return new UnaryTerm(token.getType().unaryOperator(), this.parse(tokenizer));
+			return new UnaryTerm(token.getType().unaryOperator(), parse(tokenizer));
 		}
 		return termParser.parse(tokenizer);
 	}

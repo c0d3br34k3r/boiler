@@ -21,6 +21,10 @@ public class Tokenizer {
 	private Token next;
 
 	public Tokenizer(Reader reader) throws CarrotException {
+		this(new PushbackReader(reader));
+	}
+	
+	public Tokenizer(PushbackReader reader) throws CarrotException {
 		this.reader = new PushbackReader(reader);
 		next();
 	}
@@ -182,6 +186,7 @@ public class Tokenizer {
 			case '!': return either('=', Token.NOT_EQUAL, Token.NOT);
 			case '<': return either('=', Token.LESS_THAN_OR_EQUAL, Token.LESS_THAN);
 			case '>': return either('=', Token.GREATER_THAN_OR_EQUAL, Token.GREATER_THAN);
+			case '%': return required('>', Token.EOF);
 			// @formatter:on
 			case '"':
 			case '\'':

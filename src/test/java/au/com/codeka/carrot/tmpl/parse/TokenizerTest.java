@@ -13,79 +13,79 @@ import org.junit.runners.JUnit4;
 import au.com.codeka.carrot.CarrotException;
 
 /**
- * Tests for {@link SegmentParser}.
+ * Tests for {@link Parser}.
  */
 @RunWith(JUnit4.class)
 public class TokenizerTest {
 	@Test
 	public void testEmpty() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("");
+		Parser tokenizer = createTokenizer("");
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleFixed() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("Hello World!");
+		Parser tokenizer = createTokenizer("Hello World!");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "Hello World!"));
+				.isEqualTo(new Segment(NodeType.FIXED, "Hello World!"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleTag() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("{% Hello World! %}");
+		Parser tokenizer = createTokenizer("{% Hello World! %}");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.TAG, " Hello World! "));
+				.isEqualTo(new Segment(NodeType.TAG, " Hello World! "));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleEcho() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("{{ Hello World! }}");
+		Parser tokenizer = createTokenizer("{{ Hello World! }}");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.ECHO, " Hello World! "));
+				.isEqualTo(new Segment(NodeType.ECHO, " Hello World! "));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testSingleComment() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("{# Hello World! #}");
+		Parser tokenizer = createTokenizer("{# Hello World! #}");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.COMMENT, " Hello World! "));
+				.isEqualTo(new Segment(NodeType.COMMENT, " Hello World! "));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedTagFixed() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("Hello {% foo %} world");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "Hello "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.TAG, " foo "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, " world"));
+		Parser tokenizer = createTokenizer("Hello {% foo %} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "Hello "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.TAG, " foo "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, " world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagEchoFixed() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("{% foo %}{{ bar }} world");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.TAG, " foo "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.ECHO, " bar "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, " world"));
+		Parser tokenizer = createTokenizer("{% foo %}{{ bar }} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.TAG, " foo "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.ECHO, " bar "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, " world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagEchoComment() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("{% foo %}{{ bar }}{# baz #}");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.TAG, " foo "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.ECHO, " bar "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.COMMENT, " baz "));
+		Parser tokenizer = createTokenizer("{% foo %}{{ bar }}{# baz #}");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.TAG, " foo "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.ECHO, " bar "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.COMMENT, " baz "));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagInvalidEnd() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("stuff {% foo }} baz");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "stuff "));
+		Parser tokenizer = createTokenizer("stuff {% foo }} baz");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "stuff "));
 		try {
 			Segment token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
@@ -95,7 +95,7 @@ public class TokenizerTest {
 		}
 
 		tokenizer = createTokenizer("blah {% foo #} baz");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "blah "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "blah "));
 		try {
 			Segment token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
@@ -107,8 +107,8 @@ public class TokenizerTest {
 
 	@Test
 	public void testEchoInvalidEnd() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("stuff {{ foo %} baz");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "stuff "));
+		Parser tokenizer = createTokenizer("stuff {{ foo %} baz");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "stuff "));
 		try {
 			Segment token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
@@ -118,7 +118,7 @@ public class TokenizerTest {
 		}
 
 		tokenizer = createTokenizer("blah {{ foo #} baz");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "blah "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "blah "));
 		try {
 			Segment token = tokenizer.getNext();
 			fail("Expected ParseException, got: " + token);
@@ -130,95 +130,95 @@ public class TokenizerTest {
 
 	@Test
 	public void testTagInnerOpenBrace() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello {% yada { yada %} world");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "hello "));
+		Parser tokenizer = createTokenizer("hello {% yada { yada %} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "hello "));
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.TAG, " yada { yada "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, " world"));
+				.isEqualTo(new Segment(NodeType.TAG, " yada { yada "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, " world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testTagInnerCloseBrace() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello {% yada } yada %} world");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "hello "));
+		Parser tokenizer = createTokenizer("hello {% yada } yada %} world");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "hello "));
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.TAG, " yada } yada "));
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, " world"));
+				.isEqualTo(new Segment(NodeType.TAG, " yada } yada "));
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, " world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerOpenBrace() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello { world");
+		Parser tokenizer = createTokenizer("hello { world");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "hello { world"));
+				.isEqualTo(new Segment(NodeType.FIXED, "hello { world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerCloseBrace() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello } world");
+		Parser tokenizer = createTokenizer("hello } world");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "hello } world"));
+				.isEqualTo(new Segment(NodeType.FIXED, "hello } world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerCloseTag() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello %} world");
+		Parser tokenizer = createTokenizer("hello %} world");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "hello %} world"));
+				.isEqualTo(new Segment(NodeType.FIXED, "hello %} world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testFixedInnerCloseEcho() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello }} world");
+		Parser tokenizer = createTokenizer("hello }} world");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "hello }} world"));
+				.isEqualTo(new Segment(NodeType.FIXED, "hello }} world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testEscapedOpenTag() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello {\\{ world");
+		Parser tokenizer = createTokenizer("hello {\\{ world");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "hello {{ world"));
+				.isEqualTo(new Segment(NodeType.FIXED, "hello {{ world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testDoubleEscapedOpenTag() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello {\\\\{ world");
+		Parser tokenizer = createTokenizer("hello {\\\\{ world");
 		assertThat(tokenizer.getNext())
-				.isEqualTo(new Segment(SegmentType.FIXED, "hello {\\{ world"));
+				.isEqualTo(new Segment(NodeType.FIXED, "hello {\\{ world"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testOpenTagEndOfInput() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello {");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "hello {"));
+		Parser tokenizer = createTokenizer("hello {");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "hello {"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testCloseTagEndOfInput() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello }");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "hello }"));
+		Parser tokenizer = createTokenizer("hello }");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "hello }"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
 	@Test
 	public void testPercentEndOfInput() throws CarrotException, IOException {
-		SegmentParser tokenizer = createTokenizer("hello %");
-		assertThat(tokenizer.getNext()).isEqualTo(new Segment(SegmentType.FIXED, "hello %"));
+		Parser tokenizer = createTokenizer("hello %");
+		assertThat(tokenizer.getNext()).isEqualTo(new Segment(NodeType.FIXED, "hello %"));
 		assertThat(tokenizer.getNext()).isNull();
 	}
 
-	private static SegmentParser createTokenizer(String content) {
-		return new SegmentParser(new StringReader(content));
+	private static Parser createTokenizer(String content) {
+		return new Parser(new StringReader(content));
 	}
 
 }

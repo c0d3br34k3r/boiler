@@ -17,7 +17,7 @@ import com.google.common.util.concurrent.ListenableFutureTask;
 
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TemplateParser;
-import au.com.codeka.carrot.tmpl.parse.SegmentParser;
+import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Helper class used to cache parsed template files.
@@ -37,7 +37,7 @@ public class ParseCache {
 					public CacheEntry load(Path key) throws IOException, CarrotException {
 						try (Reader reader = Files.newBufferedReader(key, config.getCharset())) {
 							return new CacheEntry(
-									TemplateParser.parse(new SegmentParser(reader), config),
+									TemplateParser.parse(new Parser(reader), config),
 									Files.getLastModifiedTime(key));
 						}
 					}

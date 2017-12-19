@@ -3,6 +3,9 @@ package au.com.codeka.carrot.tmpl;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.List;
+
+import javax.annotation.Nullable;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
@@ -23,6 +26,8 @@ import au.com.codeka.carrot.tmpl.parse.Segment;
 public class TagNode extends Node {
 
 	private final Tag tag;
+	private final @Nullable List<Node> children;
+	private @Nullable Node nextNode;
 
 	public TagNode(Tag tag) {
 		super(tag.isBlockTag());
@@ -34,7 +39,7 @@ public class TagNode extends Node {
 	 *
 	 * @param segment The {@link Segment} the echo node is going to created
 	 *        from, must have {@link Segment#getType()} of
-	 *        {@link au.com.codeka.carrot.tmpl.parse.SegmentType#ECHO}.
+	 *        {@link au.com.codeka.carrot.tmpl.parse.NodeType#ECHO}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
 	 * @throws CarrotException if there's a problem parsing the segment.
@@ -48,7 +53,7 @@ public class TagNode extends Node {
 	 *
 	 * @param segment The {@link Segment} the node is going to created from,
 	 *        must have {@link Segment#getType()} of
-	 *        {@link au.com.codeka.carrot.tmpl.parse.SegmentType#TAG}.
+	 *        {@link au.com.codeka.carrot.tmpl.parse.NodeType#TAG}.
 	 * @param config The current {@link Configuration}.
 	 * @return A new {@link TagNode}.
 	 * @throws CarrotException if there's a problem parsing the segment.
@@ -70,9 +75,6 @@ public class TagNode extends Node {
 	private static TagNode create(String tagName, String content, Configuration config)
 			throws CarrotException {
 		Tag tag = config.getTagRegistry().createTag(tagName);
-		if (tag == null) {
-			throw new CarrotException(String.format("Invalid tag '%s'", tagName));
-		}
 		try {
 			StatementParser stmtParser =
 					new StatementParser(new Tokenizer(new StringReader(content)));
@@ -83,25 +85,6 @@ public class TagNode extends Node {
 		}
 		return new TagNode(tag);
 	}
-
-	// private static TagNode create(Supplier<Tag> creator, String content,
-	// Configuration config)
-	// throws CarrotException {
-	// Tag tag = config.getTagRegistry().createTag(tagName);
-	// if (tag == null) {
-	// throw new CarrotException(String.format("Invalid tag '%s'", tagName));
-	// }
-	// try {
-	// StatementParser stmtParser =
-	// new StatementParser(new Tokenizer(new StringReader(content)));
-	// tag.parseStatement(stmtParser);
-	// } catch (CarrotException e) {
-	// throw new CarrotException(
-	// "Exception parsing statement for '" + tagName + "' [" + content + "]",
-	// e);
-	// }
-	// return new TagNode(tag);
-	// }
 
 	@Override
 	public boolean canChain(Node nextNode) {

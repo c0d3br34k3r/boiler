@@ -13,6 +13,7 @@ import au.com.codeka.carrot.Bindings;
  *
  * @author Marten Gajda
  */
+@Deprecated
 public final class SingletonBindings implements Bindings, Iterable<EntryBindings> {
 	
 	private final String key;

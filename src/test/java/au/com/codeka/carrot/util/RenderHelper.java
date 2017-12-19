@@ -12,7 +12,7 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.tmpl.TemplateParser;
-import au.com.codeka.carrot.tmpl.parse.SegmentParser;
+import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Helpers for rendering templates in tests.
@@ -29,7 +29,7 @@ public class RenderHelper {
 
 		Configuration config = new Configuration.Builder().build();
 		StringWriter writer = new StringWriter();
-		TemplateParser.parse(new SegmentParser(new StringReader(content)), config)
+		TemplateParser.parse(new Parser(new StringReader(content)), config)
 				.render(new CarrotEngine(config), writer, new Scope(new MapBindings(bindingsMap)));
 		return writer.toString();
 	}

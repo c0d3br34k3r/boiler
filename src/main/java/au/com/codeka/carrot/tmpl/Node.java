@@ -16,15 +16,8 @@ import au.com.codeka.carrot.Scope;
  */
 public abstract class Node {
 
-	private final @Nullable List<Node> children;
-	private @Nullable Node nextNode;
-
 	protected Node(boolean isBlockNode) {
-		if (isBlockNode) {
-			children = new ArrayList<>();
-		} else {
-			children = null;
-		}
+
 	}
 
 	/**

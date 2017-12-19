@@ -23,22 +23,19 @@ public class Configuration {
 
 	private final Charset charset;
 	private final Path dir;
-	private final TagRegistry tagRegistry;
 	private final Logger logger;
-//	private final Escaper escaper;
+	// private final Escaper escaper;
 
 	private Configuration(
 			Charset charset,
 			Path root,
-			TagRegistry.Builder tagRegistryBuilder,
 			Logger logger
-//			, Escaper escaper
-			) {
+	// , Escaper escaper
+	) {
 		this.charset = charset;
 		this.dir = root;
-		this.tagRegistry = tagRegistryBuilder.build(this);
 		this.logger = logger;
-//		this.escaper = escaper;
+		// this.escaper = escaper;
 	}
 
 	public Charset getCharset() {
@@ -49,13 +46,9 @@ public class Configuration {
 		return dir;
 	}
 
-	public TagRegistry getTagRegistry() {
-		return tagRegistry;
-	}
-
-//	public Escaper getEscaper() {
-//		return escaper;
-//	}
+	// public Escaper getEscaper() {
+	// return escaper;
+	// }
 
 	public Logger getLogger() {
 		return logger;
@@ -65,13 +58,12 @@ public class Configuration {
 
 		private Charset charset;
 		private Path dir;
-		private TagRegistry.Builder tagRegistryBuilder;
 		private Logger logger;
-//		private Escaper escaper;
+		// private Escaper escaper;
 
 		public Builder() {
 			charset = StandardCharsets.UTF_8;
-//			escaper = Escapers.nullEscaper();
+			// escaper = Escapers.nullEscaper();
 		}
 
 		public Builder setCharset(Charset charset) {
@@ -84,35 +76,31 @@ public class Configuration {
 			return this;
 		}
 
-		public Builder setTagRegistry(TagRegistry.Builder tagRegistryBuilder) {
-			this.tagRegistryBuilder = tagRegistryBuilder;
-			return this;
-		}
-
-//		/**
-//		 * Sets whether or not you want to automatically escape all variable
-//		 * output.
-//		 *
-//		 * <p>
-//		 * By default, all variables are HTML-escaped. You can explicitly mark
-//		 * output as "safe" for output by passing it through html.safe(), as in:
-//		 *
-//		 * <pre>
-//		 * <code>{{ html.safe("Some &lt;b&gt;HTML&lt;/b&gt; here") }}</code>
-//		 * </pre>
-//		 *
-//		 * Without the call to <code>html.safe</code>, the above would have
-//		 * output "Some &amp;lt;b&amp;gt;HTML&amp;lt;/b&gt; here".
-//		 *
-//		 * @param value If true, output will be automatically HTML-escaped. If
-//		 *        false, it would be as if all output is wrapped in
-//		 *        <code>html.safe()</code> by default.
-//		 * @return The current {@link Builder}.
-//		 */
-//		public Builder setEscaper(Escaper escaper) {
-//			this.escaper = escaper;
-//			return this;
-//		}
+		// /**
+		// * Sets whether or not you want to automatically escape all variable
+		// * output.
+		// *
+		// * <p>
+		// * By default, all variables are HTML-escaped. You can explicitly mark
+		// * output as "safe" for output by passing it through html.safe(), as
+		// in:
+		// *
+		// * <pre>
+		// * <code>{{ html.safe("Some &lt;b&gt;HTML&lt;/b&gt; here") }}</code>
+		// * </pre>
+		// *
+		// * Without the call to <code>html.safe</code>, the above would have
+		// * output "Some &amp;lt;b&amp;gt;HTML&amp;lt;/b&gt; here".
+		// *
+		// * @param value If true, output will be automatically HTML-escaped. If
+		// * false, it would be as if all output is wrapped in
+		// * <code>html.safe()</code> by default.
+		// * @return The current {@link Builder}.
+		// */
+		// public Builder setEscaper(Escaper escaper) {
+		// this.escaper = escaper;
+		// return this;
+		// }
 
 		public Builder setLogger(Logger logger) {
 			this.logger = logger;
@@ -122,9 +110,7 @@ public class Configuration {
 		public Configuration build() {
 			return new Configuration(
 					charset,
-					dir == null ? null
-							: dir,
-					tagRegistryBuilder == null ? new TagRegistry.Builder() : tagRegistryBuilder,
+					dir == null ? null : dir,
 					logger);
 		}
 	}

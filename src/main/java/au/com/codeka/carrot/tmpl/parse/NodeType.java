@@ -1,11 +1,10 @@
 package au.com.codeka.carrot.tmpl.parse;
 
-public enum SegmentType {
+public enum NodeType {
 
-//	UNKNOWN,
+	COMMENT,
 	FIXED,
 	TAG,
-	ECHO,
-	COMMENT;
+	ECHO;
 
 }
