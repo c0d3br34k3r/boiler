@@ -11,8 +11,8 @@ import au.com.codeka.carrot.tag.EndTag;
 import au.com.codeka.carrot.tag.ForTag;
 import au.com.codeka.carrot.tag.IfTag;
 import au.com.codeka.carrot.tag.IncludeTag;
-import au.com.codeka.carrot.tag.SetTag;
 import au.com.codeka.carrot.tag.Tag;
+import au.com.codeka.carrot.tmpl.SetNode;
 
 /**
  * Contains a collection of tags that will be matched when parsing a template.
@@ -55,7 +55,7 @@ public enum TagType {
 
 		@Override
 		public Tag create() {
-			return new SetTag();
+			return new SetNode();
 		}
 	},
 

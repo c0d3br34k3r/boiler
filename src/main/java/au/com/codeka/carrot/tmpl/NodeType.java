@@ -1,4 +1,4 @@
-package au.com.codeka.carrot.tmpl.parse;
+package au.com.codeka.carrot.tmpl;
 
 public enum NodeType {
 

@@ -10,6 +10,8 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.expr.Term;
+import au.com.codeka.carrot.expr.UnaryOperator;
+import au.com.codeka.carrot.expr.UnaryTerm;
 
 /**
  * @author Marten Gajda

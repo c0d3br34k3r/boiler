@@ -11,8 +11,8 @@ import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.MapBindings;
+import au.com.codeka.carrot.tmpl.Parser;
 import au.com.codeka.carrot.tmpl.TemplateParser;
-import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Helpers for rendering templates in tests.

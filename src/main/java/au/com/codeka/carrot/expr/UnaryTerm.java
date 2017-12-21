@@ -1,9 +1,8 @@
-package au.com.codeka.carrot.expr.unary;
+package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.expr.Term;
 
 /**
  * An unary {@link Term}. It has an {@link UnaryOperator} and a {@link Term} to
@@ -11,7 +10,7 @@ import au.com.codeka.carrot.expr.Term;
  *
  * @author Marten Gajda
  */
-public final class UnaryTerm implements Term {
+class UnaryTerm implements Term {
 
 	private final UnaryOperator operator;
 	private final Term term;

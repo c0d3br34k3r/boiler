@@ -16,8 +16,8 @@ import au.com.codeka.carrot.helpers.HtmlHelper;
 import au.com.codeka.carrot.resource.ResourceLocator;
 import au.com.codeka.carrot.resource.ResourceName;
 import au.com.codeka.carrot.tmpl.Node;
+import au.com.codeka.carrot.tmpl.Parser;
 import au.com.codeka.carrot.tmpl.TemplateParser;
-import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * {@link CarrotEngine} is the root of the carrot system. You create an instance

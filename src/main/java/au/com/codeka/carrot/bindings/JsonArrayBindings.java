@@ -1,13 +1,8 @@
 package au.com.codeka.carrot.bindings;
 
-import java.util.Iterator;
+import java.util.AbstractList;
 
-import javax.annotation.Nonnull;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Iterators;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 
 import au.com.codeka.carrot.Bindings;
 import au.com.codeka.carrot.ValueHelper;
@@ -17,7 +12,7 @@ import au.com.codeka.carrot.ValueHelper;
  *
  * @author Marten Gajda
  */
-public final class JsonArrayBindings implements Bindings, Iterable<Object> {
+public final class JsonArrayBindings extends AbstractList<Object> {
 
 	private final JsonArray jsonArray;
 
@@ -26,24 +21,13 @@ public final class JsonArrayBindings implements Bindings, Iterable<Object> {
 	}
 
 	@Override
-	public Object resolve(@Nonnull String key) {
-		return ValueHelper.jsonHelper(jsonArray.get(Integer.parseInt(key)));
+	public Object get(int index) {
+		return ValueHelper.jsonHelper(jsonArray.get(index));
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return jsonArray.size() == 0;
-	}
-
-	@Override
-	public Iterator<Object> iterator() {
-		return Iterators.transform(jsonArray.iterator(), new Function<JsonElement, Object>() {
-
-			@Override
-			public Object apply(JsonElement input) {
-				return ValueHelper.jsonHelper(input);
-			}
-		});
+	public int size() {
+		return jsonArray.size();
 	}
 
 }

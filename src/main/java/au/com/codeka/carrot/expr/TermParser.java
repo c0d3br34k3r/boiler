@@ -7,7 +7,7 @@ import au.com.codeka.carrot.CarrotException;
  *
  * @author Marten Gajda
  */
-public interface TermParser {
+interface TermParser {
 
 	/**
 	 * Return the next {@link Term} from the given {@link Tokenizer}.

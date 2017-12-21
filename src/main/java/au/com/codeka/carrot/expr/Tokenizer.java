@@ -5,9 +5,6 @@ import java.io.PushbackReader;
 import java.io.Reader;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.google.common.base.CharMatcher;
 
 import au.com.codeka.carrot.CarrotException;
@@ -17,13 +14,20 @@ import au.com.codeka.carrot.CarrotException;
  */
 public class Tokenizer {
 
-	private final PushbackReader reader;
+	public enum EndMode {
+		STREAM,
+		TAG,
+		ECHO;
+	}
+
+	private PushbackReader reader;
+	private EndMode endMode;
 	private Token next;
 
 	public Tokenizer(Reader reader) throws CarrotException {
 		this(new PushbackReader(reader));
 	}
-	
+
 	public Tokenizer(PushbackReader reader) throws CarrotException {
 		this.reader = new PushbackReader(reader);
 		next();
@@ -36,7 +40,6 @@ public class Tokenizer {
 	 * @param type the type to match against
 	 * @return true if the next token matches the given type
 	 */
-	@Deprecated
 	public boolean check(TokenType type) {
 		return type == next.getType();
 	}
@@ -48,7 +51,6 @@ public class Tokenizer {
 	 * @param types the types to match against
 	 * @return true if the next token matches one of the given types
 	 */
-	@Deprecated
 	public boolean check(Set<TokenType> types) {
 		return types.contains(next.getType());
 	}
@@ -61,14 +63,12 @@ public class Tokenizer {
 	 * @throws CarrotException if there's an error parsing the token, or if it
 	 *         doesn't match the given type
 	 */
-	@Nonnull
 	public Token get(TokenType type) throws CarrotException {
-		Token token = tryGet(type);
-		if (token == null) {
-			throw new CarrotException(
-					"Expected token of type " + type + ", got " + next.getType());
+		if (check(type)) {
+			return next();
 		}
-		return token;
+		throw new CarrotException(
+				"Expected token of type " + type + ", got " + next.getType());
 	}
 
 	/**
@@ -80,64 +80,38 @@ public class Tokenizer {
 	 * @throws CarrotException if there's an error parsing the token, or if it
 	 *         doesn't matches any of the given types
 	 */
-	@Nonnull
 	public Token get(Set<TokenType> types) throws CarrotException {
-		Token token = tryGet(types);
-		if (token == null) {
-			throw new CarrotException(
-					"Expected token of type " + types + ", got " + next.getType());
+		if (check(types)) {
+			return next();
 		}
-		return token;
+		throw new CarrotException(
+				"Expected token of type " + types + ", got " + next.getType());
 	}
 
-	/**
-	 * Returns the next token if it matches the given type, or else leaves it in
-	 * place and returns null.
-	 *
-	 * @param type the type to match against
-	 * @return the next token
-	 * @throws CarrotException if there's an error parsing the token
-	 */
-	@Nullable
-	public Token tryGet(TokenType type) throws CarrotException {
-		if (type == next.getType()) {
-			return advance();
+	public Token next() throws CarrotException {
+		// TODO: ???
+		if (next.getType() == TokenType.EOF) {
+			return next;
 		}
-		return null;
-	}
-
-	/**
-	 * Returns the next token if it matches one of the given types, or else
-	 * leaves it in place and returns null.
-	 *
-	 * @param types the types to match against
-	 * @return the next token
-	 * @throws CarrotException if there's an error parsing the token
-	 */
-	@Nullable
-	public Token tryGet(Set<TokenType> types) throws CarrotException {
-		if (types.contains(next.getType())) {
-			return advance();
-		}
-		return null;
-	}
-
-	/**
-	 * Consumes the next token and returns true if it matches the given type, or
-	 * else returns false.
-	 *
-	 * @param type the type to match against
-	 * @return true if the next token matches the given type
-	 * @throws CarrotException if there's an error parsing the token
-	 */
-	public boolean tryConsume(TokenType type) throws CarrotException {
-		return tryGet(type) != null;
-	}
-
-	private Token advance() throws CarrotException {
 		Token token = next;
-		next();
+		try {
+			int ch;
+			do {
+				ch = reader.read();
+			} while (CharMatcher.whitespace().matches((char) ch));
+			next = getToken(ch);
+		} catch (IOException e) {
+			throw new CarrotException(e);
+		}
 		return token;
+	}
+
+	public Term parseExpression() throws CarrotException {
+		return ExpressionParser.parse(this);
+	}
+
+	public String parseIdentifier() throws CarrotException {
+		return (String) get(TokenType.IDENTIFIER).getValue();
 	}
 
 	private static final CharMatcher NUMBER;
@@ -153,22 +127,9 @@ public class Tokenizer {
 		IDENTIFIER_PART = IDENTIFIER_START.or(digit);
 	}
 
-	private void next() throws CarrotException {
-		try {
-			int ch;
-			do {
-				ch = reader.read();
-			} while (CharMatcher.whitespace().matches((char) ch));
-			next = getToken(ch);
-		} catch (IOException e) {
-			throw new CarrotException(e);
-		}
-	}
-
 	private Token getToken(int ch) throws CarrotException, IOException {
 		switch (ch) {
 			// @formatter:off
-			case -1:  return Token.EOF;
 			case '(': return Token.LEFT_PARENTHESIS;
 			case ')': return Token.RIGHT_PARENTHESIS;
 			case '[': return Token.LEFT_BRACKET;
@@ -180,17 +141,19 @@ public class Tokenizer {
 			case '-': return Token.MINUS;
 			case '*': return Token.MULTIPLY;
 			case '/': return Token.DIVIDE;
-			case '&': return required('&', Token.LOGICAL_AND);
-			case '|': return required('|', Token.LOGICAL_OR);
-			case '=': return either('=', Token.EQUAL, Token.ASSIGNMENT);
-			case '!': return either('=', Token.NOT_EQUAL, Token.NOT);
-			case '<': return either('=', Token.LESS_THAN_OR_EQUAL, Token.LESS_THAN);
-			case '>': return either('=', Token.GREATER_THAN_OR_EQUAL, Token.GREATER_THAN);
-			case '%': return required('>', Token.EOF);
+			case '&': return requireNext('&', Token.LOGICAL_AND);
+			case '|': return requireNext('|', Token.LOGICAL_OR);
+			case '=': return checkNext('=', Token.EQUAL, Token.ASSIGNMENT);
+			case '!': return checkNext('=', Token.NOT_EQUAL, Token.NOT);
+			case '<': return checkNext('=', Token.LESS_THAN_OR_EQUAL, Token.LESS_THAN);
+			case '>': return checkNext('=', Token.GREATER_THAN_OR_EQUAL, Token.GREATER_THAN);
+			case '%': return checkEndTag();
 			// @formatter:on
 			case '"':
 			case '\'':
 				return readString((char) ch);
+			case -1:
+				return eof(EndMode.STREAM);
 			default:
 		}
 		if (NUMBER.matches((char) ch)) {
@@ -260,14 +223,14 @@ public class Tokenizer {
 		return builder.toString();
 	}
 
-	private Token required(char required, Token token) throws IOException, CarrotException {
+	private Token requireNext(char required, Token token) throws IOException, CarrotException {
 		if (reader.read() != required) {
 			throw new CarrotException("expected " + required);
 		}
 		return token;
 	}
 
-	private Token either(char match, Token ifMatch, Token ifNotMatch) throws IOException {
+	private Token checkNext(char match, Token ifMatch, Token ifNotMatch) throws IOException {
 		int ch = reader.read();
 		if (ch == match) {
 			return ifMatch;
@@ -276,6 +239,20 @@ public class Tokenizer {
 			reader.unread(ch);
 		}
 		return ifNotMatch;
+	}
+
+	private Token checkEndTag() throws IOException, CarrotException {
+		if (reader.read() != '>') {
+			throw new CarrotException("expected " + '>');
+		}
+		return eof(EndMode.TAG);
+	}
+
+	private Token eof(EndMode end) throws CarrotException {
+		if (end != endMode) {
+			throw new CarrotException("expected end mode " + endMode + " but got " + end);
+		}
+		return Token.EOF;
 	}
 
 	// private char readEscapeCharacter() throws IOException, CarrotException {

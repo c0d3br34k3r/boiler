@@ -11,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.tmpl.NodeType;
+import au.com.codeka.carrot.tmpl.Parser;
 
 /**
  * Tests for {@link Parser}.

@@ -9,20 +9,19 @@ import au.com.codeka.carrot.Scope;
  *
  * @author Marten Gajda
  */
-public final class LazyTerm implements Lazy {
+class LazyValue {
 
 	private final Configuration config;
 	private final Scope scope;
 	private final Term term;
 
-	public LazyTerm(Configuration config, Scope scope, Term term) {
+	LazyValue(Configuration config, Scope scope, Term term) {
 		this.config = config;
 		this.scope = scope;
 		this.term = term;
 	}
 
-	@Override
-	public Object value() throws CarrotException {
+	Object value() throws CarrotException {
 		return term.evaluate(config, scope);
 	}
 

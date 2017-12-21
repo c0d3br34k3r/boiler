@@ -16,8 +16,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
 
 import au.com.codeka.carrot.tmpl.Node;
+import au.com.codeka.carrot.tmpl.Parser;
 import au.com.codeka.carrot.tmpl.TemplateParser;
-import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Helper class used to cache parsed template files.

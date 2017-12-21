@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 
 import au.com.codeka.carrot.bindings.Composite;
 import au.com.codeka.carrot.bindings.SingletonBindings;
+import au.com.codeka.carrot.expr.BinaryOperator;
 import au.com.codeka.carrot.util.MockLazyTerm;
 
 /**

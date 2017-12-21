@@ -10,9 +10,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.tmpl.SetNode;
 
 /**
- * Tests for {@link SetTag}.
+ * Tests for {@link SetNode}.
  */
 @RunWith(JUnit4.class)
 public class SetTagHelper {

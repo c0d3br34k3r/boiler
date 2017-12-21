@@ -5,7 +5,6 @@ import java.io.IOException;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.tmpl.parse.Segment;
-import au.com.codeka.carrot.tmpl.parse.Parser;
 
 /**
  * Parses a stream of {@link Segment}s into a tree of {@link Node}s.
@@ -58,12 +57,12 @@ public class TemplateParser {
 						childNode = tagNode;
 					}
 				case FIXED:
-					childNode = FixedNode.create(token);
+					childNode = TextNode.create(token);
 					break;
 				default:
 					throw new IllegalStateException("Unknown token type: " + token.getType());
 			}
-			if (childNode.isBlockNode()) {
+			if (childNode.isBlock()) {
 				parse(parser, childNode, config);
 			}
 			current.add(childNode);

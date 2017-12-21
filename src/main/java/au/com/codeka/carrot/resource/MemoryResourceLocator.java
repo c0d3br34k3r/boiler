@@ -14,6 +14,7 @@ import au.com.codeka.carrot.Configuration;
  * A simple {@link ResourceLocator} that just keeps stuff in memory.
  */
 public class MemoryResourceLocator implements ResourceLocator {
+
 	private final Map<String, String> resources;
 
 	/**

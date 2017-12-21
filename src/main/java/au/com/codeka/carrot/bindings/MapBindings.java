@@ -1,5 +1,6 @@
 package au.com.codeka.carrot.bindings;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,6 +20,10 @@ public final class MapBindings implements Bindings, Iterable<EntryBindings> {
 
 	public static Builder newBuilder() {
 		return new Builder();
+	}
+
+	public MapBindings(String key, Object value) {
+		this(Collections.singletonMap(key, value));
 	}
 
 	public MapBindings(Map<String, Object> values) {

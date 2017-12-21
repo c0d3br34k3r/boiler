@@ -104,7 +104,7 @@ public class ValueHelper {
 				"cannot convert " + value + " (" + value.getClass() + ") to a number.");
 	}
 
-	static Number parseNumber(String value) {
+	private static Number parseNumber(String value) {
 		if (value.contains(".")) {
 			return Double.parseDouble(value);
 		}

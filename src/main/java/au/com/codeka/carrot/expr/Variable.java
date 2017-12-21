@@ -1,19 +1,14 @@
-package au.com.codeka.carrot.expr.values;
+package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.expr.Term;
 
 /**
- * A {@link Term} decorator which evaluates the value of the decorated term to a
- * bound variable of the current scope.
- *
- * @author Marten Gajda
+ * A {@link Term} that evaluates the bound value of the identifier.
  */
-public final class Variable implements Term {
+class Variable implements Term {
 
-	// TODO: What???
 	private final String name;
 
 	public Variable(String name) {

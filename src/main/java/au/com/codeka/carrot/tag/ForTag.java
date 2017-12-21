@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 
-import au.com.codeka.carrot.Bindings;
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.ValueHelper;
 import au.com.codeka.carrot.bindings.Composite;
 import au.com.codeka.carrot.bindings.LoopBindings;
-import au.com.codeka.carrot.bindings.SingletonBindings;
+import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.TokenType;
@@ -53,13 +52,12 @@ public class ForTag extends Tag {
 		Collection<?> items =
 				ValueHelper.toCollection(loopExpression.evaluate(engine.getConfig(), scope));
 		int i = 0;
-
 		for (Object item : items) {
-			Bindings loopItem = new SingletonBindings(loopIdentifier, item);
 			// make bindings mutable?
-			scope.push(new Composite(loopItem,
-					new SingletonBindings("loop", new LoopBindings(items.size(), i++))));
-			tagNode.renderChildren(engine, writer, scope);
+			scope.push(new Composite(
+					new MapBindings(loopIdentifier, item),
+					new MapBindings("loop", new LoopBindings(items.size(), i++))));
+			tagNode.render(engine, writer, scope);
 			scope.pop();
 		}
 		// If we have an else block and the collection was empty, render the
