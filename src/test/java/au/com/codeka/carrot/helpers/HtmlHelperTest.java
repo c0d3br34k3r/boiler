@@ -1,10 +1,11 @@
 package au.com.codeka.carrot.helpers;
 
-import au.com.codeka.carrot.CarrotException;
-import org.junit.Test;
-
 import static au.com.codeka.carrot.util.RenderHelper.render;
 import static com.google.common.truth.Truth.assertThat;
+
+import org.junit.Test;
+
+import au.com.codeka.carrot.CarrotException;
 
 /**
  * Tests for {@link HtmlHelper}.

@@ -9,7 +9,6 @@ import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.ValueHelper;
-import au.com.codeka.carrot.expr.Identifier;
 import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.tmpl.Node;
@@ -50,14 +49,15 @@ public class ElseTag extends Tag {
 	}
 
 	@Override
-	public void parseStatement(StatementParser stmtParser) throws CarrotException {
-		Identifier identifier = stmtParser.tryParseIdentifier();
-		if (identifier != null) {
-			if (!identifier.evaluate().equalsIgnoreCase("if")) {
+	public void parseStatement(StatementParser parser) throws CarrotException {
+		String ifToken = parser.tryParseIdentifier();
+		if (ifToken != null) {
+			if (!ifToken.equals("if")) {
 				throw new CarrotException("Expected 'if' after 'else'.");
 			}
-			expr = stmtParser.parseTerm();
+			expr = parser.parseExpression();
 		}
+		parser.parseEnd();
 	}
 
 	@Override

@@ -1,12 +1,12 @@
 package au.com.codeka.carrot.bindings;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertThat;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
 
 /**
  * @author marten

@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -19,7 +17,6 @@ import com.google.gson.JsonPrimitive;
 
 import au.com.codeka.carrot.bindings.JsonArrayBindings;
 import au.com.codeka.carrot.bindings.JsonObjectBindings;
-import au.com.codeka.carrot.util.SafeString;
 
 /**
  * Various helpers for working with {@link Object}s.
@@ -30,10 +27,10 @@ public class ValueHelper {
 	 * Does the given value represent "true". For example, it's a Boolean that's
 	 * true, a non-zero integer, etc.
 	 *
-	 * @param value The value to test.
-	 * @return True if the value is "true-ish", false otherwise.
-	 * @throws CarrotException When the value cannot be determined to be true or
-	 *         false.
+	 * @param value the value to test
+	 * @return true if the value is thruthy, false otherwise
+	 * @throws CarrotException when the value cannot be determined to be true or
+	 *         false
 	 */
 	public static boolean isTrue(Object value) throws CarrotException {
 		if (value == null) {
@@ -51,6 +48,7 @@ public class ValueHelper {
 		if (value instanceof CharSequence) {
 			return ((CharSequence) value).length() > 0;
 		}
+		// these truthy values deviate from JavaScript's behavior
 		if (value instanceof Collection) {
 			return !((Collection<?>) value).isEmpty();
 		}
@@ -69,29 +67,19 @@ public class ValueHelper {
 	}
 
 	/**
-	 * Returns the "negative" of the given value. For example, if you pass in
-	 * "1" then "-1" is returned, etc.
+	 * Returns the negative of the given value. For example, if you pass in 1
+	 * then -1 is returned, etc.
 	 *
 	 * @param value The value to negate.
 	 * @return The negated value.
-	 * @throws CarrotException Thrown if the value can't be converted to a
-	 *         number.
+	 * @throws CarrotException if the value can't be converted to a number
 	 */
 	public static Number negate(Object value) throws CarrotException {
 		Number num = toNumber(value);
 		if (num instanceof Integer) {
-			return -((Integer) num);
+			return -num.intValue();
 		}
-		if (num instanceof Long) {
-			return -((Long) num);
-		}
-		if (num instanceof Float) {
-			return -((Float) num);
-		}
-		if (num instanceof Double) {
-			return -((Double) num);
-		}
-		throw new CarrotException("Value '" + value + "' cannot be negated.");
+		return -num.doubleValue();
 	}
 
 	/**
@@ -109,14 +97,18 @@ public class ValueHelper {
 		if (value instanceof String) {
 			return parseNumber((String) value);
 		}
-		throw new CarrotException("Cannot convert '" + value + "' to a number.");
+		if (value instanceof Boolean) {
+			return (Boolean) value ? 1 : 0;
+		}
+		throw new CarrotException(
+				"cannot convert " + value + " (" + value.getClass() + ") to a number.");
 	}
 
-	static Number parseNumber(String value) {
+	private static Number parseNumber(String value) {
 		if (value.contains(".")) {
 			return Double.parseDouble(value);
 		}
-		return Long.parseLong(value);
+		return Integer.parseInt(value);
 	}
 
 	/**
@@ -130,19 +122,16 @@ public class ValueHelper {
 	 * @throws CarrotException Thrown is either of the values can't be converted
 	 *         to a number.
 	 */
-	public static Number add(Object o1, Object o2) throws CarrotException {
+	public static Object add(Object o1, Object o2) throws CarrotException {
+		if (o1 instanceof String || o2 instanceof String) {
+			return o1.toString() + o2.toString();
+		}
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Double || n2 instanceof Double) {
-			return n1.doubleValue() + n2.doubleValue();
-		} else if (n1 instanceof Float || n2 instanceof Float) {
-			return n1.floatValue() + n2.floatValue();
-		} else if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() + n2.longValue();
-		} else if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() + n2.longValue();
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return n1.intValue() + n2.intValue();
 		}
-		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
+		return n1.doubleValue() + n2.doubleValue();
 	}
 
 	/**
@@ -158,16 +147,10 @@ public class ValueHelper {
 	public static Number divide(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Double || n2 instanceof Double) {
-			return n1.doubleValue() / n2.doubleValue();
-		} else if (n1 instanceof Float || n2 instanceof Float) {
-			return n1.floatValue() / n2.floatValue();
-		} else if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() / n2.longValue();
-		} else if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() / n2.longValue();
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return n1.intValue() / n2.intValue();
 		}
-		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
+		return n1.doubleValue() / n2.doubleValue();
 	}
 
 	/**
@@ -183,16 +166,10 @@ public class ValueHelper {
 	public static Number multiply(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Double || n2 instanceof Double) {
-			return n1.doubleValue() * n2.doubleValue();
-		} else if (n1 instanceof Float || n2 instanceof Float) {
-			return n1.floatValue() * n2.floatValue();
-		} else if (n1 instanceof Long || n2 instanceof Long) {
-			return n1.longValue() * n2.longValue();
-		} else if (n1 instanceof Integer || n2 instanceof Integer) {
-			return n1.longValue() * n2.longValue();
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return n1.intValue() * n2.intValue();
 		}
-		throw new CarrotException("Unknown number type '" + o1 + "' or '" + o2 + "'.");
+		return n1.doubleValue() * n2.doubleValue();
 	}
 
 	/**
@@ -200,30 +177,30 @@ public class ValueHelper {
 	 * If the value is itself an array or a list then it's just returned
 	 * in-place. Otherwise it will be converted to an {@link ArrayList}.
 	 *
-	 * @param iterable The value to "iterate".
+	 * @param collection The value to "iterate".
 	 * @return A {@link List} that can actually be iterated.
 	 * @throws CarrotException If the value is not iterable.
 	 */
-	public static Collection<?> iterate(final Object iterable) throws CarrotException {
-		if (iterable == null) {
+	public static Collection<?> toCollection(final Object collection) throws CarrotException {
+		if (collection == null) {
 			return Collections.emptySet();
 		}
-		if (iterable instanceof Collection) {
-			return (Collection<?>) iterable;
+		if (collection instanceof Collection) {
+			return (Collection<?>) collection;
 		}
-		if (iterable instanceof Iterable) {
-			return Lists.newArrayList((Iterable<?>) iterable);
+		if (collection instanceof Iterable) {
+			return ImmutableList.copyOf((Iterable<?>) collection);
 		}
-		if (iterable instanceof Map) {
-			return ((Map<?, ?>) iterable).keySet();
+		if (collection instanceof Map) {
+			return ((Map<?, ?>) collection).keySet();
 		}
-		if (iterable.getClass().isArray()) {
-			final int length = Array.getLength(iterable);
+		if (collection.getClass().isArray()) {
+			final int length = Array.getLength(collection);
 			return new AbstractList<Object>() {
-				
+
 				@Override
 				public Object get(int index) {
-					return Array.get(iterable, index);
+					return Array.get(collection, index);
 				}
 
 				@Override
@@ -232,7 +209,8 @@ public class ValueHelper {
 				}
 			};
 		}
-		throw new CarrotException("Unable to iterate '" + iterable + "'");
+		throw new CarrotException(
+				"not iterable: " + collection + " (" + collection.getClass() + ")");
 	}
 
 	/**
@@ -264,39 +242,10 @@ public class ValueHelper {
 	public static int compare(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);
-		if (n1 instanceof Double || n2 instanceof Double) {
-			return Double.compare(n1.doubleValue(), n2.doubleValue());
-		}
-		if (n1 instanceof Float || n2 instanceof Float) {
-			return Float.compare(n1.floatValue(), n2.floatValue());
-		}
-		if (n1 instanceof Long || n2 instanceof Long) {
-			return Long.compare(n1.longValue(), n2.longValue());
-		}
-		if (n1 instanceof Integer || n2 instanceof Integer) {
+		if (n1 instanceof Integer && n2 instanceof Integer) {
 			return Integer.compare(n1.intValue(), n2.intValue());
 		}
-		throw new CarrotException("Unknown number type.");
-	}
-
-	/**
-	 * Performs HTML-escaping of the given value.
-	 *
-	 * @param value The value to escape. If the value is {@link SafeString},
-	 *        then no escaping will be done.
-	 * @return The HTML-escaped version of the string.
-	 */
-	// TODO: without pulling in any other deps (e.g. Jakarta Commons) is this as
-	// comprehensive as it needs to be?
-	public static String escape(@Nullable Object value) {
-		if (value == null) {
-			return "";
-		}
-		if (value instanceof SafeString) {
-			return value.toString();
-		}
-		String unescaped = value.toString();
-		return unescaped.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		return Double.compare(n1.doubleValue(), n2.doubleValue());
 	}
 
 	public static Object jsonHelper(Object object) {

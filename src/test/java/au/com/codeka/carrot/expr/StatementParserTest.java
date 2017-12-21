@@ -1,56 +1,69 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.resource.ResourcePointer;
-import au.com.codeka.carrot.util.LineReader;
+import static com.google.common.truth.Truth.assertThat;
+
+import java.io.StringReader;
+import java.util.Collections;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.io.StringReader;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
-import static com.google.common.truth.Truth.assertThat;
+import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.Configuration;
+import au.com.codeka.carrot.Scope;
+import au.com.codeka.carrot.bindings.MapBindings;
 
 /**
  * Tests for {@link StatementParserTest}.
  */
 @RunWith(JUnit4.class)
 public class StatementParserTest {
+
 	@Test
 	public void testBinaryOperation() throws CarrotException {
-		assertThat(evaluate(createStatementParser("1+1").parseTerm())).isEqualTo(2);
-		assertThat(evaluate(createStatementParser("1+1+1").parseTerm())).isEqualTo(3);
-		assertThat(evaluate(createStatementParser("1+1+1+1").parseTerm())).isEqualTo(4);
-		assertThat(evaluate(createStatementParser("1").parseTerm())).isEqualTo(1);
-		assertThat(evaluate(createStatementParser("!1").parseTerm())).isEqualTo(false);
-		assertThat(evaluate(createStatementParser("!!1").parseTerm())).isEqualTo(true);
-		assertThat(evaluate(createStatementParser("!!!1").parseTerm())).isEqualTo(false);
+		assertThat(evaluate("+true")).isEqualTo(1);
+		assertThat(evaluate("1+1")).isEqualTo(2);
+		assertThat(evaluate("1+1+1")).isEqualTo(3);
+		assertThat(evaluate("1+1+1+1")).isEqualTo(4);
+		assertThat(evaluate("1")).isEqualTo(1);
+		assertThat(evaluate("!1")).isEqualTo(false);
+		assertThat(evaluate("!!1")).isEqualTo(true);
+		assertThat(evaluate("!!!1")).isEqualTo(false);
+		assertThat(evaluate("2 + 2 * 2")).isEqualTo(6);
+		assertThat(evaluate("2 * 2 + 2")).isEqualTo(6);
+		assertThat(evaluate("2 * (2 + 2)")).isEqualTo(8);
+		assertThat(evaluate("foo[4 + 4]")).isEqualTo(7);
+		assertThat(evaluate("foo[6] * 2")).isEqualTo(14);
+		assertThat(evaluate("bar.baz")).isEqualTo("qux");
+		assertThat(evaluate("quux.quuz.corge")).isEqualTo("grault");
+		assertThat(evaluate("quux['qu' + 'uz']['corge']")).isEqualTo("grault");
+		assertThat(evaluate("quux['quuz']['garply'][0]")).isEqualTo(3);
+		assertThat(evaluate("'1' + 1")).isEqualTo("11");
+		assertThat(evaluate("'foo' + 'bar'")).isEqualTo("foobar");
+		assertThat(evaluate("true + 'bar'")).isEqualTo("truebar");
+		assertThat(evaluate("true + 9")).isEqualTo(10);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testIterableTerms() throws CarrotException {
-		assertThat((Iterable<Object>) evaluate(createStatementParser("1, 2").parseTermsIterable()))
-				.containsAllOf(1L, 2L);
-		assertThat(
-				(Iterable<Object>) evaluate(createStatementParser("1, 2, 3").parseTermsIterable()))
-						.containsAllOf(1L, 2L, 3L);
-		assertThat((Iterable<Object>) evaluate(
-				createStatementParser("1, 2 + 5, \"3\", 4").parseTermsIterable())).containsAllOf(1L,
-						7L, "3", 4L);
+	private Object evaluate(String expr) throws CarrotException {
+		return evaluate(createParser(expr).parseExpression());
 	}
 
-	private StatementParser createStatementParser(String str) throws CarrotException {
-		return new StatementParser(
-				new Tokenizer(new LineReader(new ResourcePointer(null), new StringReader(str))));
+	private StatementParser createParser(String str) throws CarrotException {
+		return new StatementParser(new Tokenizer(new StringReader(str)));
 	}
 
 	private Object evaluate(Term term) throws CarrotException {
+		System.out.println(term);
 		return term.evaluate(
 				new Configuration.Builder().build(),
-				new Scope(new EmptyBindings()));
+				new Scope(new MapBindings(ImmutableMap.<String, Object> of("foo",
+						Collections.nCopies(10, 7), "bar", ImmutableMap.of("baz", "qux"), "quux",
+						ImmutableMap.of("quuz", ImmutableMap.of("corge", "grault", "garply",
+								ImmutableList.of(3)))))));
 	}
+
 }

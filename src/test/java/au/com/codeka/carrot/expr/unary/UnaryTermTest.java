@@ -10,6 +10,8 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.expr.Term;
+import au.com.codeka.carrot.expr.UnaryOperator;
+import au.com.codeka.carrot.expr.UnaryTerm;
 
 /**
  * @author Marten Gajda
@@ -18,7 +20,7 @@ public class UnaryTermTest {
 	@Test
 	public void testEvaluate() throws Exception {
 		final Configuration testConfiguration = new Configuration.Builder().build();
-		final Scope testScope = new Scope(new EmptyBindings());
+		final Scope testScope = new Scope(EmptyBindings.INSTANCE);
 		final Object testValue = new Object();
 		final Object testResult = new Object();
 

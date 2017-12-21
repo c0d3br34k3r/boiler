@@ -1,12 +1,12 @@
 package au.com.codeka.carrot.tag;
 
-import static au.com.codeka.carrot.util.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
 import javax.annotation.Nullable;
+
+import com.google.common.base.Preconditions;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
@@ -34,6 +34,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * </pre>
  */
 public class IncludeTag extends Tag {
+
 	private Term templateNameExpr;
 	@Nullable
 	private List<Identifier> identifiers;
@@ -42,12 +43,12 @@ public class IncludeTag extends Tag {
 
 	@Override
 	public void parseStatement(StatementParser stmtParser) throws CarrotException {
-		templateNameExpr = stmtParser.parseTerm();
+		templateNameExpr = stmtParser.parseExpression();
 
-		identifiers = stmtParser.maybeParseIdentifierList();
+		identifiers = stmtParser.tryParseIdentifierList();
 		if (identifiers != null) {
-			stmtParser.parseToken(TokenType.ASSIGNMENT);
-			expression = stmtParser.parseTerm();
+			stmtParser.get(TokenType.ASSIGNMENT);
+			expression = stmtParser.parseExpression();
 		}
 	}
 
@@ -61,20 +62,20 @@ public class IncludeTag extends Tag {
 				engine.getConfig().getResourceLocator().findResource(null, templateName);
 
 		if (identifiers != null && identifiers.size() == 1) {
-			checkNotNull(expression);
-			String identifier = checkNotNull(identifiers.get(0).evaluate());
+			Preconditions.checkNotNull(expression);
+			String identifier = Preconditions.checkNotNull(identifiers.get(0).evaluate());
 			scope.push(
 					new SingletonBindings(
 							identifier,
 							expression.evaluate(engine.getConfig(), scope)));
 		} else if (identifiers != null) {
-			checkNotNull(expression);
+			Preconditions.checkNotNull(expression);
 			scope.push(
 					new IterableExpansionBindings(
 							identifiers,
 							evaluateIterable(expression, engine, scope)));
 		} else {
-			scope.push(new EmptyBindings());
+			scope.push(EmptyBindings.INSTANCE);
 		}
 
 		engine.process(writer, resourceName, scope);

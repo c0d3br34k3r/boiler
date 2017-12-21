@@ -2,119 +2,105 @@ package au.com.codeka.carrot;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
-import au.com.codeka.carrot.resource.ResourceLocator;
+import java.nio.file.Path;
 
 /**
  * The {@link Configuration} is used to configure various aspects of the carrot
  * engine.
  */
 public class Configuration {
-	
-	public interface Logger {
-		int LEVEL_DEBUG = 1;
-		int LEVEL_INFO = 2;
-		int LEVEL_WARNING = 3;
 
-		void print(int level, String msg);
+	public interface Logger {
+
+		enum Level {
+			DEBUG,
+			INFO,
+			WARNING;
+		}
+
+		void print(Level level, String msg);
 	}
 
-	private final Charset encoding;
-	private final ResourceLocator resourceLocator;
-	private final TagRegistry tagRegistry;
+	private final Charset charset;
+	private final Path dir;
 	private final Logger logger;
-	private final boolean autoEscape;
+	// private final Escaper escaper;
 
 	private Configuration(
-			Charset encoding,
-			ResourceLocator.Builder resourceLocatorBuilder,
-			TagRegistry.Builder tagRegistryBuilder,
-			Logger logger,
-			boolean autoEscape) {
-		this.encoding = encoding;
-		this.resourceLocator = resourceLocatorBuilder.build(this);
-		this.tagRegistry = tagRegistryBuilder.build(this);
+			Charset charset,
+			Path root,
+			Logger logger
+	// , Escaper escaper
+	) {
+		this.charset = charset;
+		this.dir = root;
 		this.logger = logger;
-		this.autoEscape = autoEscape;
+		// this.escaper = escaper;
 	}
 
-	public Charset getEncoding() {
-		return encoding;
+	public Charset getCharset() {
+		return charset;
 	}
 
-	public ResourceLocator getResourceLocator() {
-		return resourceLocator;
+	public Path getResourceLocator() {
+		return dir;
 	}
 
-	public TagRegistry getTagRegistry() {
-		return tagRegistry;
-	}
-
-	/**
-	 * @return Whether or not variables are automatically HTML-escaped. True by
-	 *         default.
-	 */
-	public boolean getAutoEscape() {
-		return autoEscape;
-	}
+	// public Escaper getEscaper() {
+	// return escaper;
+	// }
 
 	public Logger getLogger() {
 		return logger;
 	}
 
 	public static class Builder {
-		
-		private Charset encoding;
-		private ResourceLocator.Builder resourceLocatorBuilder;
-		private TagRegistry.Builder tagRegistryBuilder;
+
+		private Charset charset;
+		private Path dir;
 		private Logger logger;
-		private boolean autoEscape;
+		// private Escaper escaper;
 
 		public Builder() {
-			encoding = StandardCharsets.UTF_8;
-			autoEscape = true;
+			charset = StandardCharsets.UTF_8;
+			// escaper = Escapers.nullEscaper();
 		}
 
-		public Builder setEncoding(Charset encoding) {
-			this.encoding = encoding;
+		public Builder setCharset(Charset charset) {
+			this.charset = charset;
 			return this;
 		}
 
-		public Builder setResourceLocator(ResourceLocator.Builder resourceLocatorBuilder) {
-			this.resourceLocatorBuilder = resourceLocatorBuilder;
+		public Builder setResourceLocator(Path dir) {
+			this.dir = dir;
 			return this;
 		}
 
-		public Builder setTagRegistry(TagRegistry.Builder tagRegistryBuilder) {
-			this.tagRegistryBuilder = tagRegistryBuilder;
-			return this;
-		}
-
-		/**
-		 * Sets whether or not you want to automatically escape all variable
-		 * output.
-		 *
-		 * <p>
-		 * By default, all variables are HTML-escaped. You can explicitly mark
-		 * output as "safe" for output by passing it through html.safe(), as in:
-		 *
-		 * <pre>
-		 * <code>{{ html.safe("Some &lt;b&gt;HTML&lt;/b&gt; here") }}</code>
-		 * </pre>
-		 *
-		 * Without the call to <code>html.safe</code>, the above would have
-		 * output "Some &amp;lt;b&amp;gt;HTML&amp;lt;/b&gt; here".
-		 *
-		 * @param value If true, output will be automatically HTML-escaped. If
-		 *        false, it would be as if all output is wrapped in
-		 *        <code>html.safe()</code> by default.
-		 * @return The current {@link Builder}.
-		 */
-		public Builder setAutoEscape(boolean value) {
-			this.autoEscape = value;
-			return this;
-		}
+		// /**
+		// * Sets whether or not you want to automatically escape all variable
+		// * output.
+		// *
+		// * <p>
+		// * By default, all variables are HTML-escaped. You can explicitly mark
+		// * output as "safe" for output by passing it through html.safe(), as
+		// in:
+		// *
+		// * <pre>
+		// * <code>{{ html.safe("Some &lt;b&gt;HTML&lt;/b&gt; here") }}</code>
+		// * </pre>
+		// *
+		// * Without the call to <code>html.safe</code>, the above would have
+		// * output "Some &amp;lt;b&amp;gt;HTML&amp;lt;/b&gt; here".
+		// *
+		// * @param value If true, output will be automatically HTML-escaped. If
+		// * false, it would be as if all output is wrapped in
+		// * <code>html.safe()</code> by default.
+		// * @return The current {@link Builder}.
+		// */
+		// public Builder setEscaper(Escaper escaper) {
+		// this.escaper = escaper;
+		// return this;
+		// }
 
 		public Builder setLogger(Logger logger) {
 			this.logger = logger;
@@ -123,12 +109,10 @@ public class Configuration {
 
 		public Configuration build() {
 			return new Configuration(
-					encoding,
-					resourceLocatorBuilder == null ? new MemoryResourceLocator.Builder()
-							: resourceLocatorBuilder,
-					tagRegistryBuilder == null ? new TagRegistry.Builder() : tagRegistryBuilder,
-					logger,
-					autoEscape);
+					charset,
+					dir == null ? null : dir,
+					logger);
 		}
 	}
+
 }

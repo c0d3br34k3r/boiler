@@ -1,9 +1,9 @@
 package au.com.codeka.carrot.bindings;
 
+import static org.junit.Assert.assertThat;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author marten

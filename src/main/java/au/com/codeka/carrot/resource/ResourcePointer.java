@@ -6,7 +6,9 @@ import javax.annotation.Nullable;
  * Represents a "pointer" into a resource, useful for debugging and so on (for
  * example, for displaying the line number and column where there's an error).
  */
+@Deprecated
 public class ResourcePointer {
+
 	@Nullable
 	private final ResourceName resourceName;
 	private final String line;
@@ -49,4 +51,5 @@ public class ResourcePointer {
 		str += "^";
 		return str;
 	}
+
 }

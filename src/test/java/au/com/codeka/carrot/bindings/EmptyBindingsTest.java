@@ -1,27 +1,28 @@
 package au.com.codeka.carrot.bindings;
 
+import static org.junit.Assert.assertThat;
+
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
-
-import static org.junit.Assert.assertThat;
 
 /**
  * @author marten
  */
 public class EmptyBindingsTest {
+
 	@Test
 	public void testIterator() throws Exception {
-		assertThat(new EmptyBindings().iterator().hasNext(), CoreMatchers.is(false));
+		assertThat(EmptyBindings.INSTANCE.iterator().hasNext(), CoreMatchers.is(false));
 	}
 
 	@Test
 	public void testResolved() throws Exception {
-		assertThat(new EmptyBindings().resolve("abc"), CoreMatchers.nullValue());
+		assertThat(EmptyBindings.INSTANCE.resolve("abc"), CoreMatchers.nullValue());
 	}
 
 	@Test
 	public void testIsEmpty() throws Exception {
-		assertThat(new EmptyBindings().isEmpty(), CoreMatchers.is(true));
+		assertThat(EmptyBindings.INSTANCE.isEmpty(), CoreMatchers.is(true));
 	}
 
 }

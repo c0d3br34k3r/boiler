@@ -1,18 +1,12 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.expr.binary.BinaryOperator;
-import au.com.codeka.carrot.expr.binary.BinaryOperators;
-import au.com.codeka.carrot.expr.binary.Complement;
-import au.com.codeka.carrot.expr.unary.UnaryOperator;
-import au.com.codeka.carrot.expr.unary.UnaryOperators;
-
 /**
  * An enumeration of the different types of {@link Token}s we can pull off the
  * statement parser.
  */
 public enum TokenType {
 
-	/** An unknown token, or the end of the stream. */
+	/** The end of the stream. */
 	EOF,
 
 	/** A string literal {@code "like this"}. */
@@ -21,131 +15,126 @@ public enum TokenType {
 	/** A number literal, like {@code 12} or {@code 12.34}. */
 	NUMBER_LITERAL(true),
 
+	/** A boolean literal, like {@code true} or {@code false}. */
+	BOOLEAN_LITERAL(true),
+
 	/** A Java-style identifier like {@code foo} or {@code bar}. */
 	IDENTIFIER(true),
 
-	/** Right-parenthesis: {@code )} */
-	RIGHT_PAREN,
-
 	/** Left-parenthesis: {@code (} */
-	LEFT_PAREN(RIGHT_PAREN),
+	LEFT_PARENTHESIS,
+
+	/** Right-parenthesis: {@code )} */
+	RIGHT_PARENTHESIS,
+
+	/** Left-square-bracket: {@code [} */
+	LEFT_BRACKET,
 
 	/** Right-square-bracket: {@code ]} */
 	RIGHT_BRACKET,
-
-	/** Left-square-bracket: {@code [} */
-	LEFT_BRACKET(RIGHT_BRACKET),
 
 	/** Single Equals: {@code =} */
 	ASSIGNMENT,
 
 	/** Comma: {@code ,} */
-	COMMA(BinaryOperators.ITERATION),
-	
+	COMMA,
+
+	/** Semicolon: {@code ;} */
+	SEMICOLON,
+
 	/** Dot: {@code .} */
 	DOT,
-	
+
 	/** Not: {@code !} */
-	NOT(UnaryOperators.NOT),
-	
+	NOT(UnaryOperator.NOT),
+
 	/** Logical and: {@code &&} */
-	LOGICAL_AND(BinaryOperators.AND),
-	
+	LOGICAL_AND(BinaryOperator.AND),
+
 	/** Logical or: {@code ||} */
-	LOGICAL_OR(BinaryOperators.OR),
-	
+	LOGICAL_OR(BinaryOperator.OR),
+
 	/** Equal: {@code ==} */
-	EQUAL(BinaryOperators.EQUALS),
-	
+	EQUAL(BinaryOperator.EQUAL),
+
 	/** Not equal: {@code !=} */
-	NOT_EQUAL(new Complement(BinaryOperators.EQUALS)),
-	
+	NOT_EQUAL(BinaryOperator.NOT_EQUAL),
+
 	/** Less than: {@code <} */
-	LESS_THAN(BinaryOperators.LESS_THAN),
-	
+	LESS_THAN(BinaryOperator.LESS_THAN),
+
 	/** Greater than: {@code >} */
-	GREATER_THAN(BinaryOperators.GREATER_THAN),
-	
+	GREATER_THAN(BinaryOperator.GREATER_THAN),
+
 	/** Less than or equal: {@code <=} */
-	LESS_THAN_OR_EQUAL(new Complement(GREATER_THAN.binaryOperator)),
-	
+	LESS_THAN_OR_EQUAL(BinaryOperator.LESS_THAN_OR_EQUAL),
+
 	/** Greater than or equal: {@code >=} */
-	GREATER_THAN_OR_EQUAL(new Complement(LESS_THAN.binaryOperator)),
-	
+	GREATER_THAN_OR_EQUAL(BinaryOperator.GREATER_THAN_OR_EQUAL),
+
 	/** Plus: {@code +} */
-	PLUS(BinaryOperators.ADDITION, UnaryOperators.PLUS),
-	
-	/** Minus : {@code -} */
-	MINUS(BinaryOperators.SUBTRACTION, UnaryOperators.MINUS),
-	
+	PLUS(BinaryOperator.ADD, UnaryOperator.PLUS),
+
+	/** Minus: {@code -} */
+	MINUS(BinaryOperator.SUBTRACT, UnaryOperator.MINUS),
+
 	/** Multiply: {@code *} */
-	MULTIPLY(BinaryOperators.MULTIPLICATION),
-	
+	MULTIPLY(BinaryOperator.MULTIPLY),
+
 	/** Divide: {@code /} */
-	DIVIDE(BinaryOperators.DIVISION),
-	
+	DIVIDE(BinaryOperator.DIVIDE),
+
 	/** In: {@code in} */
-	IN(BinaryOperators.IN);
+	IN(BinaryOperator.IN);
 
 	private final boolean hasValue;
 	private final BinaryOperator binaryOperator;
 	private final UnaryOperator unaryOperator;
-	private final TokenType closingToken;
 
 	TokenType() {
-		this(false, null, null, null);
+		this(false, null, null);
 	}
 
 	TokenType(boolean hasValue) {
-		this(hasValue, null, null, null);
-	}
-
-	TokenType(TokenType closingToken) {
-		this(false, null, null, closingToken);
+		this(hasValue, null, null);
 	}
 
 	TokenType(UnaryOperator unaryOperator) {
-		this(false, null, unaryOperator, null);
+		this(false, null, unaryOperator);
 	}
 
 	TokenType(BinaryOperator binaryOperator) {
-		this(false, binaryOperator, null, null);
+		this(false, binaryOperator, null);
 	}
 
 	TokenType(BinaryOperator binaryOperator, UnaryOperator unaryOperator) {
-		this(false, binaryOperator, unaryOperator, null);
+		this(false, binaryOperator, unaryOperator);
 	}
 
-	TokenType(boolean hasValue, BinaryOperator binaryOperator, UnaryOperator unaryOperator,
-			TokenType closingToken) {
+	TokenType(boolean hasValue, BinaryOperator binaryOperator, UnaryOperator unaryOperator) {
 		this.hasValue = hasValue;
 		this.binaryOperator = binaryOperator;
 		this.unaryOperator = unaryOperator;
-		this.closingToken = closingToken;
 	}
 
-	public boolean hasValue() {
+	boolean hasValue() {
 		return hasValue;
 	}
 
-	public BinaryOperator binaryOperator() {
+	BinaryOperator binaryOperator() {
 		if (binaryOperator == null) {
 			throw new UnsupportedOperationException(
-					String.format("%s is not a binary operator", this.toString()));
+					String.format("%s is not a binary operator", this));
 		}
 		return binaryOperator;
 	}
 
-	public UnaryOperator unaryOperator() {
+	UnaryOperator unaryOperator() {
 		if (unaryOperator == null) {
 			throw new UnsupportedOperationException(
-					String.format("%s is not an unary operator", this.toString()));
+					String.format("%s is not an unary operator", this));
 		}
 		return unaryOperator;
-	}
-
-	public TokenType closingType() {
-		return closingToken;
 	}
 
 }

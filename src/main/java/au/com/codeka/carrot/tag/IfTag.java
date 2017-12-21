@@ -18,6 +18,7 @@ import au.com.codeka.carrot.tmpl.TagNode;
  * ElseTags.
  */
 public class IfTag extends Tag {
+
 	private Term expr;
 
 	@Override
@@ -31,12 +32,12 @@ public class IfTag extends Tag {
 	 */
 	@Override
 	public boolean canChain(Tag nextTag) {
-		return (nextTag instanceof ElseTag);
+		return nextTag instanceof ElseTag;
 	}
 
 	@Override
 	public void parseStatement(StatementParser stmtParser) throws CarrotException {
-		expr = stmtParser.parseTerm();
+		expr = stmtParser.parseExpression();
 	}
 
 	@Override
@@ -52,4 +53,5 @@ public class IfTag extends Tag {
 			}
 		}
 	}
+
 }
