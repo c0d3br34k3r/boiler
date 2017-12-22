@@ -12,11 +12,11 @@ import au.com.codeka.carrot.ValueHelper;
  *
  * @author Marten Gajda
  */
-public final class JsonArrayBindings extends AbstractList<Object> {
+public final class JsonArrayAsList extends AbstractList<Object> {
 
 	private final JsonArray jsonArray;
 
-	public JsonArrayBindings(JsonArray jsonArray) {
+	public JsonArrayAsList(JsonArray jsonArray) {
 		this.jsonArray = jsonArray;
 	}
 

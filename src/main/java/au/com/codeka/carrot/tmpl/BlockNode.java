@@ -14,6 +14,8 @@ abstract class BlockNode implements Node {
 	private List<Node> children = new ArrayList<>();
 	private Node linked; // = null
 
+	protected BlockNode(Tokenizer)
+	
 	protected void renderLinked(CarrotEngine engine, Writer writer, Scope scope)
 			throws CarrotException, IOException {
 		linked.render(engine, writer, scope);

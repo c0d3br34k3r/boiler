@@ -147,6 +147,7 @@ public class Tokenizer {
 			case '!': return checkNext('=', Token.NOT_EQUAL, Token.NOT);
 			case '<': return checkNext('=', Token.LESS_THAN_OR_EQUAL, Token.LESS_THAN);
 			case '>': return checkNext('=', Token.GREATER_THAN_OR_EQUAL, Token.GREATER_THAN);
+			// TODO: Modulo
 			case '%': return checkEndTag();
 			// @formatter:on
 			case '"':

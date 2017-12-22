@@ -17,11 +17,11 @@ import au.com.codeka.carrot.ValueHelper;
  *
  * @author Marten Gajda
  */
-public final class JsonObjectBindings implements Bindings, Iterable<EntryBindings> {
+public final class JsonObjectAsBindings implements Bindings, Iterable<EntryBindings> {
 
 	private final JsonObject jsonObject;
 
-	public JsonObjectBindings(JsonObject JsonObject) {
+	public JsonObjectAsBindings(JsonObject JsonObject) {
 		this.jsonObject = JsonObject;
 	}
 

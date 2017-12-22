@@ -15,8 +15,8 @@ import com.google.gson.JsonParser;
 
 import au.com.codeka.carrot.bindings.Composite;
 import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.bindings.JsonArrayBindings;
-import au.com.codeka.carrot.bindings.JsonObjectBindings;
+import au.com.codeka.carrot.bindings.JsonArrayAsList;
+import au.com.codeka.carrot.bindings.JsonObjectAsBindings;
 import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.bindings.SingletonBindings;
 import au.com.codeka.carrot.resource.MemoryResourceLocator;
@@ -160,7 +160,7 @@ public class CarrotEngineTest {
 						"{% for item in $json %}{{ item.key }} -> {{ item.value }}\n{% end %}",
 						new SingletonBindings(
 								"$json",
-								new JsonObjectBindings(
+								new JsonObjectAsBindings(
 										new JsonParser().parse(
 												"{ \"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null }")
 												.getAsJsonObject()))))
@@ -175,7 +175,7 @@ public class CarrotEngineTest {
 						"{% for key, value in $json %}{{ key }} -> {{ value }}\n{% end %}",
 						new SingletonBindings(
 								"$json",
-								new JsonObjectBindings(
+								new JsonObjectAsBindings(
 										new JsonParser().parse(
 												"{\"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null }")
 												.getAsJsonObject()))))
@@ -189,7 +189,7 @@ public class CarrotEngineTest {
 				"{% for item in $json.map %}{{ item.key }} -> {{ $json.map[item.key] }}\n{% end %}",
 				new SingletonBindings(
 						"$json",
-						new JsonObjectBindings(
+						new JsonObjectAsBindings(
 
 								new JsonParser().parse(
 										"{ \"map\": { \"key1\": \"a\", \"key2\": 2, \"key3\": true, \"key4\": null } }")
@@ -202,7 +202,7 @@ public class CarrotEngineTest {
 	public void testJsonArrayIterable() {
 		assertThat(render("{% for value in $json %}{{ value }}{% end %}",
 				new SingletonBindings("$json",
-						new JsonArrayBindings(new JsonParser().parse("[ \"a\", 2, true, null]")
+						new JsonArrayAsList(new JsonParser().parse("[ \"a\", 2, true, null]")
 								.getAsJsonArray()))))
 										.isEqualTo("a2true");
 	}

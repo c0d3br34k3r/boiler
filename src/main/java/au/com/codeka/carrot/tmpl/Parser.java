@@ -20,58 +20,59 @@ public class Parser {
 		this.reader = new PushbackReader(reader, 1);
 	}
 
-	public Node getNext() throws IOException, CarrotException {
+	public Node next() throws IOException, CarrotException {
 		return mode.parse(this);
 	}
 
-	private interface ParseMode {
+	private enum ParseMode {
+		TEXT {
 
-		Node parse(Parser parser) throws IOException, CarrotException;
+			@Override
+			Node parse(Parser parser) throws IOException, CarrotException {
+				return parser.parseNext();
+			}
+		},
+		TAG {
+
+			@Override
+			Node parse(Parser parser) throws IOException, CarrotException {
+				return parser.parseTag();
+			}
+		},
+		ECHO {
+
+			@Override
+			Node parse(Parser parser) throws IOException, CarrotException {
+				return parser.parseEcho();
+			}
+		},
+		COMMENT {
+
+			@Override
+			Node parse(Parser parser) throws IOException, CarrotException {
+				return parser.skipCommentAndParseNext();
+			}
+		},
+		END {
+
+			@Override
+			Node parse(Parser parser) throws IOException, CarrotException {
+				// Do something similar with tokens?
+				return MarkerNode.END_DOCUMENT;
+			}
+		};
+
+		abstract Node parse(Parser parser) throws IOException, CarrotException;
 	}
 
-	private static final ParseMode TAG = new ParseMode() {
-
-		@Override
-		public Node parse(Parser parser) throws IOException, CarrotException {
-			return parser.parseTag();
-		}
-	};
-
-	// private static final ParseMode ECHO = new TagParseMode('}',
-	// NodeType.ECHO);
-
-	private static final ParseMode COMMENT = new ParseMode() {
-
-		@Override
-		public Node parse(Parser parser) throws IOException, CarrotException {
-			return parser.skipCommentAndParseNext();
-		}
-	};
-
-	private static final ParseMode TEXT = new ParseMode() {
-
-		@Override
-		public Node parse(Parser parser) throws IOException, CarrotException {
-			return parser.parseNext();
-		}
-	};
-
-	private static final ParseMode END = new ParseMode() {
-
-		@Override
-		public Node parse(Parser parser) throws IOException, CarrotException {
-			return null;
-		}
-	};
-
-	private ParseMode mode = TEXT;
+	private ParseMode mode = ParseMode.TEXT;
 
 	private Node parseNext() throws IOException, CarrotException {
-		String content = parseFixed();
-		return !content.isEmpty() ? new TextNode(content) : getNext();
+		String content = parseText();
+		return !content.isEmpty() ? new TextNode(content) : next();
 	}
 
-	private String parseFixed() throws IOException {
+	private String parseText() throws IOException {
 		StringBuilder content = new StringBuilder();
 		for (;;) {
 			int c = reader.read();
@@ -83,16 +84,16 @@ public class Parser {
 					int c2 = reader.read();
 					switch (c2) {
 						case -1:
-							mode = END;
+							mode = ParseMode.END;
 							return content.append((char) c).toString();
 						case '<':
-							mode = ECHO;
+							mode = ParseMode.ECHO;
 							return content.toString();
 						case '%':
-							mode = TAG;
+							mode = ParseMode.TAG;
 							return content.toString();
 						case '#':
-							mode = COMMENT;
+							mode = ParseMode.COMMENT;
 							return content.toString();
 						default:
 							reader.unread(c2);
@@ -112,7 +113,7 @@ public class Parser {
 				case '#':
 					int c2 = reader.read();
 					if (c2 == '>') {
-						return getNext();
+						return parseNext();
 					}
 					reader.unread(c2);
 					break;
@@ -120,6 +121,5 @@ public class Parser {
 			}
 		}
 	}
-
 
 }

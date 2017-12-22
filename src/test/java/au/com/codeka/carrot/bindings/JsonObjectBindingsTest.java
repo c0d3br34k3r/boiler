@@ -26,26 +26,26 @@ public class JsonObjectBindingsTest {
 
 	@Test
 	public void testResolved() throws Exception {
-		assertThat(new JsonObjectBindings(new JsonObject()).resolve("key"),
+		assertThat(new JsonObjectAsBindings(new JsonObject()).resolve("key"),
 				CoreMatchers.nullValue());
-		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key1"),
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).resolve("key1"),
 				CoreMatchers.<Object> is("value"));
-		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key2"),
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).resolve("key2"),
 				CoreMatchers.<Object> is(2));
-		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key3"),
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).resolve("key3"),
 				CoreMatchers.<Object> is(true));
-		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key4"),
-				CoreMatchers.instanceOf(JsonArrayBindings.class));
-		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key5"),
-				CoreMatchers.instanceOf(JsonObjectBindings.class));
-		assertThat(new JsonObjectBindings(JSON_OBJECT).resolve("key6"),
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).resolve("key4"),
+				CoreMatchers.instanceOf(JsonArrayAsList.class));
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).resolve("key5"),
+				CoreMatchers.instanceOf(JsonObjectAsBindings.class));
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).resolve("key6"),
 				CoreMatchers.nullValue());
 	}
 
 	@Test
 	public void testIsEmpty() throws Exception {
-		assertThat(new JsonObjectBindings(new JsonObject()).isEmpty(), CoreMatchers.is(true));
-		assertThat(new JsonObjectBindings(JSON_OBJECT).isEmpty(),
+		assertThat(new JsonObjectAsBindings(new JsonObject()).isEmpty(), CoreMatchers.is(true));
+		assertThat(new JsonObjectAsBindings(JSON_OBJECT).isEmpty(),
 				CoreMatchers.is(false));
 	}
 }

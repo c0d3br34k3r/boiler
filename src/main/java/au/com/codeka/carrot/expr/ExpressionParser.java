@@ -10,6 +10,7 @@ import static au.com.codeka.carrot.expr.TokenType.LESS_THAN_OR_EQUAL;
 import static au.com.codeka.carrot.expr.TokenType.LOGICAL_AND;
 import static au.com.codeka.carrot.expr.TokenType.LOGICAL_OR;
 import static au.com.codeka.carrot.expr.TokenType.MINUS;
+import static au.com.codeka.carrot.expr.TokenType.MODULO;
 import static au.com.codeka.carrot.expr.TokenType.MULTIPLY;
 import static au.com.codeka.carrot.expr.TokenType.NOT_EQUAL;
 import static au.com.codeka.carrot.expr.TokenType.PLUS;
@@ -31,7 +32,7 @@ public class ExpressionParser {
 		        new BinaryTermParser(
 		          new BinaryTermParser(
 		            new ValueParser(),
-		            MULTIPLY, DIVIDE),
+		            MULTIPLY, DIVIDE, MODULO),
 		          PLUS, MINUS),
 		        LESS_THAN, LESS_THAN_OR_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL, IN),
 		      EQUAL, NOT_EQUAL),

@@ -37,6 +37,7 @@ public class Token {
 	public static final Token MINUS = new Token(TokenType.MINUS);
 	public static final Token MULTIPLY = new Token(TokenType.MULTIPLY);
 	public static final Token DIVIDE = new Token(TokenType.DIVIDE);
+	public static final Token MODULO = new Token(TokenType.MODULO);
 	public static final Token IN = new Token(TokenType.IN);
 	
 	public static final Token TRUE = new Token(TokenType.BOOLEAN_LITERAL, true);

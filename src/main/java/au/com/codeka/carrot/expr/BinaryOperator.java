@@ -38,6 +38,13 @@ enum BinaryOperator {
 			return ValueHelper.divide(left, right.value());
 		}
 	},
+	
+	MODULO {
+		@Override
+		Object apply(Object left, LazyValue right) throws CarrotException {
+			return ValueHelper.modulo(left, right.value());
+		}
+	},
 
 	GREATER_THAN {
 		@Override

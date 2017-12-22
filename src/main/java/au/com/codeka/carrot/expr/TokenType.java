@@ -83,6 +83,9 @@ public enum TokenType {
 
 	/** Divide: {@code /} */
 	DIVIDE(BinaryOperator.DIVIDE),
+	
+	/** Divide: {@code /} */
+	MODULO(BinaryOperator.MODULO),
 
 	/** In: {@code in} */
 	IN(BinaryOperator.IN);

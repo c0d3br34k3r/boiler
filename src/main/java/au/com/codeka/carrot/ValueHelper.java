@@ -10,13 +10,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
+import com.google.common.math.DoubleMath;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
-import au.com.codeka.carrot.bindings.JsonArrayBindings;
-import au.com.codeka.carrot.bindings.JsonObjectBindings;
+import au.com.codeka.carrot.bindings.JsonArrayAsList;
+import au.com.codeka.carrot.bindings.JsonObjectAsBindings;
 
 /**
  * Various helpers for working with {@link Object}s.
@@ -171,6 +170,15 @@ public class ValueHelper {
 		}
 		return n1.doubleValue() * n2.doubleValue();
 	}
+	
+	public static Number modulo(Object o1, Object o2) throws CarrotException {
+		Number n1 = toNumber(o1);
+		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return n1.intValue() % n2.intValue();
+		}
+		return n1.doubleValue() % n2.doubleValue();
+	}
 
 	/**
 	 * Convert the given value to a list of object, as if it were an iterable.
@@ -248,17 +256,27 @@ public class ValueHelper {
 		return Double.compare(n1.doubleValue(), n2.doubleValue());
 	}
 
+	// JSON has questionable value...
 	public static Object jsonHelper(Object object) {
-		if (object instanceof JsonObject) {
-			return new JsonObjectBindings((JsonObject) object);
+		if (!(object instanceof JsonElement)) {
+			return object;
 		}
-		if (object instanceof JsonArray) {
-			return new JsonArrayBindings((JsonArray) object);
+		JsonElement json = (JsonElement) object;
+		if (json.isJsonObject()) {
+			return new JsonObjectAsBindings(json.getAsJsonObject());
 		}
-		if (object instanceof JsonPrimitive) {
-			JsonPrimitive primitive = (JsonPrimitive) object;
+		if (json.isJsonArray()) {
+			return new JsonArrayAsList(json.getAsJsonArray());
+		}
+		if (json.isJsonPrimitive()) {
+			JsonPrimitive primitive = json.getAsJsonPrimitive();
 			if (primitive.isNumber()) {
-				return primitive.getAsNumber();
+				Number number = primitive.getAsNumber();
+				double doubleValue = number.doubleValue();
+				if (doubleValue == Math.rint(doubleValue) && doubleValue < Integer.MAX_VALUE) {
+					return number.intValue();
+				}
+				return doubleValue;
 			}
 			if (primitive.isString()) {
 				return primitive.getAsString();
@@ -267,10 +285,10 @@ public class ValueHelper {
 				return primitive.getAsBoolean();
 			}
 		}
-		if (JsonNull.INSTANCE.equals(object)) {
+		if (json.isJsonNull()) {
 			return null;
 		}
-		return object;
+		throw new IllegalArgumentException();
 	}
 
 }

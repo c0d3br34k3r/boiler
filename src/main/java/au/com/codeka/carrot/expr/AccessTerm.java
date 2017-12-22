@@ -41,13 +41,6 @@ class AccessTerm implements Term {
 		if (termValue instanceof List) {
 			return ((List<?>) termValue).get(ValueHelper.toNumber(accessValue).intValue());
 		}
-//		if (termValue.getClass().isArray()) {
-//			return Array.get(termValue, ValueHelper.toNumber(accessValue).intValue());
-//		}
-//		if (termValue instanceof Iterable && accessValue instanceof Number) {
-//			return Iterators.get(((Iterable<?>) termValue).iterator(),
-//					ValueHelper.toNumber(accessValue).intValue());
-//		}
 		throw new CarrotException("Cannot access key " + accessValue + " in " + termValue);
 	}
 
