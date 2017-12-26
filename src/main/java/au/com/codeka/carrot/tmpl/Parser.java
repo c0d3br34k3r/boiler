@@ -11,6 +11,8 @@ import com.google.common.io.LineReader;
 
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.TagType;
+import au.com.codeka.carrot.expr.TokenType;
+import au.com.codeka.carrot.expr.Tokenizer;
 
 public class Parser {
 
@@ -102,6 +104,36 @@ public class Parser {
 					content.append((char) c);
 			}
 		}
+	}
+	
+	private Node parseTag() throws CarrotException {
+		Tokenizer tokenizer = new Tokenizer(reader);
+		Node node;
+		String tagName = tokenizer.parseIdentifier();
+		switch (tagName) {
+			case "if":
+				
+			case "else":
+				
+			case "for":
+				
+			case "echo":
+				node = parseEcho(tokenizer);
+				break;
+			case "set":
+				
+			case "include":
+				
+			default:
+				throw new CarrotException("unknown tag: " + tagName);
+		}
+		tokenizer.get(TokenType.END);
+		mode = ParseMode.TEXT;
+		return node;
+	}
+
+	private Node parseEcho(Tokenizer tokenizer) {
+		return new Echo(tokenizer.parseExpression());
 	}
 
 	private Node skipCommentAndParseNext() throws IOException, CarrotException {

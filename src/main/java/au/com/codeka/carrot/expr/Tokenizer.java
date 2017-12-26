@@ -90,7 +90,7 @@ public class Tokenizer {
 
 	public Token next() throws CarrotException {
 		// TODO: ???
-		if (next.getType() == TokenType.EOF) {
+		if (next.getType() == TokenType.END) {
 			return next;
 		}
 		Token token = next;

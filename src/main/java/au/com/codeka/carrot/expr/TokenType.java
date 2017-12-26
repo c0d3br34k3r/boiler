@@ -7,7 +7,7 @@ package au.com.codeka.carrot.expr;
 public enum TokenType {
 
 	/** The end of the stream. */
-	EOF,
+	END,
 
 	/** A string literal {@code "like this"}. */
 	STRING_LITERAL(true),

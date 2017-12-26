@@ -15,7 +15,7 @@ public class Token {
 	private final TokenType tokenType;
 	private final @Nullable Object value;
 
-	public static final Token EOF = new Token(TokenType.EOF);
+	public static final Token EOF = new Token(TokenType.END);
 	public static final Token RIGHT_PARENTHESIS = new Token(TokenType.RIGHT_PARENTHESIS);
 	public static final Token LEFT_PARENTHESIS = new Token(TokenType.LEFT_PARENTHESIS);
 	public static final Token RIGHT_BRACKET = new Token(TokenType.RIGHT_BRACKET);

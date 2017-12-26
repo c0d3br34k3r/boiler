@@ -10,8 +10,8 @@ import au.com.codeka.carrot.tag.ElseTag;
 import au.com.codeka.carrot.tag.EndTag;
 import au.com.codeka.carrot.tag.ForTag;
 import au.com.codeka.carrot.tag.IfTag;
-import au.com.codeka.carrot.tag.IncludeTag;
 import au.com.codeka.carrot.tag.Tag;
+import au.com.codeka.carrot.tmpl.IncludeTag;
 import au.com.codeka.carrot.tmpl.SetNode;
 
 /**

@@ -18,6 +18,7 @@ import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.bindings.EmptyBindings;
 import au.com.codeka.carrot.bindings.SingletonBindings;
 import au.com.codeka.carrot.resource.MemoryResourceLocator;
+import au.com.codeka.carrot.tmpl.IncludeTag;
 
 /**
  * Tests for {@link IncludeTag}.

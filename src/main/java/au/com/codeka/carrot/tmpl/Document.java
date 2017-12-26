@@ -6,43 +6,28 @@ import java.io.Writer;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 
-public class Document extends Node {
+public class Document implements Node {
 
-	public static Document parse(Reader reader, Configuration config) {
-		Document root = new Document();
+	public static Document parse(Reader reader) throws IOException, CarrotException {
 		Parser parser = new Parser(reader);
-		parse(parser, root, config);
-		return root;
+		return new Document(parser);
 	}
 
-	/**
-	 * Parse tokens into the given {@link Node}.
-	 * 
-	 * @throws IOException
-	 * @throws CarrotException
-	 */
-	private static void parse(Parser parser, Node node, Configuration config)
-			throws IOException, CarrotException {
-		Node current = node;
+	private Document(Parser parser) throws IOException, CarrotException {
 		for (;;) {
-			Node child = parser.getNext();
-			if (child == null) {
+			Node node = parser.next();
+			if (node == MarkerNode.END_DOCUMENT) {
 				break;
 			}
-			if (child.isBlock()) {
-				parse(parser, child, config);
-			}
-			current.addChildNode(child);
+			
 		}
 	}
 
 	@Override
-	void render(CarrotEngine engine, Writer writer, Scope scope)
-			throws CarrotException, IOException {
-		renderChildNodes(engine, writer, scope);
+	public void render(CarrotEngine engine, Writer writer, Scope scope) throws CarrotException, IOException {
+
 	}
 
 }
