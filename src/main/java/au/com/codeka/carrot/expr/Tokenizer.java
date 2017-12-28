@@ -14,14 +14,7 @@ import au.com.codeka.carrot.CarrotException;
  */
 public class Tokenizer {
 
-	public enum EndMode {
-		STREAM,
-		TAG,
-		ECHO;
-	}
-
 	private PushbackReader reader;
-	private EndMode endMode;
 	private Token next;
 
 	public Tokenizer(Reader reader) throws CarrotException {
@@ -143,10 +136,10 @@ public class Tokenizer {
 			case '/': return Token.DIVIDE;
 			case '&': return requireNext('&', Token.LOGICAL_AND);
 			case '|': return requireNext('|', Token.LOGICAL_OR);
-			case '=': return checkNext('=', Token.EQUAL, Token.ASSIGNMENT);
-			case '!': return checkNext('=', Token.NOT_EQUAL, Token.NOT);
-			case '<': return checkNext('=', Token.LESS_THAN_OR_EQUAL, Token.LESS_THAN);
-			case '>': return checkNext('=', Token.GREATER_THAN_OR_EQUAL, Token.GREATER_THAN);
+			case '=': return matchEquals() ? Token.EQUAL: Token.ASSIGNMENT;
+			case '!': return matchEquals() ? Token.NOT_EQUAL : Token.NOT;
+			case '<': return matchEquals() ? Token.LESS_THAN_OR_EQUAL : Token.LESS_THAN;
+			case '>': return matchEquals() ? Token.GREATER_THAN_OR_EQUAL : Token.GREATER_THAN;
 			// TODO: Modulo
 			case '%': return checkEndTag();
 			// @formatter:on
@@ -154,7 +147,8 @@ public class Tokenizer {
 			case '\'':
 				return readString((char) ch);
 			case -1:
-				return eof(EndMode.STREAM);
+				// TODO:
+				throw new CarrotException("");
 			default:
 		}
 		if (NUMBER.matches((char) ch)) {
@@ -231,15 +225,23 @@ public class Tokenizer {
 		return token;
 	}
 
-	private Token checkNext(char match, Token ifMatch, Token ifNotMatch) throws IOException {
+	private void require(char required) throws IOException, CarrotException {
+		if (reader.read() != required) {
+			throw new CarrotException("expected " + required);
+		}
+	}
+
+	private boolean matchEquals() throws IOException {
 		int ch = reader.read();
-		if (ch == match) {
-			return ifMatch;
+		switch (ch) {
+			case '=':
+				return true;
+			default:
+				reader.unread(ch);
+				// fallthrough
+			case -1:
+				return false;
 		}
-		if (ch != -1) {
-			reader.unread(ch);
-		}
-		return ifNotMatch;
 	}
 
 	private Token checkEndTag() throws IOException, CarrotException {
@@ -247,13 +249,6 @@ public class Tokenizer {
 			throw new CarrotException("expected " + '>');
 		}
 		return eof(EndMode.TAG);
-	}
-
-	private Token eof(EndMode end) throws CarrotException {
-		if (end != endMode) {
-			throw new CarrotException("expected end mode " + endMode + " but got " + end);
-		}
-		return Token.EOF;
 	}
 
 	// private char readEscapeCharacter() throws IOException, CarrotException {

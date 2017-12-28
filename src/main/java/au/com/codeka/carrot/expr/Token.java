@@ -63,7 +63,6 @@ public class Token {
 	private Token(TokenType type, Object value) {
 		this.tokenType = Preconditions.checkNotNull(type);
 		this.value = Preconditions.checkNotNull(value);
-		Preconditions.checkArgument(type.hasValue());
 	}
 
 	public TokenType getType() {

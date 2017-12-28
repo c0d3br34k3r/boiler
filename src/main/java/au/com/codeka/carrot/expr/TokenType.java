@@ -8,6 +8,18 @@ public enum TokenType {
 
 	/** The end of the stream. */
 	END,
+//	
+//	/** The end of the stream. */
+//	START_TAG,
+//	
+//	/** The end of the stream. */
+//	END_TAG,
+//	
+//	/** The end of the stream. */
+//	START_ECHO,
+//	
+//	/** The end of the stream. */
+//	END_ECHO,
 
 	/** A string literal {@code "like this"}. */
 	STRING_LITERAL(true),
