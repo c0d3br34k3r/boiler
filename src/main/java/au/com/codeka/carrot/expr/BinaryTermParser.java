@@ -24,7 +24,7 @@ final class BinaryTermParser implements TermParser {
 	@Override
 	public Term parse(Tokenizer tokenizer) throws CarrotException {
 		Term left = termParser.parse(tokenizer);
-		while (tokenizer.check(tokenTypes)) {
+		while (tokenTypes.contains(tokenizer.peek())) {
 			left = new BinaryTerm(left,
 					tokenizer.next().getType().binaryOperator(),
 					termParser.parse(tokenizer));

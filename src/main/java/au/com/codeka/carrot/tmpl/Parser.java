@@ -127,7 +127,7 @@ public class Parser {
 			default:
 				throw new CarrotException("unknown tag: " + tagName);
 		}
-		tokenizer.get(TokenType.END);
+		tokenizer.consume(TokenType.END);
 		mode = ParseMode.TEXT;
 		return node;
 	}

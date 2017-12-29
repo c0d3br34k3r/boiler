@@ -42,7 +42,7 @@ public class ForTag extends Tag {
 	@Override
 	public void parseStatement(StatementParser parser) throws CarrotException {
 		loopIdentifier = parser.parseIdentifier();
-		parser.get(TokenType.IN);
+		parser.consume(TokenType.IN);
 		loopExpression = parser.parseExpression();
 	}
 

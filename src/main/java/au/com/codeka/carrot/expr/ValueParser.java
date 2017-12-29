@@ -25,7 +25,7 @@ class ValueParser implements TermParser {
 				return getAccessTerm(tokenizer, new Variable((String) token.getValue()));
 			case LEFT_PARENTHESIS:
 				Term term = ExpressionParser.parse(tokenizer);
-				tokenizer.get(TokenType.RIGHT_PARENTHESIS);
+				tokenizer.consume(TokenType.RIGHT_PARENTHESIS);
 				return term;
 			// TODO: Arrays and objects?
 			default:
@@ -38,16 +38,15 @@ class ValueParser implements TermParser {
 
 	private static Term getAccessTerm(Tokenizer tokenizer, Term accessTerm) throws CarrotException {
 		Term result = accessTerm;
-		while (tokenizer.check(ACCESS_TYPE)) {
+		while (ACCESS_TYPE.contains(tokenizer.peek())) {
 			Token token = tokenizer.next();
 			switch (token.getType()) {
 				case DOT:
-					result = new AccessTerm(result,
-							new ValueTerm(tokenizer.get(TokenType.IDENTIFIER).getValue()));
+					result = new AccessTerm(result, new ValueTerm(tokenizer.parseIdentifier()));
 					break;
 				case LEFT_BRACKET:
 					result = new AccessTerm(result, ExpressionParser.parse(tokenizer));
-					tokenizer.get(TokenType.RIGHT_BRACKET);
+					tokenizer.consume(TokenType.RIGHT_BRACKET);
 					break;
 				default:
 			}

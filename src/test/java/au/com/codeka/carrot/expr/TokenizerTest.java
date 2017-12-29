@@ -21,52 +21,52 @@ public class TokenizerTest {
 	@Test
 	public void testIdentifier() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("foo bar baz");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("baz");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("baz");
 	}
 
 	@Test
 	public void testParen() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("(foo) (bar)");
-		assertThat(tokenizer.get(TokenType.LEFT_PARENTHESIS)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-		assertThat(tokenizer.get(TokenType.RIGHT_PARENTHESIS)).isNotNull();
-		assertThat(tokenizer.get(TokenType.LEFT_PARENTHESIS)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
-		assertThat(tokenizer.get(TokenType.RIGHT_PARENTHESIS)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.LEFT_PARENTHESIS)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
+		assertThat(tokenizer.consume(TokenType.RIGHT_PARENTHESIS)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.LEFT_PARENTHESIS)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
+		assertThat(tokenizer.consume(TokenType.RIGHT_PARENTHESIS)).isNotNull();
 	}
 
 	@Test
 	public void testBooleanOperands() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("a && b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_AND));
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.LOGICAL_AND));
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a and b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_AND));
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.LOGICAL_AND));
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a || b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_OR));
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.LOGICAL_OR));
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a or b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LOGICAL_OR));
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.LOGICAL_OR));
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("not a");
-		assertThat(tokenizer.get(TokenType.NOT));
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.NOT));
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
 
 		try {
 			tokenizer = createTokenizer("a & b");
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-			assertThat(tokenizer.get(TokenType.LOGICAL_AND)).isNotNull();
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+			assertThat(tokenizer.consume(TokenType.LOGICAL_AND)).isNotNull();
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage()).isEqualTo("???\n1: a & b\n       ^\nExpected &&");
@@ -74,8 +74,8 @@ public class TokenizerTest {
 
 		try {
 			tokenizer = createTokenizer("a | b");
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-			assertThat(tokenizer.get(TokenType.LOGICAL_OR)).isNotNull();
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+			assertThat(tokenizer.consume(TokenType.LOGICAL_OR)).isNotNull();
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage()).isEqualTo("???\n1: a | b\n       ^\nExpected ||");
@@ -85,83 +85,83 @@ public class TokenizerTest {
 	@Test
 	public void testEquality() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("a == b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.EQUAL)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.EQUAL)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a != b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.NOT_EQUAL)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.NOT_EQUAL)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a ! b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.NOT)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.NOT)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a = b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.ASSIGNMENT)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.ASSIGNMENT)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 	}
 
 	@Test
 	public void testGreaterLessThan() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("a < b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LESS_THAN)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.LESS_THAN)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a > b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.GREATER_THAN)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.GREATER_THAN)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a <= b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.LESS_THAN_OR_EQUAL)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.LESS_THAN_OR_EQUAL)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 		tokenizer = createTokenizer("a >= b");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.GREATER_THAN_OR_EQUAL)).isNotNull();
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.GREATER_THAN_OR_EQUAL)).isNotNull();
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 
 	}
 
 	@Test
 	public void testString() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("\"Hello World\" \"This's a test\" 'So is \"this\"'");
-		assertThat(tokenizer.get(TokenType.STRING_LITERAL).getValue()).isEqualTo("Hello World");
-		assertThat(tokenizer.get(TokenType.STRING_LITERAL).getValue())
+		assertThat(tokenizer.consume(TokenType.STRING_LITERAL).getValue()).isEqualTo("Hello World");
+		assertThat(tokenizer.consume(TokenType.STRING_LITERAL).getValue())
 				.isEqualTo("This's a test");
-		assertThat(tokenizer.get(TokenType.STRING_LITERAL).getValue())
+		assertThat(tokenizer.consume(TokenType.STRING_LITERAL).getValue())
 				.isEqualTo("So is \"this\"");
 	}
 
 	@Test
 	public void testInteger() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("foo 1234 bar");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-		assertThat(tokenizer.get(TokenType.NUMBER_LITERAL).getValue()).isEqualTo(1234L);
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
+		assertThat(tokenizer.consume(TokenType.NUMBER_LITERAL).getValue()).isEqualTo(1234L);
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
 	}
 
 	@Test
 	public void testDouble() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("foo 12.34 bar");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-		assertThat(tokenizer.get(TokenType.NUMBER_LITERAL).getValue()).isEqualTo(12.34);
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
+		assertThat(tokenizer.consume(TokenType.NUMBER_LITERAL).getValue()).isEqualTo(12.34);
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("bar");
 	}
 
 	@Test
 	public void testUnexpectedToken() {
 		try {
 			Tokenizer tokenizer = createTokenizer("a + + b");
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-			assertThat(tokenizer.get(TokenType.PLUS).getType()).isEqualTo(TokenType.PLUS);
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+			assertThat(tokenizer.consume(TokenType.PLUS).getType()).isEqualTo(TokenType.PLUS);
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage()).isEqualTo(
@@ -170,9 +170,9 @@ public class TokenizerTest {
 
 		try {
 			Tokenizer tokenizer = createTokenizer("a + + b");
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-			assertThat(tokenizer.get(TokenType.PLUS).getType()).isEqualTo(TokenType.PLUS);
-			assertThat(tokenizer.get(EnumSet.of(TokenType.IDENTIFIER, TokenType.NUMBER_LITERAL,
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+			assertThat(tokenizer.consume(TokenType.PLUS).getType()).isEqualTo(TokenType.PLUS);
+			assertThat(tokenizer.consume(EnumSet.of(TokenType.IDENTIFIER, TokenType.NUMBER_LITERAL,
 					TokenType.STRING_LITERAL)).getValue()).isEqualTo("b");
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
@@ -184,23 +184,23 @@ public class TokenizerTest {
 	@Test
 	public void testEndOfStream() throws CarrotException {
 		Tokenizer tokenizer = createTokenizer("a =");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
-		assertThat(tokenizer.get(TokenType.ASSIGNMENT).getType())
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("a");
+		assertThat(tokenizer.consume(TokenType.ASSIGNMENT).getType())
 				.isEqualTo(TokenType.ASSIGNMENT);
 
 		tokenizer = createTokenizer("b <");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
-		assertThat(tokenizer.get(TokenType.LESS_THAN).getType()).isEqualTo(TokenType.LESS_THAN);
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("b");
+		assertThat(tokenizer.consume(TokenType.LESS_THAN).getType()).isEqualTo(TokenType.LESS_THAN);
 
 		tokenizer = createTokenizer("c >");
-		assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("c");
-		assertThat(tokenizer.get(TokenType.GREATER_THAN).getType())
+		assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("c");
+		assertThat(tokenizer.consume(TokenType.GREATER_THAN).getType())
 				.isEqualTo(TokenType.GREATER_THAN);
 
 		try {
 			tokenizer = createTokenizer("d \"foo");
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("d");
-			tokenizer.get(TokenType.STRING_LITERAL);
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("d");
+			tokenizer.consume(TokenType.STRING_LITERAL);
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage()).isEqualTo(
@@ -212,8 +212,8 @@ public class TokenizerTest {
 	public void testUnexpectedCharacter() {
 		try {
 			Tokenizer tokenizer = createTokenizer("foo \u263a bar");
-			assertThat(tokenizer.get(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
-			tokenizer.get(TokenType.IDENTIFIER);
+			assertThat(tokenizer.consume(TokenType.IDENTIFIER).getValue()).isEqualTo("foo");
+			tokenizer.consume(TokenType.IDENTIFIER);
 			fail("Expected CarrotException");
 		} catch (CarrotException e) {
 			assertThat(e.getMessage())

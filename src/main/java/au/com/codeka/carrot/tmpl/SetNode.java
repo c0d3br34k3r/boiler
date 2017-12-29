@@ -21,7 +21,7 @@ public class SetNode implements Node {
 	SetNode(Tokenizer tokenizer) throws CarrotException {
 		do {
 			String identifier = tokenizer.parseIdentifier();
-			tokenizer.get(TokenType.ASSIGNMENT);
+			tokenizer.consume(TokenType.ASSIGNMENT);
 			Term expression = tokenizer.parseExpression();
 			assignments.add(identifier, expression);
 		} while (parser.tryConsume(TokenType.SEMICOLON));
