@@ -15,7 +15,7 @@ public class Token {
 	private final TokenType tokenType;
 	private final @Nullable Object value;
 
-	public static final Token EOF = new Token(TokenType.END);
+	public static final Token END = new Token(TokenType.END);
 	public static final Token RIGHT_PARENTHESIS = new Token(TokenType.RIGHT_PARENTHESIS);
 	public static final Token LEFT_PARENTHESIS = new Token(TokenType.LEFT_PARENTHESIS);
 	public static final Token RIGHT_BRACKET = new Token(TokenType.RIGHT_BRACKET);
@@ -38,7 +38,7 @@ public class Token {
 	public static final Token MULTIPLY = new Token(TokenType.MULTIPLY);
 	public static final Token DIVIDE = new Token(TokenType.DIVIDE);
 	public static final Token MODULO = new Token(TokenType.MODULO);
-	public static final Token IN = new Token(TokenType.IN);
+//	public static final Token IN = new Token(TokenType.IN);
 	
 	public static final Token TRUE = new Token(TokenType.BOOLEAN_LITERAL, true);
 	public static final Token FALSE = new Token(TokenType.BOOLEAN_LITERAL, false);

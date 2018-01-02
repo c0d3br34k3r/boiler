@@ -1,10 +1,10 @@
 package au.com.codeka.carrot.expr;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import java.io.PushbackReader;
 import java.io.StringReader;
 import java.util.Collections;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -25,35 +25,38 @@ public class StatementParserTest {
 
 	@Test
 	public void testBinaryOperation() throws CarrotException {
-		assertThat(evaluate("+true")).isEqualTo(1);
-		assertThat(evaluate("1+1")).isEqualTo(2);
-		assertThat(evaluate("1+1+1")).isEqualTo(3);
-		assertThat(evaluate("1+1+1+1")).isEqualTo(4);
-		assertThat(evaluate("1")).isEqualTo(1);
-		assertThat(evaluate("!1")).isEqualTo(false);
-		assertThat(evaluate("!!1")).isEqualTo(true);
-		assertThat(evaluate("!!!1")).isEqualTo(false);
-		assertThat(evaluate("2 + 2 * 2")).isEqualTo(6);
-		assertThat(evaluate("2 * 2 + 2")).isEqualTo(6);
-		assertThat(evaluate("2 * (2 + 2)")).isEqualTo(8);
-		assertThat(evaluate("foo[4 + 4]")).isEqualTo(7);
-		assertThat(evaluate("foo[6] * 2")).isEqualTo(14);
-		assertThat(evaluate("bar.baz")).isEqualTo("qux");
-		assertThat(evaluate("quux.quuz.corge")).isEqualTo("grault");
-		assertThat(evaluate("quux['qu' + 'uz']['corge']")).isEqualTo("grault");
-		assertThat(evaluate("quux['quuz']['garply'][0]")).isEqualTo(3);
-		assertThat(evaluate("'1' + 1")).isEqualTo("11");
-		assertThat(evaluate("'foo' + 'bar'")).isEqualTo("foobar");
-		assertThat(evaluate("true + 'bar'")).isEqualTo("truebar");
-		assertThat(evaluate("true + 9")).isEqualTo(10);
+		Assert.assertEquals(evaluate("+true"), 1);
+		Assert.assertEquals(evaluate("1+1"), 2);
+		Assert.assertEquals(evaluate("1+1+1"), 3);
+		Assert.assertEquals(evaluate("1+1+1+1"), 4);
+		Assert.assertEquals(evaluate("1"), 1);
+		Assert.assertEquals(evaluate("!1"), false);
+		Assert.assertEquals(evaluate("!!1"), true);
+		Assert.assertEquals(evaluate("!!!1"), false);
+		Assert.assertEquals(evaluate("2 + 2 * 2"), 6);
+		Assert.assertEquals(evaluate("2 * 2 + 2"), 6);
+		Assert.assertEquals(evaluate("2 * (2 + 2)"), 8);
+		Assert.assertEquals(evaluate("foo[4 + 4]"), 7);
+		Assert.assertEquals(evaluate("foo[6] * 2"), 14);
+		Assert.assertEquals(evaluate("bar.baz"), "qux");
+		Assert.assertEquals(evaluate("quux.quuz.corge"), "grault");
+		Assert.assertEquals(evaluate("quux['qu' + 'uz']['corge']"), "grault");
+		Assert.assertEquals(evaluate("quux['quuz']['garply'][0]"), 3);
+		Assert.assertEquals(evaluate("'1' + 1"), "11");
+		Assert.assertEquals(evaluate("'foo' + 'bar'"), "foobar");
+		Assert.assertEquals(evaluate("true + 'bar'"), "truebar");
+		Assert.assertEquals(evaluate("true + 9"), 10);
 	}
 
 	private Object evaluate(String expr) throws CarrotException {
-		return evaluate(createParser(expr).parseExpression());
+		Tokenizer tokenizer = createParser(expr);
+		Term term = tokenizer.parseExpression();
+		tokenizer.consume(TokenType.END);
+		return evaluate(term);
 	}
 
-	private StatementParser createParser(String str) throws CarrotException {
-		return new StatementParser(new Tokenizer(new StringReader(str)));
+	private Tokenizer createParser(String str) throws CarrotException {
+		return new Tokenizer(new PushbackReader(new StringReader(str)), Tokenizer.Mode.STREAM);
 	}
 
 	private Object evaluate(Term term) throws CarrotException {

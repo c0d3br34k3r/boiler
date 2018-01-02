@@ -75,57 +75,59 @@ public class Parser {
 	}
 
 	private String parseText() throws IOException {
-		StringBuilder content = new StringBuilder();
-		for (;;) {
-			int c = reader.read();
-			switch (c) {
+		StringBuilder builder = new StringBuilder();
+		loop: for (;;) {
+			int ch = reader.read();
+			switch (ch) {
+			case -1:
+				mode = ParseMode.END;
+				break loop;
+			case '<':
+				int ch2 = reader.read();
+				switch (ch2) {
 				case -1:
-					mode = END;
-					return content.toString();
+					mode = ParseMode.END;
+					builder.append((char) ch);
+					break loop;
 				case '<':
-					int c2 = reader.read();
-					switch (c2) {
-						case -1:
-							mode = ParseMode.END;
-							return content.append((char) c).toString();
-						case '<':
-							mode = ParseMode.ECHO;
-							return content.toString();
-						case '%':
-							mode = ParseMode.TAG;
-							return content.toString();
-						case '#':
-							mode = ParseMode.COMMENT;
-							return content.toString();
-						default:
-							reader.unread(c2);
-					}
+					mode = ParseMode.ECHO;
+					break loop;
+				case '%':
+					mode = ParseMode.TAG;
+					break loop;
+				case '#':
+					mode = ParseMode.COMMENT;
+					break loop;
 				default:
-					content.append((char) c);
+					reader.unread(ch2);
+				}
+			default:
+				builder.append((char) ch);
 			}
 		}
+		return builder.toString();
 	}
-	
+
 	private Node parseTag() throws CarrotException {
 		Tokenizer tokenizer = new Tokenizer(reader);
 		Node node;
 		String tagName = tokenizer.parseIdentifier();
 		switch (tagName) {
-			case "if":
-				
-			case "else":
-				
-			case "for":
-				
-			case "echo":
-				node = parseEcho(tokenizer);
-				break;
-			case "set":
-				
-			case "include":
-				
-			default:
-				throw new CarrotException("unknown tag: " + tagName);
+		case "if":
+
+		case "else":
+
+		case "for":
+
+		case "echo":
+			node = parseEcho(tokenizer);
+			break;
+		case "set":
+
+		case "include":
+
+		default:
+			throw new CarrotException("unknown tag: " + tagName);
 		}
 		tokenizer.consume(TokenType.END);
 		mode = ParseMode.TEXT;
@@ -140,16 +142,16 @@ public class Parser {
 		for (;;) {
 			int c = reader.read();
 			switch (c) {
-				case -1:
-					throw new CarrotException("unclosed comment");
-				case '#':
-					int c2 = reader.read();
-					if (c2 == '>') {
-						return parseNext();
-					}
-					reader.unread(c2);
-					break;
-				default:
+			case -1:
+				throw new CarrotException("unclosed comment");
+			case '#':
+				int c2 = reader.read();
+				if (c2 == '>') {
+					return parseNext();
+				}
+				reader.unread(c2);
+				break;
+			default:
 			}
 		}
 	}
