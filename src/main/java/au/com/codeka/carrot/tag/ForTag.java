@@ -11,9 +11,8 @@ import au.com.codeka.carrot.ValueHelper;
 import au.com.codeka.carrot.bindings.Composite;
 import au.com.codeka.carrot.bindings.LoopBindings;
 import au.com.codeka.carrot.bindings.MapBindings;
-import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Term;
-import au.com.codeka.carrot.expr.TokenType;
+import au.com.codeka.carrot.expr.Tokenizer;
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TagNode;
 
@@ -40,9 +39,10 @@ public class ForTag extends Tag {
 	}
 
 	@Override
-	public void parseStatement(StatementParser parser) throws CarrotException {
+	public void parseStatement(Tokenizer parser) throws CarrotException {
 		loopIdentifier = parser.parseIdentifier();
-		parser.consume(TokenType.IN);
+		parser.consumeIdentifier("in");
+		
 		loopExpression = parser.parseExpression();
 	}
 

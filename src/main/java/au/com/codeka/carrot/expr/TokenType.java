@@ -8,18 +8,6 @@ public enum TokenType {
 
 	/** The end of the stream. */
 	END,
-	//
-	// /** The end of the stream. */
-	// START_TAG,
-	//
-	// /** The end of the stream. */
-	// END_TAG,
-	//
-	// /** The end of the stream. */
-	// START_ECHO,
-	//
-	// /** The end of the stream. */
-	// END_ECHO,
 
 	/** A string literal {@code "like this"}. */
 	STRING_LITERAL(true),
@@ -51,8 +39,8 @@ public enum TokenType {
 	/** Comma: {@code ,} */
 	COMMA,
 
-	/** Semicolon: {@code ;} */
-	SEMICOLON,
+	// /** Semicolon: {@code ;} */
+	// SEMICOLON,
 
 	/** Dot: {@code .} */
 	DOT,
@@ -140,14 +128,16 @@ public enum TokenType {
 
 	BinaryOperator binaryOperator() {
 		if (binaryOperator == null) {
-			throw new UnsupportedOperationException(String.format("%s is not a binary operator", this));
+			throw new UnsupportedOperationException(
+					String.format("%s is not a binary operator", this));
 		}
 		return binaryOperator;
 	}
 
 	UnaryOperator unaryOperator() {
 		if (unaryOperator == null) {
-			throw new UnsupportedOperationException(String.format("%s is not an unary operator", this));
+			throw new UnsupportedOperationException(
+					String.format("%s is not an unary operator", this));
 		}
 		return unaryOperator;
 	}

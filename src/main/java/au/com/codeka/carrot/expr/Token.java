@@ -22,7 +22,7 @@ public class Token {
 	public static final Token LEFT_BRACKET = new Token(TokenType.LEFT_BRACKET);
 	public static final Token ASSIGNMENT = new Token(TokenType.ASSIGNMENT);
 	public static final Token COMMA = new Token(TokenType.COMMA);
-	public static final Token SEMICOLON = new Token(TokenType.SEMICOLON);
+//	public static final Token SEMICOLON = new Token(TokenType.SEMICOLON);
 	public static final Token DOT = new Token(TokenType.DOT);
 	public static final Token NOT = new Token(TokenType.NOT);
 	public static final Token LOGICAL_AND = new Token(TokenType.LOGICAL_AND);

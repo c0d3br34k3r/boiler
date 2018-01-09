@@ -31,8 +31,7 @@ public class Tokenizer {
 	 * Returns the type of the next token without consuming it.
 	 * 
 	 * @return the type of the next token
-	 * @throws CarrotException
-	 *             if there's an error parsing the token
+	 * @throws CarrotException if there's an error parsing the token
 	 */
 	public TokenType peek() throws CarrotException {
 		if (peeked == null) {
@@ -49,21 +48,39 @@ public class Tokenizer {
 		peeked = null;
 		return result;
 	}
+	
+	public BinaryOperator binaryOperator() throws CarrotException {
+		return next().getType().binaryOperator();
+	}
+	
+	public UnaryOperator unaryOperator() throws CarrotException {
+		return next().getType().unaryOperator();
+	}
+	
+	public Object value() throws CarrotException {
+		return next().getValue();
+	}
 
 	/**
 	 * Consumes the next token and asserts that it matches the given type.
 	 *
-	 * @param type
-	 *            the type to match against
-	 * @throws CarrotException
-	 *             if there's an error parsing the token, or if it doesn't match
-	 *             the given type
+	 * @param type the type to match against
+	 * @throws CarrotException if there's an error parsing the token, or if it
+	 *         doesn't match the given type
 	 */
 	public void consume(TokenType type) throws CarrotException {
 		Token next = next();
 		if (next.getType() != type) {
 			throw new CarrotException("Expected token of type " + type
 					+ ", got " + next.getType());
+		}
+	}
+
+	public void consumeIdentifier(String value) throws CarrotException {
+		Token next = next();
+		if (next.getType() != TokenType.IDENTIFIER || !next.getValue().equals(value)) {
+			throw new CarrotException("Expected identifier " + value
+					+ ", got " + next);
 		}
 	}
 
@@ -94,8 +111,8 @@ public class Tokenizer {
 		return (String) next.getValue();
 	}
 
-	private static final CharMatcher DIGIT_OR_DOT;
 	private static final CharMatcher DIGIT;
+	private static final CharMatcher DIGIT_OR_DOT;
 	private static final CharMatcher IDENTIFIER_START;
 	private static final CharMatcher IDENTIFIER_PART;
 
@@ -116,7 +133,7 @@ public class Tokenizer {
 		case '[': return Token.LEFT_BRACKET;
 		case ']': return Token.RIGHT_BRACKET;
 		case ',': return Token.COMMA;
-		case ';': return Token.SEMICOLON;
+		// case ';': return Token.SEMICOLON;
 		case '.': return Token.DOT;
 		case '+': return Token.PLUS;
 		case '-': return Token.MINUS;
@@ -194,12 +211,9 @@ public class Tokenizer {
 			}
 		}
 		String str = builder.toString();
-		Number number;
-		if (dot) {
-			number = Double.parseDouble(str);
-		} else {
-			number = Integer.parseInt(str);
-		}
+		Number number = dot
+				? (Number) Double.parseDouble(str)
+				: (Number) Integer.parseInt(str);
 		return new Token(TokenType.NUMBER_LITERAL, number);
 	}
 
@@ -234,22 +248,6 @@ public class Tokenizer {
 		return builder.toString();
 	}
 
-	// private void readUntil(StringBuilder builder, CharMatcher matcher)
-	// throws IOException {
-	// for (;;) {
-	// int next = reader.read();
-	// if (next == -1) {
-	// break;
-	// }
-	// if (matcher.matches((char) next)) {
-	// builder.append((char) next);
-	// } else {
-	// reader.unread(next);
-	// break;
-	// }
-	// }
-	// }
-
 	private void require(char required) throws IOException, CarrotException {
 		if (reader.read() != required) {
 			throw new CarrotException("expected " + required);
@@ -260,8 +258,7 @@ public class Tokenizer {
 	 * "Peeks" at the next character and consumes it if it matches the given
 	 * character.
 	 * 
-	 * @param match
-	 *            the character to match
+	 * @param match the character to match
 	 * @return whether the character was consumed
 	 * @throws IOException
 	 */

@@ -48,6 +48,20 @@ public class StatementParserTest {
 		Assert.assertEquals(evaluate("true + 9"), 10);
 	}
 
+	@Test
+	public void testSyntaxError() {
+		syntaxError("1 1");
+	}
+
+	private void syntaxError(String expr) {
+		try {
+			evaluate(expr);
+			Assert.fail(expr + " was valid");
+		} catch (CarrotException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
 	private Object evaluate(String expr) throws CarrotException {
 		Tokenizer tokenizer = createParser(expr);
 		Term term = tokenizer.parseExpression();
@@ -55,7 +69,7 @@ public class StatementParserTest {
 		return evaluate(term);
 	}
 
-	private Tokenizer createParser(String str) throws CarrotException {
+	private Tokenizer createParser(String str) {
 		return new Tokenizer(new PushbackReader(new StringReader(str)), Tokenizer.Mode.STREAM);
 	}
 

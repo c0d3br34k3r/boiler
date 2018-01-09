@@ -1,11 +1,10 @@
 package au.com.codeka.carrot.expr;
 
-
 import au.com.codeka.carrot.CarrotException;
 
-public class ExpressionParser {
+class ExpressionParser {
 
-	public static Term parse(Tokenizer tokenizer) throws CarrotException {
+	static Term parse(Tokenizer tokenizer) throws CarrotException {
 		return EXPRESSION_PARSER.parse(tokenizer);
 	}
 
