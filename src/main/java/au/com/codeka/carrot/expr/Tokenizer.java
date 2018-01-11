@@ -48,15 +48,15 @@ public class Tokenizer {
 		peeked = null;
 		return result;
 	}
-	
+
 	public BinaryOperator binaryOperator() throws CarrotException {
 		return next().getType().binaryOperator();
 	}
-	
+
 	public UnaryOperator unaryOperator() throws CarrotException {
 		return next().getType().unaryOperator();
 	}
-	
+
 	public Object value() throws CarrotException {
 		return next().getValue();
 	}
@@ -178,8 +178,7 @@ public class Tokenizer {
 			case '\'':
 			case '"':
 				if (next == end) {
-					return new Token(TokenType.STRING_LITERAL,
-							builder.toString());
+					return new Token(TokenType.VALUE, builder.toString());
 				}
 				// fallthrough
 			default:
@@ -214,7 +213,7 @@ public class Tokenizer {
 		Number number = dot
 				? (Number) Double.parseDouble(str)
 				: (Number) Integer.parseInt(str);
-		return new Token(TokenType.NUMBER_LITERAL, number);
+		return new Token(TokenType.VALUE, number);
 	}
 
 	private Token parseIdentifier(char first) throws IOException {

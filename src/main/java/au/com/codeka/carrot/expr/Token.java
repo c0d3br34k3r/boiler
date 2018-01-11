@@ -22,7 +22,7 @@ public class Token {
 	public static final Token LEFT_BRACKET = new Token(TokenType.LEFT_BRACKET);
 	public static final Token ASSIGNMENT = new Token(TokenType.ASSIGNMENT);
 	public static final Token COMMA = new Token(TokenType.COMMA);
-//	public static final Token SEMICOLON = new Token(TokenType.SEMICOLON);
+	// public static final Token SEMICOLON = new Token(TokenType.SEMICOLON);
 	public static final Token DOT = new Token(TokenType.DOT);
 	public static final Token NOT = new Token(TokenType.NOT);
 	public static final Token LOGICAL_AND = new Token(TokenType.LOGICAL_AND);
@@ -38,10 +38,10 @@ public class Token {
 	public static final Token MULTIPLY = new Token(TokenType.MULTIPLY);
 	public static final Token DIVIDE = new Token(TokenType.DIVIDE);
 	public static final Token MODULO = new Token(TokenType.MODULO);
-//	public static final Token IN = new Token(TokenType.IN);
-	
-	public static final Token TRUE = new Token(TokenType.BOOLEAN_LITERAL, true);
-	public static final Token FALSE = new Token(TokenType.BOOLEAN_LITERAL, false);
+	// public static final Token IN = new Token(TokenType.IN);
+
+	public static final Token TRUE = new Token(TokenType.VALUE, true);
+	public static final Token FALSE = new Token(TokenType.VALUE, false);
 
 	public Token(TokenType tokenType) {
 		this.tokenType = tokenType;

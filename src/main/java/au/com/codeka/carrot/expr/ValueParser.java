@@ -17,9 +17,7 @@ class ValueParser implements TermParser {
 		case MINUS:
 		case NOT:
 			return new UnaryTerm(type.unaryOperator(), parse(tokenizer));
-		case NUMBER_LITERAL:
-		case STRING_LITERAL:
-		case BOOLEAN_LITERAL:
+		case VALUE:
 			return new ValueTerm(token.getValue());
 		case IDENTIFIER:
 			return getAccessTerm(tokenizer, new Variable((String) token.getValue()));

@@ -9,14 +9,16 @@ public enum TokenType {
 	/** The end of the stream. */
 	END,
 
-	/** A string literal {@code "like this"}. */
-	STRING_LITERAL(true),
-
-	/** A number literal, like {@code 12} or {@code 12.34}. */
-	NUMBER_LITERAL(true),
-
-	/** A boolean literal, like {@code true} or {@code false}. */
-	BOOLEAN_LITERAL(true),
+//	/** A string literal {@code "like this"}. */
+//	STRING_LITERAL(true),
+//
+//	/** A number literal, like {@code 12} or {@code 12.34}. */
+//	NUMBER_LITERAL(true),
+//
+//	/** A boolean literal, like {@code true} or {@code false}. */
+//	BOOLEAN_LITERAL(true),
+	
+	VALUE(true),
 
 	/** A Java-style identifier like {@code foo} or {@code bar}. */
 	IDENTIFIER(true),
