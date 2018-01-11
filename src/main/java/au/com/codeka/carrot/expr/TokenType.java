@@ -9,19 +9,15 @@ public enum TokenType {
 	/** The end of the stream. */
 	END,
 
-//	/** A string literal {@code "like this"}. */
-//	STRING_LITERAL(true),
-//
-//	/** A number literal, like {@code 12} or {@code 12.34}. */
-//	NUMBER_LITERAL(true),
-//
-//	/** A boolean literal, like {@code true} or {@code false}. */
-//	BOOLEAN_LITERAL(true),
-	
-	VALUE(true),
+	/**
+	 * Any literal value, such as a string {@code "like this"}, a number, like
+	 * {@code 12} or {@code 12.34}, or a boolean literal, like {@code true} or
+	 * {@code false}.
+	 */
+	VALUE,
 
 	/** A Java-style identifier like {@code foo} or {@code bar}. */
-	IDENTIFIER(true),
+	IDENTIFIER,
 
 	/** Left-parenthesis: {@code (} */
 	LEFT_PARENTHESIS,
@@ -40,9 +36,6 @@ public enum TokenType {
 
 	/** Comma: {@code ,} */
 	COMMA,
-
-	// /** Semicolon: {@code ;} */
-	// SEMICOLON,
 
 	/** Dot: {@code .} */
 	DOT,
@@ -87,45 +80,26 @@ public enum TokenType {
 	DIVIDE(BinaryOperator.DIVIDE),
 
 	/** Divide: {@code /} */
-	MODULO(BinaryOperator.MODULO),
+	MODULO(BinaryOperator.MODULO);
 
-	// /** In: {@code in} */
-	// IN(BinaryOperator.IN),
-
-	;
-
-	private final boolean hasValue;
 	private final BinaryOperator binaryOperator;
 	private final UnaryOperator unaryOperator;
 
 	TokenType() {
-		this(false, null, null);
-	}
-
-	TokenType(boolean hasValue) {
-		this(hasValue, null, null);
+		this(null, null);
 	}
 
 	TokenType(UnaryOperator unaryOperator) {
-		this(false, null, unaryOperator);
+		this(null, unaryOperator);
 	}
 
 	TokenType(BinaryOperator binaryOperator) {
-		this(false, binaryOperator, null);
+		this(binaryOperator, null);
 	}
 
 	TokenType(BinaryOperator binaryOperator, UnaryOperator unaryOperator) {
-		this(false, binaryOperator, unaryOperator);
-	}
-
-	TokenType(boolean hasValue, BinaryOperator binaryOperator, UnaryOperator unaryOperator) {
-		this.hasValue = hasValue;
 		this.binaryOperator = binaryOperator;
 		this.unaryOperator = unaryOperator;
-	}
-
-	boolean hasValue() {
-		return hasValue;
 	}
 
 	BinaryOperator binaryOperator() {
