@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.math.DoubleMath;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
@@ -43,9 +42,6 @@ public class ValueHelper {
 		}
 		if (value instanceof String) {
 			return !((String) value).isEmpty();
-		}
-		if (value instanceof CharSequence) {
-			return ((CharSequence) value).length() > 0;
 		}
 		// these truthy values deviate from JavaScript's behavior
 		if (value instanceof Collection) {
@@ -122,15 +118,15 @@ public class ValueHelper {
 	 *         to a number.
 	 */
 	public static Object add(Object o1, Object o2) throws CarrotException {
-		if (o1 instanceof String || o2 instanceof String) {
-			return o1.toString() + o2.toString();
+		if (o1 instanceof Number || o2 instanceof Number) {
+			Number n1 = toNumber(o1);
+			Number n2 = toNumber(o2);
+			if (n1 instanceof Integer && n2 instanceof Integer) {
+				return n1.intValue() + n2.intValue();
+			}
+			return n1.doubleValue() + n2.doubleValue();
 		}
-		Number n1 = toNumber(o1);
-		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer && n2 instanceof Integer) {
-			return n1.intValue() + n2.intValue();
-		}
-		return n1.doubleValue() + n2.doubleValue();
+		return o1.toString() + o2.toString();
 	}
 
 	/**
@@ -170,7 +166,7 @@ public class ValueHelper {
 		}
 		return n1.doubleValue() * n2.doubleValue();
 	}
-	
+
 	public static Number modulo(Object o1, Object o2) throws CarrotException {
 		Number n1 = toNumber(o1);
 		Number n2 = toNumber(o2);

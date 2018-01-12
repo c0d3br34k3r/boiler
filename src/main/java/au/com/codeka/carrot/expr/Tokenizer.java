@@ -76,9 +76,13 @@ public class Tokenizer {
 		}
 	}
 
+	public void end() throws CarrotException {
+		consume(TokenType.END);
+	}
+
 	public void consumeIdentifier(String value) throws CarrotException {
 		Token next = next();
-		if (next.getType() != TokenType.IDENTIFIER || !next.getValue().equals(value)) {
+		if (next.getType() != TokenType.IDENTIFIER || !next.getIdentifier().equals(value)) {
 			throw new CarrotException("Expected identifier " + value
 					+ ", got " + next);
 		}
@@ -108,7 +112,7 @@ public class Tokenizer {
 		if (next.getType() != TokenType.IDENTIFIER) {
 			throw new CarrotException("expected identifier, got " + next);
 		}
-		return (String) next.getValue();
+		return next.getIdentifier();
 	}
 
 	private static final CharMatcher DIGIT;
@@ -133,7 +137,6 @@ public class Tokenizer {
 		case '[': return Token.LEFT_BRACKET;
 		case ']': return Token.RIGHT_BRACKET;
 		case ',': return Token.COMMA;
-		// case ';': return Token.SEMICOLON;
 		case '.': return Token.DOT;
 		case '+': return Token.PLUS;
 		case '-': return Token.MINUS;
@@ -178,7 +181,7 @@ public class Tokenizer {
 			case '\'':
 			case '"':
 				if (next == end) {
-					return new Token(TokenType.VALUE, builder.toString());
+					return Token.valueToken(builder.toString());
 				}
 				// fallthrough
 			default:
@@ -213,7 +216,7 @@ public class Tokenizer {
 		Number number = dot
 				? (Number) Double.parseDouble(str)
 				: (Number) Integer.parseInt(str);
-		return new Token(TokenType.VALUE, number);
+		return Token.valueToken(number);
 	}
 
 	private Token parseIdentifier(char first) throws IOException {
@@ -224,7 +227,7 @@ public class Tokenizer {
 		case "false":
 			return Token.FALSE;
 		default:
-			return new Token(TokenType.IDENTIFIER, identifier);
+			return Token.identifierToken(identifier);
 		}
 	}
 

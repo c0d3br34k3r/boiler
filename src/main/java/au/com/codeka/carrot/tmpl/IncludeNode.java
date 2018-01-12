@@ -9,19 +9,19 @@ import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.Tokenizer;
 
-class Echo implements Node {
+public class IncludeNode implements Node {
 
-	private final Term term;
-
-	Echo(Tokenizer tokenizer) throws CarrotException {
-		term = tokenizer.parseExpression();
+	private final Term fileName;
+	
+	public IncludeNode(Tokenizer tokenizer) throws CarrotException {
+		fileName = tokenizer.parseExpression();
 		tokenizer.end();
 	}
 
 	@Override
 	public void render(CarrotEngine engine, Writer writer, Scope scope)
 			throws CarrotException, IOException {
-		writer.write(term.evaluate(engine.getConfig(), scope).toString());
+
 	}
 
 }

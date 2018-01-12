@@ -1,79 +1,136 @@
 package au.com.codeka.carrot.expr;
 
-import java.util.Objects;
-
 /**
  * A {@link Token} is something pulled off the statement stream and represents a
  * terminal like a string literal, number, identifier, etc.
  */
-public class Token {
+public abstract class Token {
 
-	static final Token END = new Token(TokenType.END);
-	static final Token RIGHT_PARENTHESIS = new Token(TokenType.RIGHT_PARENTHESIS);
-	static final Token LEFT_PARENTHESIS = new Token(TokenType.LEFT_PARENTHESIS);
-	static final Token RIGHT_BRACKET = new Token(TokenType.RIGHT_BRACKET);
-	static final Token LEFT_BRACKET = new Token(TokenType.LEFT_BRACKET);
-	static final Token ASSIGNMENT = new Token(TokenType.ASSIGNMENT);
-	static final Token COMMA = new Token(TokenType.COMMA);
-	static final Token DOT = new Token(TokenType.DOT);
-	static final Token NOT = new Token(TokenType.NOT);
-	static final Token LOGICAL_AND = new Token(TokenType.LOGICAL_AND);
-	static final Token LOGICAL_OR = new Token(TokenType.LOGICAL_OR);
-	static final Token EQUAL = new Token(TokenType.EQUAL);
-	static final Token NOT_EQUAL = new Token(TokenType.NOT_EQUAL);
-	static final Token LESS_THAN = new Token(TokenType.LESS_THAN);
-	static final Token GREATER_THAN = new Token(TokenType.GREATER_THAN);
-	static final Token LESS_THAN_OR_EQUAL = new Token(TokenType.LESS_THAN_OR_EQUAL);
-	static final Token GREATER_THAN_OR_EQUAL = new Token(TokenType.GREATER_THAN_OR_EQUAL);
-	static final Token PLUS = new Token(TokenType.PLUS);
-	static final Token MINUS = new Token(TokenType.MINUS);
-	static final Token MULTIPLY = new Token(TokenType.MULTIPLY);
-	static final Token DIVIDE = new Token(TokenType.DIVIDE);
-	static final Token MODULO = new Token(TokenType.MODULO);
-	static final Token TRUE = new Token(TokenType.VALUE, true);
-	static final Token FALSE = new Token(TokenType.VALUE, false);
+	static final Token END = new SymbolToken(TokenType.END);
+	static final Token RIGHT_PARENTHESIS = new SymbolToken(TokenType.RIGHT_PARENTHESIS);
+	static final Token LEFT_PARENTHESIS = new SymbolToken(TokenType.LEFT_PARENTHESIS);
+	static final Token RIGHT_BRACKET = new SymbolToken(TokenType.RIGHT_BRACKET);
+	static final Token LEFT_BRACKET = new SymbolToken(TokenType.LEFT_BRACKET);
+	static final Token ASSIGNMENT = new SymbolToken(TokenType.ASSIGNMENT);
+	static final Token COMMA = new SymbolToken(TokenType.COMMA);
+	static final Token DOT = new SymbolToken(TokenType.DOT);
+	static final Token NOT = new SymbolToken(TokenType.NOT);
+	static final Token LOGICAL_AND = new SymbolToken(TokenType.LOGICAL_AND);
+	static final Token LOGICAL_OR = new SymbolToken(TokenType.LOGICAL_OR);
+	static final Token EQUAL = new SymbolToken(TokenType.EQUAL);
+	static final Token NOT_EQUAL = new SymbolToken(TokenType.NOT_EQUAL);
+	static final Token LESS_THAN = new SymbolToken(TokenType.LESS_THAN);
+	static final Token GREATER_THAN = new SymbolToken(TokenType.GREATER_THAN);
+	static final Token LESS_THAN_OR_EQUAL = new SymbolToken(TokenType.LESS_THAN_OR_EQUAL);
+	static final Token GREATER_THAN_OR_EQUAL = new SymbolToken(TokenType.GREATER_THAN_OR_EQUAL);
+	static final Token PLUS = new SymbolToken(TokenType.PLUS);
+	static final Token MINUS = new SymbolToken(TokenType.MINUS);
+	static final Token MULTIPLY = new SymbolToken(TokenType.MULTIPLY);
+	static final Token DIVIDE = new SymbolToken(TokenType.DIVIDE);
+	static final Token MODULO = new SymbolToken(TokenType.MODULO);
 
-	private final TokenType tokenType;
-	private final Object value;
+	static final Token TRUE = new ValueToken(true);
+	static final Token FALSE = new ValueToken(false);
 
-	private Token(TokenType tokenType) {
-		this.tokenType = tokenType;
-		this.value = null;
+	static Token valueToken(Object value) {
+		return new ValueToken(value);
 	}
 
-	Token(TokenType type, Object value) {
-		this.tokenType = type;
-		this.value = value;
+	static Token identifierToken(String value) {
+		return new IdentifierToken(value);
 	}
 
-	public TokenType getType() {
-		return tokenType;
-	}
+	public abstract TokenType getType();
 
-	public Object getValue() {
-		if (value == null) {
+	public abstract Object getValue();
+
+	public abstract String getIdentifier();
+
+	private static class SymbolToken extends Token {
+
+		private final TokenType type;
+
+		private SymbolToken(TokenType type) {
+			this.type = type;
+		}
+
+		@Override
+		public TokenType getType() {
+			return type;
+		}
+
+		@Override
+		public Object getValue() {
 			throw new IllegalStateException();
 		}
-		return value;
-	}
 
-	@Override
-	public String toString() {
-		return value == null ? tokenType.toString() : tokenType + ": " + value;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Token)) {
-			return false;
+		@Override
+		public String getIdentifier() {
+			throw new IllegalStateException();
 		}
-		Token other = (Token) obj;
-		return other.tokenType == tokenType && Objects.equals(other.value, value);
+
+		@Override
+		public String toString() {
+			return type.toString();
+		}
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(tokenType, value);
+	private static class ValueToken extends Token {
+
+		private final Object value;
+
+		private ValueToken(Object value) {
+			this.value = value;
+		}
+
+		@Override
+		public TokenType getType() {
+			return TokenType.VALUE;
+		}
+
+		@Override
+		public Object getValue() {
+			return value;
+		}
+
+		@Override
+		public String getIdentifier() {
+			throw new IllegalStateException();
+		}
+
+		@Override
+		public String toString() {
+			return TokenType.VALUE + ": " + value;
+		}
+	}
+
+	private static class IdentifierToken extends Token {
+
+		private final String value;
+
+		private IdentifierToken(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public TokenType getType() {
+			return TokenType.IDENTIFIER;
+		}
+
+		@Override
+		public Object getValue() {
+			throw new IllegalStateException();
+		}
+
+		@Override
+		public String getIdentifier() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return TokenType.IDENTIFIER + ": " + value;
+		}
 	}
 
 }

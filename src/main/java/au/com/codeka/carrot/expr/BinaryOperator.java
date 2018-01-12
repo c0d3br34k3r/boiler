@@ -32,7 +32,7 @@ enum BinaryOperator {
 			return ValueHelper.divide(left, right.value());
 		}
 	},
-	
+
 	MODULO {
 		@Override
 		Object apply(Object left, LazyValue right) throws CarrotException {
@@ -94,30 +94,7 @@ enum BinaryOperator {
 		Object apply(Object left, LazyValue right) throws CarrotException {
 			return ValueHelper.isTrue(left) ? left : right.value();
 		}
-	},
-
-//	IN {
-//		@Override
-//		Object apply(Object left, LazyValue right) throws CarrotException {
-//			Object rightValue = right.value();
-//			if (rightValue instanceof Collection) {
-//				return ((Collection<?>) rightValue).contains(left);
-//			}
-//			if (rightValue instanceof Map) {
-//				return ((Map<?, ?>) rightValue).containsKey(left);
-//			}
-//			if (rightValue instanceof Bindings) {
-//				return ((Bindings) rightValue).resolve(left.toString()) != null;
-//			}
-//			if (rightValue instanceof Iterable) {
-//				return Iterables.contains(((Iterable<?>) rightValue), left);
-//			}
-//			throw new CarrotException("rightValue "
-//					+ rightValue + "(" + rightValue.getClass() + ") is not a container");
-//		}
-//	},
-	
-	;
+	};
 
 	/**
 	 * Applies the binary operator to the given operands.

@@ -31,16 +31,16 @@ public enum TokenType {
 	/** Right-square-bracket: {@code ]} */
 	RIGHT_BRACKET,
 
-	/** Single Equals: {@code =} */
+	/** The assignment operator, {@code =} */
 	ASSIGNMENT,
 
-	/** Comma: {@code ,} */
+	/** A comma, {@code ,} */
 	COMMA,
 
-	/** Dot: {@code .} */
+	/** The dot (access) operator, {@code .} */
 	DOT,
 
-	/** Not: {@code !} */
+	/** The not operator, {@code !} */
 	NOT(UnaryOperator.NOT),
 
 	/** Logical and: {@code &&} */

@@ -13,6 +13,7 @@ import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.TagType;
 import au.com.codeka.carrot.expr.TokenType;
 import au.com.codeka.carrot.expr.Tokenizer;
+import au.com.codeka.carrot.expr.Tokenizer.Mode;
 
 public class Parser {
 
@@ -108,34 +109,26 @@ public class Parser {
 		return builder.toString();
 	}
 
-	private Node parseTag() throws CarrotException {
-		Tokenizer tokenizer = new Tokenizer(reader);
-		Node node;
+	private Node parseTag() throws CarrotException, IOException {
+		Tokenizer tokenizer = new Tokenizer(reader, Mode.TAG);
 		String tagName = tokenizer.parseIdentifier();
+		mode = ParseMode.TEXT;
 		switch (tagName) {
 		case "if":
-
+			return IfNode.expression(tokenizer).childNodes(this);
 		case "else":
 
 		case "for":
 
 		case "echo":
-			node = parseEcho(tokenizer);
-			break;
+			return new Echo(tokenizer);
 		case "set":
 
 		case "include":
-
+			return new IncludeNode(tokenizer);
 		default:
 			throw new CarrotException("unknown tag: " + tagName);
 		}
-		tokenizer.consume(TokenType.END);
-		mode = ParseMode.TEXT;
-		return node;
-	}
-
-	private Node parseEcho(Tokenizer tokenizer) {
-		return new Echo(tokenizer.parseExpression());
 	}
 
 	private Node skipCommentAndParseNext() throws IOException, CarrotException {
@@ -155,6 +148,5 @@ public class Parser {
 			}
 		}
 	}
-
 
 }

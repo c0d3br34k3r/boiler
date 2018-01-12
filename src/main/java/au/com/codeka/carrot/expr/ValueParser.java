@@ -20,7 +20,7 @@ class ValueParser implements TermParser {
 		case VALUE:
 			return new ValueTerm(token.getValue());
 		case IDENTIFIER:
-			return getAccessTerm(tokenizer, new Variable((String) token.getValue()));
+			return getAccessTerm(tokenizer, new Variable(token.getIdentifier()));
 		case LEFT_PARENTHESIS:
 			Term term = ExpressionParser.parse(tokenizer);
 			tokenizer.consume(TokenType.RIGHT_PARENTHESIS);
