@@ -29,9 +29,6 @@ class AccessTerm implements Term {
 	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
 		Object termValue = term.evaluate(config, scope);
 		Object accessValue = accessor.evaluate(config, scope);
-		if (termValue == null) {
-			throw new CarrotException("null has no properties");
-		}
 		if (termValue instanceof Map) {
 			return ((Map<?, ?>) termValue).get(accessValue.toString());
 		}
@@ -39,7 +36,14 @@ class AccessTerm implements Term {
 			return ((Bindings) termValue).resolve(accessValue.toString());
 		}
 		if (termValue instanceof List) {
-			return ((List<?>) termValue).get(ValueHelper.toNumber(accessValue).intValue());
+			int index = ValueHelper.toNumber(accessValue).intValue();
+			List<?> list = (List<?>) termValue;
+			return list.get(index < 0 ? list.size() + index : index);
+		}
+		if (termValue instanceof String) {
+			int index = ValueHelper.toNumber(accessValue).intValue();
+			String str = (String) termValue;
+			return String.valueOf(str.charAt(index < 0 ? str.length() + index : index));
 		}
 		throw new CarrotException("Cannot access key " + accessValue + " in " + termValue);
 	}

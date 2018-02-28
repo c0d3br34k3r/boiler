@@ -30,7 +30,7 @@ public class ValueHelper {
 	 * @throws CarrotException when the value cannot be determined to be true or
 	 *         false
 	 */
-	public static boolean isTrue(Object value) throws CarrotException {
+	public static boolean isTrue(Object value) {
 		if (value == null) {
 			return false;
 		}
