@@ -1,12 +1,15 @@
 package au.com.codeka.carrot.expr;
 
+import static au.com.codeka.carrot.expr.Functions.camelToSeparator;
+import static au.com.codeka.carrot.expr.Functions.range;
+import static au.com.codeka.carrot.expr.Functions.separatorToCamel;
+import static au.com.codeka.carrot.expr.Functions.slice;
+
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import static au.com.codeka.carrot.expr.Functions.*;
 
 public class FunctionsTest {
 
@@ -34,6 +37,9 @@ public class FunctionsTest {
 		Assert.assertEquals(range(2, 0), Collections.emptyList());
 		Assert.assertEquals(range(0, 2, -1), Collections.emptyList());
 		Assert.assertEquals(range(2, 0, -1), Arrays.asList(2, 1));
+		Assert.assertEquals(range(0, 5, 2), Arrays.asList(0, 2, 4));
+		Assert.assertEquals(range(-5, 0, 2), Arrays.asList(-5, -3, -1));
+		Assert.assertEquals(range(1, 7, 3), Arrays.asList(1, 4));
 		Assert.assertEquals(range(0, 30, 5), Arrays.asList(0, 5, 10, 15, 20, 25));
 	}
 
@@ -41,7 +47,8 @@ public class FunctionsTest {
 	public void testSlice() {
 		Assert.assertEquals(slice("abcde", 0, 2, 1), "ab");
 		Assert.assertEquals(slice("abcde", null, 2), "ab");
-		Assert.assertEquals(slice("abcde", 5, 5, 1), "");
+		Assert.assertEquals(slice("abcde", 5, 5), "");
+		Assert.assertEquals(slice("abcde", 5, 0), "");
 		Assert.assertEquals(slice("abcde", -1, 0, -1), "edcb");
 		Assert.assertEquals(slice("abcde", -1, -6, -1), "edcba");
 		Assert.assertEquals(slice("abcde", null, null, -1), "edcba");
@@ -50,6 +57,12 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", null, null, -2), "eca");
 		Assert.assertEquals(slice("abcde", -2, null, -2), "db");
 		Assert.assertEquals(slice("abcde", -2), "de");
+		Assert.assertEquals(slice("abcde", -100, 100), "abcde");
+		Assert.assertEquals(slice("abcde", 100, -100, -1), "edcba");
+		Assert.assertEquals(slice("abcde", 100, 100), "");
+		Assert.assertEquals(slice("abcde", -100, -100), "");
+		Assert.assertEquals(slice("abcde", 100, 100, -1), "");
+		Assert.assertEquals(slice("abcde", -100, -100, -1), "");
 	}
 
 }
