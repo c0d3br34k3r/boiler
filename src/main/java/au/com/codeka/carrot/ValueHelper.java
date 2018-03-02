@@ -236,20 +236,22 @@ public class ValueHelper {
 	 * Performs a numerical comparison on the two operands (assuming they are
 	 * both convertible to numbers).
 	 *
-	 * @param o1 The left hand side to compare.
-	 * @param o2 The right hand side to compare.
+	 * @param a The left hand side to compare.
+	 * @param b The right hand side to compare.
 	 * @return Less than zero if lhs is less than rhs, zero if lhs is equal to
 	 *         rhs, and greater than zero if lhs is greater than rhs.
 	 * @throws CarrotException if either of the objects cannot be converted to
 	 *         numbers.
 	 */
-	public static int compare(Object o1, Object o2) throws CarrotException {
-		Number n1 = toNumber(o1);
-		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer && n2 instanceof Integer) {
-			return Integer.compare(n1.intValue(), n2.intValue());
+	public static int compare(Object a, Object b) throws CarrotException {
+		return compare(toNumber(a), toNumber(b));
+	}
+	
+	public static int compare(Number a, Number b) {
+		if (a instanceof Integer && b instanceof Integer) {
+			return Integer.compare(a.intValue(), a.intValue());
 		}
-		return Double.compare(n1.doubleValue(), n2.doubleValue());
+		return Double.compare(a.doubleValue(), b.doubleValue());
 	}
 
 	// JSON has questionable value...

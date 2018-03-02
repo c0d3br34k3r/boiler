@@ -40,6 +40,18 @@ public enum Builtins {
 			return Functions.len(params.get());
 		}
 	},
+	MIN {
+		@Override
+		Object apply(Params params) {
+			return Functions.min(params.size() == 1 ? (Collection<?>) params.get() : params);
+		}
+	},
+	MAX {
+		@Override
+		Object apply(Params params) {
+			return Functions.max(params.size() == 1 ? (Collection<?>) params.get() : params);
+		}
+	},
 	RANGE {
 		@Override
 		Object apply(Params params) {

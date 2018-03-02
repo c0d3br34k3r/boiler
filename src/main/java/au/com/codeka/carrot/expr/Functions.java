@@ -11,6 +11,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+import au.com.codeka.carrot.ValueHelper;
+
 public class Functions {
 
 	private static final CharMatcher UPPER = CharMatcher.inRange('A', 'Z');
@@ -106,7 +108,6 @@ public class Functions {
 	public static <E> List<E> slice(final List<E> list, Integer start, Integer stop, Integer step) {
 		return Lists.transform(sliceRange(start, stop, step, list.size()),
 				new Function<Integer, E>() {
-
 					@Override
 					public E apply(Integer input) {
 						return list.get(input);
@@ -130,19 +131,40 @@ public class Functions {
 			if (stop == null) {
 				istop = len;
 			} else {
-				istop = Math.min(stop < 0 ? len + stop : stop, len);
+				istop = Math.min(getIndex(stop, len), len);
 			}
 		} else {
 			if (start == null) {
 				istart = len - 1;
 			} else {
-				istart = Math.min(start < 0 ? len + start : start, len - 1);
+				istart = Math.min(getIndex(start, len), len - 1);
 			}
 			if (stop == null) {
 				istop = -1;
 			} else {
 				istop = stop < 0 ? Math.max(len + stop, -1) : stop;
 			}
+		}
+		return range(istart, istop, istep);
+	}
+
+	@VisibleForTesting
+	static List<Integer> strictSliceRange(Integer start, Integer stop, Integer step, int len) {
+		int istep = step == null ? 1 : step;
+		if (istep == 0) {
+			throw new IllegalArgumentException();
+		}
+		int istart;
+		int istop;
+		if (start == null) {
+			istart = istep > 0 ? 0 : len - 1;
+		} else {
+			istart = getIndex(start, len);
+		}
+		if (stop == null) {
+			istop = istep > 0 ? len : -1;
+		} else {
+			istop = getIndex(stop, len);
 		}
 		return range(istart, istop, istep);
 	}
@@ -182,6 +204,52 @@ public class Functions {
 
 	public static <E> List<E> slice(List<E> list, Integer start, Integer stop) {
 		return slice(list, start, stop, null);
+	}
+
+	public static Object index(Object seq, int i) {
+		if (seq instanceof String) {
+			return index((String) seq, i);
+		}
+		if (seq instanceof List) {
+			return index((List<?>) seq, i);
+		}
+		throw new IllegalArgumentException();
+	}
+
+	public static String index(String str, int i) {
+		return String.valueOf(str.charAt(getIndex(i, str.length())));
+	}
+
+	public static <E> E index(List<E> list, int i) {
+		return list.get(getIndex(i, list.size()));
+	}
+
+	private static int getIndex(int i, int len) {
+		return i < 0 ? len + i : i;
+	}
+
+	public static Object min(Collection<?> seq) {
+		Iterator<?> iter = seq.iterator();
+		Number min = (Number) iter.next();
+		while (iter.hasNext()) {
+			Number next = (Number) iter.next();
+			if (ValueHelper.compare(next, min) < 0) {
+				min = next;
+			}
+		}
+		return min;
+	}
+
+	public static Object max(Collection<?> seq) {
+		Iterator<?> iter = seq.iterator();
+		Number min = (Number) iter.next();
+		while (iter.hasNext()) {
+			Number next = (Number) iter.next();
+			if (ValueHelper.compare(next, min) > 0) {
+				min = next;
+			}
+		}
+		return min;
 	}
 
 }

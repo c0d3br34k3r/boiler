@@ -63,6 +63,7 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", -100, -100), "");
 		Assert.assertEquals(slice("abcde", 100, 100, -1), "");
 		Assert.assertEquals(slice("abcde", -100, -100, -1), "");
+		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2), Arrays.asList(3, 4));
 	}
 
 }
