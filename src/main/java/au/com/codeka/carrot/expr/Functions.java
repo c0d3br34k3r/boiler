@@ -1,14 +1,15 @@
 package au.com.codeka.carrot.expr;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class Functions {
 
@@ -94,108 +95,56 @@ public class Functions {
 		return p / q + (p % q == 0 ? 0 : 1);
 	}
 
-	public static String slice(final String str,
-			Integer start,
-			Integer stop,
-			Integer step) {
-		final StringBuilder builder = new StringBuilder();
-		buildSlice(new Sequence() {
-
-			@Override
-			public int len() {
-				return str.length();
-			}
-
-			@Override
-			public void add(int index) {
-				builder.append(str.charAt(index));
-			}
-		}, start, stop, step);
+	public static String slice(String str, Integer start, Integer stop, Integer step) {
+		StringBuilder builder = new StringBuilder();
+		for (int i : sliceRange(start, stop, step, str.length())) {
+			builder.append(str.charAt(i));
+		}
 		return builder.toString();
 	}
 
-	public static <E> List<E> slice(final List<E> list,
-			Integer start,
-			Integer stop,
-			Integer step) {
-		final List<E> builder = new ArrayList<>();
-		buildSlice(new Sequence() {
+	public static <E> List<E> slice(final List<E> list, Integer start, Integer stop, Integer step) {
+		return Lists.transform(sliceRange(start, stop, step, list.size()),
+				new Function<Integer, E>() {
 
-			@Override
-			public int len() {
-				return list.size();
-			}
-
-			@Override
-			public void add(int index) {
-				builder.add(list.get(index));
-			}
-		}, start, stop, step);
-		return builder;
+					@Override
+					public E apply(Integer input) {
+						return list.get(input);
+					}
+				});
 	}
 
-	private static void buildSlice(Sequence seq,
-			Integer start,
-			Integer stop,
-			Integer step) {
-		if (step == null) {
-			buildSliceAsc(seq, start, stop, 1);
-		} else if (step > 0) {
-			buildSliceAsc(seq, start, stop, step);
-		} else if (step < 0) {
-			buildSliceDesc(seq, start, stop, step);
-		} else {
+	private static List<Integer> sliceRange(Integer start, Integer stop, Integer step, int len) {
+		int istep = step == null ? 1 : step;
+		if (istep == 0) {
 			throw new IllegalArgumentException();
 		}
-	}
-
-	private static void buildSliceAsc(Sequence seq,
-			Integer start,
-			Integer stop,
-			int step) {
 		int istart;
 		int istop;
-		if (start == null) {
-			istart = 0;
+		if (istep > 0) {
+			if (start == null) {
+				istart = 0;
+			} else {
+				istart = start < 0 ? Math.max(len + start, 0) : start;
+			}
+			if (stop == null) {
+				istop = len;
+			} else {
+				istop = Math.min(stop < 0 ? len + stop : stop, len);
+			}
 		} else {
-			istart = start < 0 ? Math.max(seq.len() + start, 0) : start;
+			if (start == null) {
+				istart = len - 1;
+			} else {
+				istart = Math.min(start < 0 ? len + start : start, len - 1);
+			}
+			if (stop == null) {
+				istop = -1;
+			} else {
+				istop = stop < 0 ? Math.max(len + stop, -1) : stop;
+			}
 		}
-		if (stop == null) {
-			istop = seq.len();
-		} else {
-			istop = Math.min(stop < 0 ? seq.len() + stop : stop, seq.len());
-		}
-		for (int i = istart; i < istop; i += step) {
-			seq.add(i);
-		}
-	}
-
-	private static void buildSliceDesc(Sequence seq,
-			Integer start,
-			Integer stop,
-			int step) {
-		int istart;
-		int istop;
-		if (start == null) {
-			istart = seq.len() - 1;
-		} else {
-			istart = Math.min(start < 0 ? seq.len() + start : start, seq.len() - 1);
-		}
-		if (stop == null) {
-			istop = -1;
-		} else {
-			istop = stop < 0 ? Math.max(seq.len() + stop, -1) : stop;
-		}
-		for (int i = istart; i > istop; i += step) {
-			seq.add(i);
-		}
-	}
-
-	private interface Sequence {
-
-		int len();
-
-		void add(int index);
+		return range(istart, istop, istep);
 	}
 
 	public static Object slice(Object seq,
