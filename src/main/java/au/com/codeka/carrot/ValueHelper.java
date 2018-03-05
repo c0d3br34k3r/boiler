@@ -31,9 +31,6 @@ public class ValueHelper {
 	 *         false
 	 */
 	public static boolean isTrue(Object value) {
-		if (value == null) {
-			return false;
-		}
 		if (value instanceof Boolean) {
 			return (Boolean) value;
 		}
@@ -43,7 +40,7 @@ public class ValueHelper {
 		if (value instanceof String) {
 			return !((String) value).isEmpty();
 		}
-		// these truthy values deviate from JavaScript's behavior
+		// these truthy values deviate from JavaScript's behavior FWIW
 		if (value instanceof Collection) {
 			return !((Collection<?>) value).isEmpty();
 		}
@@ -58,7 +55,7 @@ public class ValueHelper {
 			return !((Iterable<?>) value).iterator().hasNext();
 		}
 		// any unknown non-null, non-boolean value evaluates to true
-		return true;
+		return value != null;
 	}
 
 	/**
@@ -106,27 +103,48 @@ public class ValueHelper {
 		return Integer.parseInt(value);
 	}
 
-	/**
-	 * Adds the two values together. We attempt to make them the most-precise
-	 * they can be (i.e. if one of them is a double then double is returned, if
-	 * one of them is a long then long is returned, etc).
-	 *
-	 * @param o1 The left-hand side to add.
-	 * @param o2 The right-hand side to add.
-	 * @return The two numbers added together.
-	 * @throws CarrotException Thrown is either of the values can't be converted
-	 *         to a number.
-	 */
-	public static Object add(Object o1, Object o2) throws CarrotException {
-		if (o1 instanceof Number || o2 instanceof Number) {
-			Number n1 = toNumber(o1);
-			Number n2 = toNumber(o2);
-			if (n1 instanceof Integer && n2 instanceof Integer) {
-				return n1.intValue() + n2.intValue();
+	public static Object add(Object o1, Object o2) {
+		if (o1 instanceof Number) {
+			Number n1 = (Number) o1;
+			if (o2 instanceof Number) {
+				return add(n1, (Number) o2);
 			}
-			return n1.doubleValue() + n2.doubleValue();
+			Number n2 = tryConvertNumber(o2);
+			if (n2 != null) {
+				return add(n1, n2);
+			}
+		} else if (o2 instanceof Number) {
+			Number n1 = tryConvertNumber(o1);
+			if (n1 != null) {
+				return add(n1, (Number) o2);
+			}
 		}
+		// should we be able to add things that aren't strings?
 		return o1.toString() + o2.toString();
+	}
+
+	private static Number tryConvertNumber(Object value) {
+		if (value instanceof String) {
+			String str = (String) value;
+			try {
+				if (str.contains(".")) {
+					return Double.parseDouble(str);
+				}
+				return Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				// continue
+			}
+		} else if (value instanceof Boolean) {
+			return (Boolean) value ? 1 : 0;
+		}
+		return null;
+	}
+
+	public static Number add(Number a, Number b) {
+		if (a instanceof Integer && b instanceof Integer) {
+			return a.intValue() + b.intValue();
+		}
+		return a.doubleValue() + b.doubleValue();
 	}
 
 	/**
@@ -198,6 +216,7 @@ public class ValueHelper {
 		if (collection instanceof Map) {
 			return ((Map<?, ?>) collection).keySet();
 		}
+		// TODO: arrays suck
 		if (collection.getClass().isArray()) {
 			final int length = Array.getLength(collection);
 			return new AbstractList<Object>() {
@@ -246,7 +265,7 @@ public class ValueHelper {
 	public static int compare(Object a, Object b) throws CarrotException {
 		return compare(toNumber(a), toNumber(b));
 	}
-	
+
 	public static int compare(Number a, Number b) {
 		if (a instanceof Integer && b instanceof Integer) {
 			return Integer.compare(a.intValue(), b.intValue());
@@ -254,7 +273,7 @@ public class ValueHelper {
 		return Double.compare(a.doubleValue(), b.doubleValue());
 	}
 
-	// JSON has questionable value...
+	// TODO: JSON has questionable value...
 	public static Object jsonHelper(Object object) {
 		if (!(object instanceof JsonElement)) {
 			return object;
