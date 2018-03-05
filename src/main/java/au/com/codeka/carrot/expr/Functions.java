@@ -10,7 +10,9 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 
+import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.ValueHelper;
 
 public class Functions {
@@ -97,7 +99,8 @@ public class Functions {
 		return p / q + (p % q == 0 ? 0 : 1);
 	}
 
-	public static String slice(String str, Integer start, Integer stop, Integer step) {
+	public static String slice(String str, Integer start, Integer stop,
+			Integer step) {
 		StringBuilder builder = new StringBuilder();
 		for (int i : sliceRange(start, stop, step, str.length())) {
 			builder.append(str.charAt(i));
@@ -105,7 +108,8 @@ public class Functions {
 		return builder.toString();
 	}
 
-	public static <E> List<E> slice(final List<E> list, Integer start, Integer stop, Integer step) {
+	public static <E> List<E> slice(final List<E> list, Integer start,
+			Integer stop, Integer step) {
 		return Lists.transform(sliceRange(start, stop, step, list.size()),
 				new Function<Integer, E>() {
 					@Override
@@ -115,7 +119,8 @@ public class Functions {
 				});
 	}
 
-	private static List<Integer> sliceRange(Integer start, Integer stop, Integer step, int len) {
+	private static List<Integer> sliceRange(Integer start, Integer stop,
+			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
 			throw new IllegalArgumentException();
@@ -149,7 +154,8 @@ public class Functions {
 	}
 
 	@VisibleForTesting
-	static List<Integer> strictSliceRange(Integer start, Integer stop, Integer step, int len) {
+	static List<Integer> strictSliceRange(Integer start, Integer stop,
+			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
 			throw new IllegalArgumentException();
@@ -228,28 +234,24 @@ public class Functions {
 		return i < 0 ? len + i : i;
 	}
 
-	public static Object min(Collection<?> seq) {
-		Iterator<?> iter = seq.iterator();
-		Number min = (Number) iter.next();
-		while (iter.hasNext()) {
-			Number next = (Number) iter.next();
-			if (ValueHelper.compare(next, min) < 0) {
-				min = next;
+	private static final Ordering<Object> ORDER = new Ordering<Object>() {
+
+		@Override
+		public int compare(Object left, Object right) {
+			try {
+				return ValueHelper.compare(left, right);
+			} catch (CarrotException e) {
+				throw new IllegalArgumentException(e);
 			}
 		}
-		return min;
+	};
+
+	public static Object min(Iterable<?> seq) {
+		return ORDER.min(seq);
 	}
 
-	public static Object max(Collection<?> seq) {
-		Iterator<?> iter = seq.iterator();
-		Number min = (Number) iter.next();
-		while (iter.hasNext()) {
-			Number next = (Number) iter.next();
-			if (ValueHelper.compare(next, min) > 0) {
-				min = next;
-			}
-		}
-		return min;
+	public static Object max(Iterable<?> seq) {
+		return ORDER.max(seq);
 	}
 
 }

@@ -43,13 +43,13 @@ public enum Builtins {
 	MIN {
 		@Override
 		Object apply(Params params) {
-			return Functions.min(params.size() == 1 ? (Collection<?>) params.get() : params);
+			return Functions.min(params.size() == 1 ? (Iterable<?>) params.get() : params);
 		}
 	},
 	MAX {
 		@Override
 		Object apply(Params params) {
-			return Functions.max(params.size() == 1 ? (Collection<?>) params.get() : params);
+			return Functions.max(params.size() == 1 ? (Iterable<?>) params.get() : params);
 		}
 	},
 	RANGE {

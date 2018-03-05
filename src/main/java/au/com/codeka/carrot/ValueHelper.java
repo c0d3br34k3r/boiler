@@ -249,7 +249,7 @@ public class ValueHelper {
 	
 	public static int compare(Number a, Number b) {
 		if (a instanceof Integer && b instanceof Integer) {
-			return Integer.compare(a.intValue(), a.intValue());
+			return Integer.compare(a.intValue(), b.intValue());
 		}
 		return Double.compare(a.doubleValue(), b.doubleValue());
 	}
