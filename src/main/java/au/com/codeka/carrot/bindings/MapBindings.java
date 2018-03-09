@@ -3,9 +3,6 @@ package au.com.codeka.carrot.bindings;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
-
-import javax.annotation.Nonnull;
 
 import com.google.common.collect.UnmodifiableIterator;
 
@@ -18,10 +15,6 @@ public final class MapBindings implements Bindings, Iterable<EntryBindings> {
 
 	private final Map<String, Object> values;
 
-	public static Builder newBuilder() {
-		return new Builder();
-	}
-
 	public MapBindings(String key, Object value) {
 		this(Collections.singletonMap(key, value));
 	}
@@ -31,7 +24,7 @@ public final class MapBindings implements Bindings, Iterable<EntryBindings> {
 	}
 
 	@Override
-	public Object resolve(@Nonnull String key) {
+	public Object resolve(String key) {
 		return values.get(key);
 	}
 
@@ -55,20 +48,6 @@ public final class MapBindings implements Bindings, Iterable<EntryBindings> {
 				return new EntryBindings(iterator.next());
 			}
 		};
-	}
-
-	public static class Builder {
-
-		private final Map<String, Object> values = new TreeMap<>();
-
-		public Builder set(String key, Object value) {
-			values.put(key, value);
-			return this;
-		}
-
-		public MapBindings build() {
-			return new MapBindings(values);
-		}
 	}
 
 }

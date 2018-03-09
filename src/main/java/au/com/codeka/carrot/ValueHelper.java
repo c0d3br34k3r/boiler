@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.math.DoubleMath;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
@@ -131,7 +132,7 @@ public class ValueHelper {
 					return Double.parseDouble(str);
 				}
 				return Integer.parseInt(str);
-			} catch (NumberFormatException e) {
+			} catch (@SuppressWarnings("unused") NumberFormatException e) {
 				// continue
 			}
 		} else if (value instanceof Boolean) {
@@ -271,6 +272,16 @@ public class ValueHelper {
 			return Integer.compare(a.intValue(), b.intValue());
 		}
 		return Double.compare(a.doubleValue(), b.doubleValue());
+	}
+
+	public static String toString(Object o) {
+		if (o instanceof Number && !(o instanceof Integer)) {
+			Number n = (Number) o;
+			if (DoubleMath.isMathematicalInteger(n.doubleValue())) {
+				return Integer.toString(n.intValue());
+			}
+		}
+		return o.toString();
 	}
 
 	// TODO: JSON has questionable value...
