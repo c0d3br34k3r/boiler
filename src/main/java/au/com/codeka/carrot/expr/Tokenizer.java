@@ -1,8 +1,10 @@
 package au.com.codeka.carrot.expr;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import com.google.common.base.CharMatcher;
 
@@ -31,7 +33,8 @@ public class Tokenizer {
 	 * Returns the type of the next token without consuming it.
 	 * 
 	 * @return the type of the next token
-	 * @throws CarrotException if there's an error parsing the token
+	 * @throws CarrotException
+	 *             if there's an error parsing the token
 	 */
 	public TokenType peek() throws CarrotException {
 		if (peeked == null) {
@@ -64,9 +67,11 @@ public class Tokenizer {
 	/**
 	 * Consumes the next token and asserts that it matches the given type.
 	 *
-	 * @param type the type to match against
-	 * @throws CarrotException if there's an error parsing the token, or if it
-	 *         doesn't match the given type
+	 * @param type
+	 *            the type to match against
+	 * @throws CarrotException
+	 *             if there's an error parsing the token, or if it doesn't match
+	 *             the given type
 	 */
 	public void consume(TokenType type) throws CarrotException {
 		Token next = next();
@@ -82,7 +87,8 @@ public class Tokenizer {
 
 	public void consumeIdentifier(String value) throws CarrotException {
 		Token next = next();
-		if (next.getType() != TokenType.IDENTIFIER || !next.getIdentifier().equals(value)) {
+		if (next.getType() != TokenType.IDENTIFIER
+				|| !next.getIdentifier().equals(value)) {
 			throw new CarrotException("Expected identifier " + value
 					+ ", got " + next);
 		}
@@ -116,13 +122,11 @@ public class Tokenizer {
 	}
 
 	private static final CharMatcher DIGIT;
-	private static final CharMatcher DIGIT_OR_DOT;
 	private static final CharMatcher IDENTIFIER_START;
 	private static final CharMatcher IDENTIFIER_PART;
 
 	static {
 		DIGIT = CharMatcher.inRange('0', '9');
-		DIGIT_OR_DOT = DIGIT.or(CharMatcher.anyOf("."));
 		IDENTIFIER_START = CharMatcher.inRange('a', 'z')
 				.or(CharMatcher.inRange('A', 'Z'))
 				.or(CharMatcher.is('_'));
@@ -137,11 +141,11 @@ public class Tokenizer {
 		case '[': return Token.LEFT_BRACKET;
 		case ']': return Token.RIGHT_BRACKET;
 		case ',': return Token.COMMA;
-		case '.': return Token.DOT;
 		case '+': return Token.PLUS;
 		case '-': return Token.MINUS;
 		case '*': return Token.MULTIPLY;
 		case '/': return Token.DIVIDE;
+		case '.': return parseDot();
 		case '&': require('&'); return Token.LOGICAL_AND;
 		case '|': require('|'); return Token.LOGICAL_OR;
 		case '%': return tryRead('>') ? end(Mode.TAG) : Token.MODULO;
@@ -157,13 +161,14 @@ public class Tokenizer {
 			return parseString((char) ch);
 		default:
 		}
-		if (DIGIT.matches((char) ch)) {
-			return parseNumber((char) ch);
+		char c = (char) ch;
+		if (DIGIT.matches(c)) {
+			return parseNumber(c);
 		}
-		if (IDENTIFIER_START.matches((char) ch)) {
-			return parseIdentifier((char) ch);
+		if (IDENTIFIER_START.matches(c)) {
+			return parseIdentifier(c);
 		}
-		throw new CarrotException("unexpected char " + (char) ch + ", ("
+		throw new CarrotException("unexpected char " + c + ", ("
 				+ Character.getName(ch) + ")");
 	}
 
@@ -176,8 +181,8 @@ public class Tokenizer {
 			case -1:
 				throw new CarrotException("unclosed string");
 			case '\\':
-				c = readEscapeChar();
-				break;
+				readEscapeChar(builder);
+				continue;
 			case '\'':
 			case '"':
 				if (next == end) {
@@ -191,36 +196,62 @@ public class Tokenizer {
 		}
 	}
 
-	private Token parseNumber(char first) throws IOException {
-		boolean dot = false;
-		StringBuilder builder = new StringBuilder();
-		builder.append(first);
-		CharMatcher matcher = DIGIT_OR_DOT;
+	private Token parseDot() throws IOException {
+		int ch = reader.read();
+		if (ch != -1) {
+			char c = (char) ch;
+			if (DIGIT.matches(c)) {
+				return parseDouble(new StringBuilder().append('.').append(c));
+			}
+			reader.unread(ch);
+		}
+		return Token.DOT;
+	}
+
+	private Token parseNumber(char digit) throws IOException {
+		return parseNumber(new StringBuilder().append(digit));
+	}
+
+	private Token parseNumber(StringBuilder builder) throws IOException {
 		for (;;) {
 			int ch = reader.read();
 			if (ch == -1) {
 				break;
 			}
-			if (matcher.matches((char) ch)) {
-				builder.append((char) ch);
-				if (ch == '.') {
-					dot = true;
-					matcher = DIGIT;
-				}
+			char c = (char) ch;
+			if (DIGIT.matches(c)) {
+				builder.append(c);
+			} else if (c == '.') {
+				return parseDouble(builder.append('.'));
 			} else {
 				reader.unread(ch);
 				break;
 			}
 		}
-		String str = builder.toString();
-		Number number = dot
-				? (Number) Double.parseDouble(str)
-				: (Number) Integer.parseInt(str);
-		return Token.valueToken(number);
+		return Token.valueToken(Integer.parseInt(builder.toString()));
+	}
+
+	private Token parseDouble(StringBuilder builder) throws IOException {
+		for (;;) {
+			int ch = reader.read();
+			if (ch != -1) {
+				break;
+			}
+			char c = (char) ch;
+			if (DIGIT.matches(c)) {
+				builder.append(c);
+			} else {
+				reader.unread(ch);
+				break;
+			}
+		}
+		return Token.valueToken(Double.parseDouble(builder.toString()));
 	}
 
 	private Token parseIdentifier(char first) throws IOException {
-		String identifier = readUntil(first, IDENTIFIER_PART);
+		StringBuilder builder = new StringBuilder().append(first);
+		readUntil(builder, IDENTIFIER_PART);
+		String identifier = builder.toString();
 		switch (identifier) {
 		case "true":
 			return Token.TRUE;
@@ -231,23 +262,21 @@ public class Tokenizer {
 		}
 	}
 
-	private String readUntil(char first, CharMatcher matcher)
+	private void readUntil(StringBuilder builder, CharMatcher matcher)
 			throws IOException {
-		StringBuilder builder = new StringBuilder();
-		builder.append(first);
 		for (;;) {
-			int next = reader.read();
-			if (next == -1) {
+			int ch = reader.read();
+			if (ch == -1) {
 				break;
 			}
-			if (matcher.matches((char) next)) {
-				builder.append((char) next);
+			char c = (char) ch;
+			if (matcher.matches(c)) {
+				builder.append(c);
 			} else {
-				reader.unread(next);
+				reader.unread(ch);
 				break;
 			}
 		}
-		return builder.toString();
 	}
 
 	private void require(char required) throws IOException, CarrotException {
@@ -260,7 +289,8 @@ public class Tokenizer {
 	 * "Peeks" at the next character and consumes it if it matches the given
 	 * character.
 	 * 
-	 * @param match the character to match
+	 * @param match
+	 *            the character to match
 	 * @return whether the character was consumed
 	 * @throws IOException
 	 */
@@ -300,42 +330,52 @@ public class Tokenizer {
 		return Token.END;
 	}
 
-	private char readEscapeChar() throws IOException, CarrotException {
+	private void readEscapeChar(StringBuilder builder)
+			throws IOException, CarrotException {
 		int ch = reader.read();
+		char escaped;
 		switch (ch) {
-		// @formatter:off
-		case 't': return '\t';
-		case 'n': return '\n';
-		case 'r': return '\r';
+		case 't':
+			escaped = '\t';
+			break;
+		case 'n':
+			escaped = '\n';
+			break;
+		case 'r':
+			escaped = '\r';
+			break;
 		case '\'':
 		case '"':
-		case '\\': return (char) ch;
-		case 'u': return readUnicode();
-		case -1: throw new CarrotException("unclosed string");
-		default: throw new CarrotException("bad escaped char: " + (char) ch);
-		// @formatter:on
+		case '\\':
+			escaped = (char) ch;
+			break;
+		case 'u':
+			builder.append(
+					Character.toChars(Integer.parseInt(new String(readFully(reader, 4), StandardCharsets.UTF_8), 16)));
+			return;
+		case -1:
+			throw new CarrotException("unclosed string");
+		default:
+			throw new CarrotException("bad escaped char: " + (char) ch);
 		}
+		builder.append(escaped);
 	}
 
-	private char readUnicode() throws IOException, CarrotException {
-		char[] buf = new char[4];
-		if (readFully(reader, buf) != 4) {
-			throw new CarrotException(
-					"unicode escapes must contain 4 hexidecimal digits");
-		}
-		return (char) Integer.parseInt(new String(buf), 16);
-	}
 
-	public static int readFully(Reader in, char[] buf) throws IOException {
+	public static char[] readFully(Reader in, int size) throws IOException {
+		char[] buf = new char[size];
 		int total = 0;
 		while (total < buf.length) {
 			int result = in.read(buf, total, buf.length - total);
 			if (result == -1) {
-				break;
+				throw new EOFException();
 			}
 			total += result;
 		}
-		return total;
+		if (total < size) {
+			throw new EOFException();
+		}
+		return buf;
 	}
 
 }

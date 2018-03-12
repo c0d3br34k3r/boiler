@@ -19,7 +19,7 @@ public class Experimental {
 					return readDecimal(reader, integer, hasDigit);
 				case 'e':
 				case 'E':
-					return readScientific(integer, 0.0);
+					return hasDigit ? readScientific(reader, integer, 0.0) : null;
 				default:
 					reader.unread(ch);
 				case -1:
@@ -33,7 +33,8 @@ public class Experimental {
 		}
 	}
 
-	private static Number readDecimal(PushbackReader reader, int integer, boolean hasDigitSoFar) {
+	private static Number readDecimal(PushbackReader reader, int integer,
+			boolean hasDigitSoFar) {
 		double decimal = 0;
 		boolean hasDigit = hasDigitSoFar;
 		loop: for (;;) {
@@ -43,7 +44,7 @@ public class Experimental {
 				switch (ch) {
 				case 'e':
 				case 'E':
-					return readScientific(reader, integer, decimal, hasDigit);
+					return readScientific(reader, integer, decimal);
 				default:
 					reader.unread(ch);
 				case -1:
