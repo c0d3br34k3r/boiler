@@ -1,10 +1,14 @@
 package au.com.codeka.carrot.expr;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
 
 import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.Params;
 
 class ValueParser implements TermParser {
 
@@ -32,7 +36,7 @@ class ValueParser implements TermParser {
 	}
 
 	private static final Set<TokenType> ACCESS_TYPE =
-			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET);
+			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET, TokenType.LEFT_PARENTHESIS);
 
 	private static Term getAccessTerm(Tokenizer tokenizer, Term accessTerm) throws CarrotException {
 		Term result = accessTerm;
@@ -46,10 +50,25 @@ class ValueParser implements TermParser {
 				result = new AccessTerm(result, ExpressionParser.parse(tokenizer));
 				tokenizer.consume(TokenType.RIGHT_BRACKET);
 				break;
+			case RIGHT_BRACKET:
+				result = new FunctionTerm(result, parseParams(tokenizer));
+				tokenizer.consume(TokenType.RIGHT_PARENTHESIS);
+				break;
 			default:
 			}
 		}
 		return result;
+	}
+
+	private static Params parseParams(Tokenizer tokenizer) throws CarrotException {
+		if (tokenizer.peek() == TokenType.RIGHT_PARENTHESIS) {
+			return new Params(Collections.emptyList());
+		}
+		List<Term> params = new ArrayList<>();
+		do {
+			params.add(tokenizer.parseExpression());
+		} while (tokenizer.tryConsume(TokenType.COMMA));
+		return new Params(params);
 	}
 
 }

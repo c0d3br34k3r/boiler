@@ -6,10 +6,15 @@ import com.google.common.collect.ForwardingList;
 
 public class Params extends ForwardingList<Object> {
 
+	private List<Object> list;
+
+	public Params(List<Object> list) {
+		this.list = list;
+	}
+
 	@Override
 	protected List<Object> delegate() {
-		// TODO Auto-generated method stub
-		return null;
+		return list;
 	}
 
 	public Object get() {

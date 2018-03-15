@@ -49,17 +49,17 @@ public class Tokenizer {
 		return result;
 	}
 
-	public BinaryOperator binaryOperator() throws CarrotException {
-		return next().getType().binaryOperator();
-	}
-
-	public UnaryOperator unaryOperator() throws CarrotException {
-		return next().getType().unaryOperator();
-	}
-
-	public Object value() throws CarrotException {
-		return next().getValue();
-	}
+	// public BinaryOperator binaryOperator() throws CarrotException {
+	// return next().getType().binaryOperator();
+	// }
+	//
+	// public UnaryOperator unaryOperator() throws CarrotException {
+	// return next().getType().unaryOperator();
+	// }
+	//
+	// public Object value() throws CarrotException {
+	// return next().getValue();
+	// }
 
 	/**
 	 * Consumes the next token and asserts that it matches the given type.
@@ -74,6 +74,14 @@ public class Tokenizer {
 			throw new CarrotException("Expected token of type " + type
 					+ ", got " + next.getType());
 		}
+	}
+
+	public boolean tryConsume(TokenType type) throws CarrotException {
+		if (peek() == type) {
+			next();
+			return true;
+		}
+		return false;
 	}
 
 	public void end() throws CarrotException {
@@ -145,7 +153,7 @@ public class Tokenizer {
 		case '&': require('&'); return Token.LOGICAL_AND;
 		case '|': require('|'); return Token.LOGICAL_OR;
 		case '%': return tryRead('>') ? end(Mode.TAG) : Token.MODULO;
-		case '=': return tryRead('=') ? Token.EQUAL: Token.ASSIGNMENT;
+		case '=': return tryRead('=') ? Token.EQUAL : Token.ASSIGNMENT;
 		case '!': return tryRead('=') ? Token.NOT_EQUAL : Token.NOT;
 		case '<': return tryRead('=') ? Token.LESS_THAN_OR_EQUAL : Token.LESS_THAN;
 		case '>': return parseGreaterThan();
@@ -304,16 +312,23 @@ public class Tokenizer {
 		int ch = reader.read();
 		switch (ch) {
 		// @formatter:off
-		case 't': return '\t';
-		case 'n': return '\n';
-		case 'r': return '\r';
+		case 't':
+			return '\t';
+		case 'n':
+			return '\n';
+		case 'r':
+			return '\r';
 		case '\'':
 		case '"':
-		case '\\': return (char) ch;
-		case 'u': return readUnicode();
-		case -1: throw new CarrotException("unclosed string");
-		default: throw new CarrotException("bad escaped char: " + (char) ch);
-		// @formatter:on
+		case '\\':
+			return (char) ch;
+		case 'u':
+			return readUnicode();
+		case -1:
+			throw new CarrotException("unclosed string");
+		default:
+			throw new CarrotException("bad escaped char: " + (char) ch);
+			// @formatter:on
 		}
 	}
 
