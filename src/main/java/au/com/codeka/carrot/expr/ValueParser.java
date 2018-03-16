@@ -24,7 +24,7 @@ class ValueParser implements TermParser {
 		case VALUE:
 			return new ValueTerm(token.getValue());
 		case IDENTIFIER:
-			return getAccessTerm(tokenizer, new Variable(token.getIdentifier()));
+			return getAccessTerm(tokenizer, token.getIdentifier());
 		case LEFT_PARENTHESIS:
 			Term term = ExpressionParser.parse(tokenizer);
 			tokenizer.consume(TokenType.RIGHT_PARENTHESIS);
@@ -60,15 +60,15 @@ class ValueParser implements TermParser {
 		return result;
 	}
 
-	private static Params parseParams(Tokenizer tokenizer) throws CarrotException {
+	private static List<Term> parseParams(Tokenizer tokenizer) throws CarrotException {
 		if (tokenizer.peek() == TokenType.RIGHT_PARENTHESIS) {
-			return new Params(Collections.emptyList());
+			return Collections.emptyList();
 		}
 		List<Term> params = new ArrayList<>();
 		do {
 			params.add(tokenizer.parseExpression());
 		} while (tokenizer.tryConsume(TokenType.COMMA));
-		return new Params(params);
+		return params;
 	}
 
 }

@@ -88,7 +88,7 @@ public class Parser {
 				switch (ch2) {
 				case -1:
 					mode = ParseMode.END;
-					builder.append((char) ch);
+					builder.append('<');
 					break loop;
 				case '<':
 					mode = ParseMode.ECHO;
@@ -109,13 +109,17 @@ public class Parser {
 		return builder.toString();
 	}
 
+	Tokenizer tokenizer() {
+		return new Tokenizer(reader, Mode.TAG);
+	}
+
 	private Node parseTag() throws CarrotException, IOException {
 		Tokenizer tokenizer = new Tokenizer(reader, Mode.TAG);
 		String tagName = tokenizer.parseIdentifier();
 		mode = ParseMode.TEXT;
 		switch (tagName) {
 		case "if":
-			return IfNode.expression(tokenizer).childNodes(this);
+			return new IfNode.expression(tokenizer).childNodes(this);
 		case "else":
 
 		case "for":
@@ -132,21 +136,26 @@ public class Parser {
 	}
 
 	private Node skipCommentAndParseNext() throws IOException, CarrotException {
-		for (;;) {
+		loop: for (;;) {
 			int c = reader.read();
 			switch (c) {
 			case -1:
-				throw new CarrotException("unclosed comment");
+				break loop;
 			case '#':
 				int c2 = reader.read();
-				if (c2 == '>') {
+				switch (c2) {
+				case '>':
 					return parseNext();
+				case -1:
+					break loop;
+				default:
+					reader.unread(c2);
 				}
-				reader.unread(c2);
 				break;
 			default:
 			}
 		}
+		throw new CarrotException("unclosed comment");
 	}
 
 }

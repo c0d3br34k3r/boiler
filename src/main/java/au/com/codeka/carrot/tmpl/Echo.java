@@ -13,6 +13,10 @@ class Echo implements Node {
 
 	private final Term term;
 
+	Echo(Parser parser) throws CarrotException {
+		this(parser.tokenizer());
+	}
+
 	Echo(Tokenizer tokenizer) throws CarrotException {
 		term = tokenizer.parseExpression();
 		tokenizer.end();

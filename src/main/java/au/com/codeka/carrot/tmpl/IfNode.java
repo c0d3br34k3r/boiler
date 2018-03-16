@@ -1,33 +1,30 @@
 package au.com.codeka.carrot.tmpl;
 
 import java.io.IOException;
+import java.io.Writer;
 
+import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.Tokenizer;
 
-public class IfNode {
+public class IfNode implements Node {
 
-	public static IfBuilder expression(Tokenizer tokenizer) throws CarrotException {
-		Term expr = tokenizer.parseExpression();
+	private final Term condition;
+
+	public IfNode(Parser parser) throws CarrotException, IOException {
+		Tokenizer tokenizer = parser.tokenizer();
+		this.condition = tokenizer.parseExpression();
 		tokenizer.end();
-		return new IfBuilder(expr);
+		Node next = parser.next();
 	}
 
-	public static class IfBuilder {
-
-		private Term expr;
-		private Node elseNode;
-
-		private IfBuilder(Term expr) {
-			this.expr = expr;
-		}
-
-		public Node childNodes(Parser parser) throws IOException, CarrotException {
-			parser.next();
-		}
-
-
+	@Override
+	public void render(CarrotEngine engine, Writer writer, Scope scope) throws CarrotException,
+			IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
