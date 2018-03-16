@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.collect.Maps;
+
 import au.com.codeka.carrot.Bindings;
 
 /**
@@ -32,7 +34,7 @@ public final class EntryBindings implements Bindings, Iterable<Object> {
 	private final Map.Entry<String, Object> entry;
 
 	public EntryBindings(String key, Object value) {
-		this(new AbstractMap.SimpleImmutableEntry<>(key, value));
+		this(Maps.immutableEntry(key, value));
 	}
 
 	public EntryBindings(Map.Entry<String, Object> entry) {
