@@ -359,7 +359,7 @@ public class Tokenizer {
 			break;
 		case 'u':
 			builder.append(
-					Character.toChars(Integer.parseInt(new String(readFully(reader, 4), StandardCharsets.UTF_8), 16)));
+					Character.toChars(Integer.parseInt(new String(readFully(reader, 4)), 16)));
 			return;
 		case -1:
 			throw new CarrotException("unclosed string");
