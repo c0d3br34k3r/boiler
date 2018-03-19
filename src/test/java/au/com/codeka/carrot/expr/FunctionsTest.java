@@ -1,9 +1,9 @@
 package au.com.codeka.carrot.expr;
 
-import static au.com.codeka.carrot.expr.Functions.camelToSeparator;
-import static au.com.codeka.carrot.expr.Functions.range;
-import static au.com.codeka.carrot.expr.Functions.separatorToCamel;
-import static au.com.codeka.carrot.expr.Functions.slice;
+import static au.com.codeka.carrot.expr.Values.camelToSeparator;
+import static au.com.codeka.carrot.expr.Values.range;
+import static au.com.codeka.carrot.expr.Values.separatorToCamel;
+import static au.com.codeka.carrot.expr.Values.slice;
 
 import java.util.Arrays;
 import java.util.Collections;

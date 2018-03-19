@@ -4,14 +4,7 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 
-import javax.annotation.Nullable;
-import javax.swing.text.Segment;
-
-import com.google.common.io.LineReader;
-
 import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.TagType;
-import au.com.codeka.carrot.expr.TokenType;
 import au.com.codeka.carrot.expr.Tokenizer;
 import au.com.codeka.carrot.expr.Tokenizer.Mode;
 
@@ -23,7 +16,7 @@ public class Parser {
 		this.reader = new PushbackReader(reader, 1);
 	}
 
-	public Node next() throws IOException, CarrotException {
+	public Node next() throws IOException {
 		return mode.parse(this);
 	}
 
@@ -31,46 +24,46 @@ public class Parser {
 		TEXT {
 
 			@Override
-			Node parse(Parser parser) throws IOException, CarrotException {
+			Node parse(Parser parser) throws IOException {
 				return parser.parseNext();
 			}
 		},
 		TAG {
 
 			@Override
-			Node parse(Parser parser) throws IOException, CarrotException {
+			Node parse(Parser parser) throws IOException {
 				return parser.parseTag();
 			}
 		},
 		ECHO {
 
 			@Override
-			Node parse(Parser parser) throws IOException, CarrotException {
+			Node parse(Parser parser) throws IOException {
 				return parser.parseEcho();
 			}
 		},
 		COMMENT {
 
 			@Override
-			Node parse(Parser parser) throws IOException, CarrotException {
+			Node parse(Parser parser) throws IOException {
 				return parser.skipCommentAndParseNext();
 			}
 		},
 		END {
 
 			@Override
-			Node parse(Parser parser) throws IOException, CarrotException {
+			Node parse(Parser parser) throws IOException {
 				// Do something similar with tokens?
 				return MarkerNode.END_DOCUMENT;
 			}
 		};
 
-		abstract Node parse(Parser parser) throws IOException, CarrotException;
+		abstract Node parse(Parser parser) throws IOException;
 	}
 
 	private ParseMode mode = ParseMode.TEXT;
 
-	private Node parseNext() throws IOException, CarrotException {
+	private Node parseNext() throws IOException {
 		String content = parseText();
 		return !content.isEmpty() ? new TextNode(content) : next();
 	}
@@ -88,7 +81,7 @@ public class Parser {
 				switch (ch2) {
 				case -1:
 					mode = ParseMode.END;
-					builder.append('<');
+					builder.append(ch);
 					break loop;
 				case '<':
 					mode = ParseMode.ECHO;
@@ -113,7 +106,7 @@ public class Parser {
 		return new Tokenizer(reader, Mode.TAG);
 	}
 
-	private Node parseTag() throws CarrotException, IOException {
+	private Node parseTag() throws IOException {
 		Tokenizer tokenizer = new Tokenizer(reader, Mode.TAG);
 		String tagName = tokenizer.parseIdentifier();
 		mode = ParseMode.TEXT;
@@ -135,7 +128,7 @@ public class Parser {
 		}
 	}
 
-	private Node skipCommentAndParseNext() throws IOException, CarrotException {
+	private Node skipCommentAndParseNext() throws IOException {
 		loop: for (;;) {
 			int c = reader.read();
 			switch (c) {

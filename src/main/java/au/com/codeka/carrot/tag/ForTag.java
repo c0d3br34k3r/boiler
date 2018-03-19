@@ -7,12 +7,12 @@ import java.util.Collection;
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.ValueHelper;
 import au.com.codeka.carrot.bindings.Composite;
 import au.com.codeka.carrot.bindings.LoopBindings;
 import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.Tokenizer;
+import au.com.codeka.carrot.expr.Values;
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TagNode;
 
@@ -50,7 +50,7 @@ public class ForTag extends Tag {
 	public void render(CarrotEngine engine, Writer writer, TagNode tagNode, Scope scope)
 			throws CarrotException, IOException {
 		Collection<?> items =
-				ValueHelper.toCollection(loopExpression.evaluate(engine.getConfig(), scope));
+				Values.toCollection(loopExpression.evaluate(engine.getConfig(), scope));
 		int i = 0;
 		for (Object item : items) {
 			// make bindings mutable?

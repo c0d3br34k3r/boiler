@@ -8,12 +8,12 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Params;
+import au.com.codeka.carrot.TemplateParseException;
 
 class ValueParser implements TermParser {
 
 	@Override
-	public Term parse(Tokenizer tokenizer) throws CarrotException {
+	public Term parse(Tokenizer tokenizer) {
 		Token token = tokenizer.next();
 		TokenType type = token.getType();
 		switch (type) {
@@ -31,36 +31,37 @@ class ValueParser implements TermParser {
 			return term;
 		// TODO: Arrays and objects?
 		default:
-			throw new CarrotException("");
+			throw new TemplateParseException("");
 		}
 	}
 
 	private static final Set<TokenType> ACCESS_TYPE =
-			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET, TokenType.LEFT_PARENTHESIS);
+			Sets.immutableEnumSet(TokenType.DOT, TokenType.LEFT_BRACKET,
+					TokenType.LEFT_PARENTHESIS);
 
-	private static Term getAccessTerm(Tokenizer tokenizer, Term accessTerm) throws CarrotException {
-		Term result = accessTerm;
+	private static Term getAccessTerm(Tokenizer tokenizer, String identifier) {
+		Term result = new Variable(identifier);
 		while (ACCESS_TYPE.contains(tokenizer.peek())) {
 			Token token = tokenizer.next();
 			switch (token.getType()) {
 			case DOT:
-				result = new AccessTerm(result, new ValueTerm(tokenizer.parseIdentifier()));
+				result = new IndexTerm(result, new ValueTerm(tokenizer.parseIdentifier()));
 				break;
 			case LEFT_BRACKET:
-				result = new AccessTerm(result, ExpressionParser.parse(tokenizer));
+				result = new IndexTerm(result, ExpressionParser.parse(tokenizer));
 				tokenizer.consume(TokenType.RIGHT_BRACKET);
 				break;
-			case RIGHT_BRACKET:
-				result = new FunctionTerm(result, parseParams(tokenizer));
-				tokenizer.consume(TokenType.RIGHT_PARENTHESIS);
-				break;
+//			case LEFT_PARENTHESIS:
+//				result = new FunctionTerm(result, parseParams(tokenizer));
+//				tokenizer.consume(TokenType.RIGHT_PARENTHESIS);
+//				break;
 			default:
 			}
 		}
 		return result;
 	}
 
-	private static List<Term> parseParams(Tokenizer tokenizer) throws CarrotException {
+	private static List<Term> parseParams(Tokenizer tokenizer) {
 		if (tokenizer.peek() == TokenType.RIGHT_PARENTHESIS) {
 			return Collections.emptyList();
 		}

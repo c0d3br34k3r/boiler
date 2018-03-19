@@ -40,7 +40,9 @@ public class Scope {
 		stack.push(bindings);
 	}
 
-	/** Pop the most recent bindings off the stack. */
+	/**
+	 * Pop the most recent bindings off the stack.
+	 */
 	public void pop() {
 		stack.pop();
 	}

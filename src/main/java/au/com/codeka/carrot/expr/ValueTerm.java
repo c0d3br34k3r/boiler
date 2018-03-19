@@ -2,8 +2,6 @@ package au.com.codeka.carrot.expr;
 
 import com.google.common.base.Preconditions;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 
 class ValueTerm implements Term {
@@ -15,7 +13,7 @@ class ValueTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
+	public Object evaluate(Scope scope) {
 		return value;
 	}
 
@@ -23,4 +21,5 @@ class ValueTerm implements Term {
 	public String toString() {
 		return value instanceof String ? "\"" + value + "\"" : value.toString();
 	}
+
 }

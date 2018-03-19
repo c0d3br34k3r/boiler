@@ -32,12 +32,25 @@ public class Params extends ForwardingList<Object> {
 		return (int) get(index);
 	}
 
+	public int getIntOrDefault(int index, int defaultValue) {
+		return getOrDefault(index, defaultValue);
+	}
+
 	public String getStr() {
 		return (String) get();
 	}
 
 	public String getStr(int index) {
 		return (String) get(index);
+	}
+
+	public String getStrOrDefault(int index, String defaultValue) {
+		return getOrDefault(index, defaultValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getOrDefault(int index, T defaultValue) {
+		return index < size() ? (T) get(index) : defaultValue;
 	}
 
 }

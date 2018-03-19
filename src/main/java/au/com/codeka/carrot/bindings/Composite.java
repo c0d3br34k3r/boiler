@@ -37,19 +37,19 @@ import au.com.codeka.carrot.Bindings;
  */
 public final class Composite implements Bindings {
 
-	private final Iterable<Bindings> bindingsIterable;
+	private final Iterable<Bindings> bindingsGroup;
 
-	public Composite(Bindings... bindings) {
-		this(Arrays.asList(bindings));
+	public Composite(Bindings first, Bindings second) {
+		this(Arrays.asList(first, second));
 	}
 
 	public Composite(Iterable<Bindings> bindingsIterable) {
-		this.bindingsIterable = bindingsIterable;
+		this.bindingsGroup = bindingsIterable;
 	}
 
 	@Override
 	public Object resolve(@Nonnull String key) {
-		for (Bindings bindings : bindingsIterable) {
+		for (Bindings bindings : bindingsGroup) {
 			Object value = bindings.resolve(key);
 			if (value != null) {
 				return value;
@@ -60,7 +60,7 @@ public final class Composite implements Bindings {
 
 	@Override
 	public boolean isEmpty() {
-		for (Bindings bindings : bindingsIterable) {
+		for (Bindings bindings : bindingsGroup) {
 			if (!bindings.isEmpty()) {
 				return false;
 			}

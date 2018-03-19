@@ -2,8 +2,6 @@ package au.com.codeka.carrot.expr;
 
 import java.util.List;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 
 public class FunctionTerm implements Term {
@@ -13,7 +11,7 @@ public class FunctionTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
+	public Object evaluate(Scope scope) {
 		// TODO Auto-generated method stub
 		return null;
 	}

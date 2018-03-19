@@ -1,12 +1,7 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 
-/**
- * A {@link Term} that evaluates the bound value of the identifier.
- */
 class Variable implements Term {
 
 	private final String name;
@@ -16,7 +11,7 @@ class Variable implements Term {
 	}
 
 	@Override
-	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
+	public Object evaluate(Scope scope) {
 		return scope.resolve(name);
 	}
 

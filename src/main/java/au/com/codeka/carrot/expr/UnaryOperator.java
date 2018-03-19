@@ -1,31 +1,28 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.ValueHelper;
-
 enum UnaryOperator {
 
 	NOT {
 		@Override
-		Object apply(Object value) throws CarrotException {
-			return !ValueHelper.isTrue(value);
+		Object apply(Object value) {
+			return !Values.isTrue(value);
 		}
 	},
 
-	MINUS {
+	NEGATIVE {
 		@Override
-		Object apply(Object value) throws CarrotException {
-			return ValueHelper.negate(value);
+		Object apply(Object value) {
+			return Values.negate(value);
 		}
 	},
 
-	PLUS {
+	POSITIVE {
 		@Override
-		Object apply(Object value) throws CarrotException {
-			return ValueHelper.toNumber(value);
+		Object apply(Object value) {
+			return Values.toNumber(value);
 		}
 	};
 
-	abstract Object apply(Object value) throws CarrotException;
+	abstract Object apply(Object value);
 
 }

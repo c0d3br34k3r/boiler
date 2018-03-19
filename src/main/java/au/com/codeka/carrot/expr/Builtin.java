@@ -1,4 +1,4 @@
-package au.com.codeka.carrot;
+package au.com.codeka.carrot.expr;
 
 import java.util.Collection;
 
@@ -6,36 +6,26 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-import au.com.codeka.carrot.expr.Functions;
+import au.com.codeka.carrot.Params;
 
-enum Builtin implements Func {
+public enum Builtin implements Func {
 
 	BOOL {
 		@Override
 		public Object apply(Params params) {
-			return ValueHelper.isTrue(params.get());
+			return Values.isTrue(params.get());
 		}
 	},
 	FLOAT {
 		@Override
 		public Object apply(Params params) {
-			try {
-				return ValueHelper.toNumber(params.get()).doubleValue();
-			} catch (CarrotException e) {
-				// TODO
-				throw new IllegalArgumentException(e);
-			}
+			return Values.toNumber(params.get()).doubleValue();
 		}
 	},
 	INT {
 		@Override
 		public Object apply(Params params) {
-			try {
-				return ValueHelper.toNumber(params.get()).intValue();
-			} catch (CarrotException e) {
-				// TODO
-				throw new IllegalArgumentException(e);
-			}
+			return Values.toNumber(params.get()).intValue();
 		}
 	},
 	STR {
@@ -47,29 +37,33 @@ enum Builtin implements Func {
 	LEN {
 		@Override
 		public Object apply(Params params) {
-			return Functions.len(params.get());
+			return Values.len(params.get());
 		}
 	},
 	MIN {
 		@Override
 		public Object apply(Params params) {
-			return Functions.min(params.size() == 1 ? (Iterable<?>) params.get() : params);
+			return Values.min(params.size() == 1 ? (Iterable<?>) params.get() : params);
 		}
 	},
 	MAX {
 		@Override
 		public Object apply(Params params) {
-			return Functions.max(params.size() == 1 ? (Iterable<?>) params.get() : params);
+			return Values.max(params.size() == 1 ? (Iterable<?>) params.get() : params);
 		}
 	},
 	RANGE {
 		@Override
 		public Object apply(Params params) {
 			switch (params.size()) {
-				case 0:  throw new IllegalArgumentException();
-				case 1:  return Functions.range(params.getInt());
-				case 2:  return Functions.range(params.getInt(0), params.getInt(1));
-				default: return Functions.range(params.getInt(0), params.getInt(1), params.getInt(2));
+			case 0:
+				throw new IllegalArgumentException();
+			case 1:
+				return Values.range(params.getInt());
+			case 2:
+				return Values.range(params.getInt(0), params.getInt(1));
+			default:
+				return Values.range(params.getInt(0), params.getInt(1), params.getInt(2));
 			}
 		}
 	},
@@ -89,7 +83,7 @@ enum Builtin implements Func {
 	CAPITALIZE {
 		@Override
 		public Object apply(Params params) {
-			return Functions.capitalize(params.getStr());
+			return Values.capitalize(params.getStr());
 		}
 	},
 	REPLACE {
@@ -157,29 +151,20 @@ enum Builtin implements Func {
 	COLLAPSE {
 		@Override
 		public Object apply(Params params) {
-			return CharMatcher.whitespace().trimAndCollapseFrom(params.getStr(0), params.size() <= 2
-					? params.getStr(1).charAt(0)
-					: ' ');
+			return CharMatcher.whitespace().trimAndCollapseFrom(params.getStr(0), params
+					.getStrOrDefault(1, "_").charAt(0));
 		}
 	},
 	SEPARATOR_TO_CAMEL {
 		@Override
 		public Object apply(Params params) {
-			switch (params.size()) {
-				case 0:  throw new IllegalArgumentException();
-				case 1:  return Functions.separatorToCamel(params.getStr());
-				default: return Functions.separatorToCamel(params.getStr(0), params.getStr(1));
-			}
+			return Values.separatorToCamel(params.getStr(0), params.getStrOrDefault(1, "_"));
 		}
 	},
 	CAMEL_TO_SEPARATOR {
 		@Override
 		public Object apply(Params params) {
-			switch (params.size()) {
-				case 0:  throw new IllegalArgumentException();
-				case 1:  return Functions.camelToSeparator(params.getStr());
-				default: return Functions.camelToSeparator(params.getStr(0), params.getStr(1));
-			}
+			return Values.camelToSeparator(params.getStr(0), params.getStrOrDefault(1, "_"));
 		}
 	};
 
@@ -195,7 +180,7 @@ enum Builtin implements Func {
 	// distinctValues
 
 	String functionName() {
-		return Functions.separatorToCamel(name().toLowerCase());
+		return Values.separatorToCamel(name().toLowerCase());
 	}
 
 }

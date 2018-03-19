@@ -28,7 +28,9 @@ public abstract class Token {
 	static final Token MULTIPLY = new SymbolToken(TokenType.MULTIPLY);
 	static final Token DIVIDE = new SymbolToken(TokenType.DIVIDE);
 	static final Token MODULO = new SymbolToken(TokenType.MODULO);
-
+	static final Token QUESTION_MARK = new SymbolToken(TokenType.QUESTION_MARK);
+	static final Token COLON = new SymbolToken(TokenType.COLON);
+	
 	static final Token TRUE = new ValueToken(true);
 	static final Token FALSE = new ValueToken(false);
 

@@ -1,15 +1,20 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.CarrotException;
-
 class ExpressionParser {
 
-	static Term parse(Tokenizer tokenizer) throws CarrotException {
-		return EXPRESSION_PARSER.parse(tokenizer);
+	static Term parse(Tokenizer tokenizer) {
+		Term left = EXPRESSION_PARSER.parse(tokenizer);
+		if (tokenizer.tryConsume(TokenType.QUESTION_MARK)) {
+			Term first = parse(tokenizer);
+			tokenizer.consume(TokenType.COLON);
+			Term second = parse(tokenizer);
+			left = new ConditionalTerm(left, first, second);
+		}
+		return left;
 	}
 
 	private static final TermParser EXPRESSION_PARSER =
-		// @formatter:off
+	// @formatter:off
 		new BinaryTermParser(
 		  new BinaryTermParser(
 		    new BinaryTermParser(
@@ -30,6 +35,6 @@ class ExpressionParser {
 		      TokenType.NOT_EQUAL),
 		    TokenType.LOGICAL_AND),
 		  TokenType.LOGICAL_OR);
-		// @formatter:on
+	// @formatter:on
 
 }

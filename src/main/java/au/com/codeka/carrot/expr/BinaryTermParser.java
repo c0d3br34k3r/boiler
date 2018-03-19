@@ -4,8 +4,6 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import au.com.codeka.carrot.CarrotException;
-
 /**
  * A factory for binary {@link Term}s.
  *
@@ -22,7 +20,7 @@ final class BinaryTermParser implements TermParser {
 	}
 
 	@Override
-	public Term parse(Tokenizer tokenizer) throws CarrotException {
+	public Term parse(Tokenizer tokenizer) {
 		Term left = termParser.parse(tokenizer);
 		while (tokenTypes.contains(tokenizer.peek())) {
 			left = new BinaryTerm(left,

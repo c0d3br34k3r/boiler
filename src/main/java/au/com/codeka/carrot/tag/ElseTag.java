@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.ValueHelper;
 import au.com.codeka.carrot.expr.StatementParser;
 import au.com.codeka.carrot.expr.Term;
+import au.com.codeka.carrot.expr.Values;
 import au.com.codeka.carrot.tmpl.Node;
 import au.com.codeka.carrot.tmpl.TagNode;
 
@@ -63,7 +63,7 @@ public class ElseTag extends Tag {
 	@Override
 	public void render(CarrotEngine engine, Writer writer, TagNode tagNode, Scope scope)
 			throws CarrotException, IOException {
-		if (expr == null || ValueHelper.isTrue(expr.evaluate(engine.getConfig(), scope))) {
+		if (expr == null || Values.isTrue(expr.evaluate(engine.getConfig(), scope))) {
 			tagNode.renderChildren(engine, writer, scope);
 		} else {
 			Node nextNode = tagNode.getNextNode();

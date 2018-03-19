@@ -1,7 +1,5 @@
 package au.com.codeka.carrot.expr;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
 import au.com.codeka.carrot.Scope;
 
 /**
@@ -23,8 +21,8 @@ class BinaryTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Configuration config, Scope scope) throws CarrotException {
-		return operator.apply(left.evaluate(config, scope), new LazyValue(config, scope, right));
+	public Object evaluate(Scope scope) {
+		return operator.apply(left.evaluate(scope), new LazyValue(scope, right));
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package au.com.codeka.carrot.bindings;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;

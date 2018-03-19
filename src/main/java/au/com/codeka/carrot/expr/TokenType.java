@@ -37,6 +37,12 @@ public enum TokenType {
 	/** A comma, {@code ,} */
 	COMMA,
 
+	/** A question mark, {@code ?} */
+	QUESTION_MARK,
+
+	/** A colon, {@code :} */
+	COLON,
+
 	/** The dot (access) operator, {@code .} */
 	DOT,
 
@@ -68,10 +74,10 @@ public enum TokenType {
 	GREATER_THAN_OR_EQUAL(BinaryOperator.GREATER_THAN_OR_EQUAL),
 
 	/** Plus: {@code +} */
-	PLUS(BinaryOperator.ADD, UnaryOperator.PLUS),
+	PLUS(BinaryOperator.ADD, UnaryOperator.POSITIVE),
 
 	/** Minus: {@code -} */
-	MINUS(BinaryOperator.SUBTRACT, UnaryOperator.MINUS),
+	MINUS(BinaryOperator.SUBTRACT, UnaryOperator.NEGATIVE),
 
 	/** Multiply: {@code *} */
 	MULTIPLY(BinaryOperator.MULTIPLY),
