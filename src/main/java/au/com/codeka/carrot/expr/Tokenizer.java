@@ -4,7 +4,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
-import java.util.Set;
 
 import com.google.common.base.CharMatcher;
 
@@ -43,9 +42,9 @@ public class Tokenizer {
 
 	public void consume(Symbol symbol) {
 		Token next = next();
-		if (!next.equals(symbol)) {
-			throw new TemplateParseException("expected %s, got %s", symbol,
-					next);
+		if (next.symbol() != symbol) {
+			throw new TemplateParseException(
+					"expected %s, got %s", symbol, next);
 		}
 	}
 
@@ -58,15 +57,6 @@ public class Tokenizer {
 		return false;
 	}
 
-	public Symbol tryConsume(Set<Symbol> allowed) {
-		Token token = peek();
-		if (token.type() == TokenType.SYMBOL
-				&& allowed.contains(token.symbol())) {
-			return next().symbol();
-		}
-		return null;
-	}
-
 	public void end() {
 		Token next = next();
 		if (next.type() != TokenType.END) {
@@ -77,10 +67,9 @@ public class Tokenizer {
 
 	public void consumeIdentifier(String value) {
 		Token next = next();
-		if (next.type() != TokenType.IDENTIFIER
-				|| !next.identifier().equals(value)) {
-			throw new TemplateParseException("expected identifier %s, got %s",
-					value, next);
+		if (!next.identifier().equals(value)) {
+			throw new TemplateParseException(
+					"expected identifier %s, got %s", value, next);
 		}
 	}
 
@@ -101,12 +90,7 @@ public class Tokenizer {
 	}
 
 	public String parseIdentifier() {
-		Token next = next();
-		if (next.type() != TokenType.IDENTIFIER) {
-			throw new TemplateParseException("expected identifier, got %s",
-					next);
-		}
-		return next.identifier();
+		return next().identifier();
 	}
 
 	private static final CharMatcher DIGIT;
@@ -161,7 +145,7 @@ public class Tokenizer {
 			return parseIdentifier(c);
 		}
 		throw new TemplateParseException(
-				"unexpected char %c (%s)", ch, Character.getName(ch));
+				"unexpected char '%c' (%s)", ch, Character.getName(ch));
 	}
 
 	private Token parseString(char end) throws IOException {
@@ -272,8 +256,8 @@ public class Tokenizer {
 	private void require(char required) throws IOException {
 		int ch = reader.read();
 		if (ch != required) {
-			throw new TemplateParseException("expected %c, got %c", required,
-					ch);
+			throw new TemplateParseException(
+					"expected '%c', got '%c'", required, ch);
 		}
 	}
 
@@ -336,7 +320,7 @@ public class Tokenizer {
 		case -1:
 			throw new TemplateParseException("unclosed string");
 		default:
-			throw new TemplateParseException("bad escaped char: %c", ch);
+			throw new TemplateParseException("unexpected escaped '%c'", ch);
 		}
 	}
 

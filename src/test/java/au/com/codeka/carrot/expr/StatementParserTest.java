@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -15,7 +14,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.TemplateParseException;
 import au.com.codeka.carrot.bindings.MapBindings;
 
 /**
@@ -27,37 +25,50 @@ public class StatementParserTest {
 	@Test
 	public void testBinaryOperation() {
 
-//		Assert.assertEquals(evaluate("+true"), 1);
-//		Assert.assertEquals(evaluate("1+1"), 2);
-//		Assert.assertEquals(evaluate("1+1+1"), 3);
-//		Assert.assertEquals(evaluate("1+1+1+1"), 4);
-//		Assert.assertEquals(evaluate("1"), 1);
-//		Assert.assertEquals(evaluate("!1"), false);
-//		Assert.assertEquals(evaluate("!!1"), true);
-//		Assert.assertEquals(evaluate("!!!1"), false);
-//		Assert.assertEquals(evaluate("2 + 2 * 2"), 6);
-//		Assert.assertEquals(evaluate("2 * 2 + 2"), 6);
-//		Assert.assertEquals(evaluate("2 * (2 + 2)"), 8);
-//
-//		Assert.assertEquals(evaluate("foo[4 + 4]"), 7);
-//		Assert.assertEquals(evaluate("foo[6] * 2"), 14);
-//		Assert.assertEquals(evaluate("bar.baz"), "qux");
-//		Assert.assertEquals(evaluate("quux.quuz.corge"), "grault");
-//		Assert.assertEquals(evaluate("quux['qu' + 'uz']['corge']"), "grault");
-//		Assert.assertEquals(evaluate("quux['quuz']['garply'][0]"), 3);
-//
-//		Assert.assertEquals(evaluate("R[0]"), 1);
-//		Assert.assertEquals(evaluate("R[1]"), 2);
-//		Assert.assertEquals(evaluate("R[-1]"), 7);
-//		Assert.assertEquals(evaluate("R[-2]"), 6);
-//
-//		Assert.assertEquals(evaluate("auto[3]"), "o");
-//		Assert.assertEquals(evaluate("auto[-2]"), "l");
-//		Assert.assertEquals(evaluate("(auto)"), "automobile");
-//		Assert.assertEquals(evaluate("(auto)[7]"), "i");
-//		Assert.assertEquals(evaluate("auto[:5]"), "autom");
-//		Assert.assertEquals(evaluate("auto[1:5]"), "utom");
-		Assert.assertEquals(evaluate("auto[-2:]"), "le");
+		Assert.assertEquals(evaluate("+true"), 1);
+		Assert.assertEquals(evaluate("1+1"), 2);
+		Assert.assertEquals(evaluate("1+1+1"), 3);
+		Assert.assertEquals(evaluate("1+1+1+1"), 4);
+		Assert.assertEquals(evaluate("1"), 1);
+		Assert.assertEquals(evaluate("!1"), false);
+		Assert.assertEquals(evaluate("!!1"), true);
+		Assert.assertEquals(evaluate("!!!1"), false);
+		Assert.assertEquals(evaluate("2 + 2 * 2"), 6);
+		Assert.assertEquals(evaluate("2 * 2 + 2"), 6);
+		Assert.assertEquals(evaluate("2 * (2 + 2)"), 8);
+
+		Assert.assertEquals(evaluate("foo[4 + 4]"), 7);
+		Assert.assertEquals(evaluate("foo[6] * 2"), 14);
+		Assert.assertEquals(evaluate("bar.baz"), "qux");
+		Assert.assertEquals(evaluate("quux.quuz.corge"), "grault");
+		Assert.assertEquals(evaluate("quux['qu' + 'uz']['corge']"), "grault");
+		Assert.assertEquals(evaluate("quux['quuz']['garply'][0]"), 3);
+
+		Assert.assertEquals(evaluate("R[0]"), 1);
+		Assert.assertEquals(evaluate("R[1]"), 2);
+		Assert.assertEquals(evaluate("R[-1]"), 7);
+		Assert.assertEquals(evaluate("R[-2]"), 6);
+
+		Assert.assertEquals(evaluate("word[3]"), "o");
+		Assert.assertEquals(evaluate("word[:]"), "automobile");
+		Assert.assertEquals(evaluate("word[4:]"), "mobile");
+		Assert.assertEquals(evaluate("word[:-3]"), "automob");
+		Assert.assertEquals(evaluate("word[1:5]"), "utom");
+		Assert.assertEquals(evaluate("word[::]"), "automobile");
+		Assert.assertEquals(evaluate("word[4::]"), "mobile");
+		Assert.assertEquals(evaluate("word[:4:]"), "auto");
+		Assert.assertEquals(evaluate("word[::-1]"), "elibomotua");
+		Assert.assertEquals(evaluate("word[:5:2]"), "atm");
+		Assert.assertEquals(evaluate("word[1:5:]"), "utom");
+		Assert.assertEquals(evaluate("word[2::3]"), "tol");
+		Assert.assertEquals(evaluate("word[1:-1:2]"), "uooi");
+
+		Assert.assertEquals(evaluate("word[4:][:3]"), "mob");
+		Assert.assertEquals(evaluate("word[:]+'y'"), "automobiley");
+		Assert.assertEquals(evaluate("word[:-4] + 'bus'"), "automobus");
+		Assert.assertEquals(evaluate("(word)"), "automobile");
+		Assert.assertEquals(evaluate("(word)[7]"), "i");
+		Assert.assertEquals(evaluate("word[-2]"), "l");
 
 		Assert.assertEquals(evaluate("'1' + 1"), 2);
 		Assert.assertEquals(evaluate("'foo' + 'bar'"), "foobar");
@@ -85,11 +96,18 @@ public class StatementParserTest {
 		Assert.assertEquals(evaluate("{a: 1, b: [true, false][1] ? 4 : 7}['b']"), 7);
 	}
 
-	@Ignore
 	@Test
 	public void testSyntaxError() {
 		syntaxError("");
 		syntaxError("(1)[0]");
+		syntaxError("'abc'[:::]");
+		syntaxError("'abc'[::");
+		syntaxError("'abc'[1 2]");
+		syntaxError("'abc'[1 2 3]");
+		syntaxError("'abc'[1:2 3]");
+		syntaxError("'abc'[1 2:3]");
+		syntaxError("'abc'[1:2:3:]");
+		syntaxError("'abc'[1:2:3:4]");
 		syntaxError("1 +");
 		syntaxError("1 1");
 		syntaxError("1 &! 1");
@@ -99,15 +117,17 @@ public class StatementParserTest {
 		try {
 			evaluate(expr);
 			Assert.fail(expr + " was valid");
-		} catch (TemplateParseException e) {
-			System.out.println(e.getMessage());
+		} catch (Exception e) {
+			System.out.printf("%-24s %s (%s)%n", expr, e.getMessage(), e.getClass().getSimpleName());
 		}
 	}
 
 	private static Object evaluate(String expr) {
 		Tokenizer tokenizer = createParser(expr);
-		Term term = tokenizer.parseExpression();
+		Term term;
+		term = tokenizer.parseExpression();
 		tokenizer.end();
+		System.out.printf("%-24s %s%n", expr, term);
 		return evaluate(term);
 	}
 
@@ -116,12 +136,12 @@ public class StatementParserTest {
 	}
 
 	private static Object evaluate(Term term) {
-		System.out.println(term);
+		// System.out.println(term);
 		return term.evaluate(
-				new Scope(new MapBindings(ImmutableMap.<String, Object>builder()
+				new Scope(new MapBindings(ImmutableMap.<String, Object> builder()
 						.put("i", 6)
 						.put("R", Arrays.asList(1, 2, 3, 4, 5, 6, 7))
-						.put("auto", "automobile")
+						.put("word", "automobile")
 						.put("foo", Collections.nCopies(10, 7))
 						.put("bar", ImmutableMap.of("baz", "qux"))
 						.put("quux", ImmutableMap.of("quuz", ImmutableMap.of(

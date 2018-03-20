@@ -3,7 +3,6 @@ package au.com.codeka.carrot.expr;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import au.com.codeka.carrot.Scope;
@@ -30,14 +29,8 @@ class ListTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(final Scope scope) {
-		return Lists.transform(items, new Function<Term, Object>() {
-
-			@Override
-			public Object apply(Term input) {
-				return input.evaluate(scope);
-			}
-		});
+	public Object evaluate(Scope scope) {
+		return Lists.transform(items, scope);
 	}
 
 	@Override

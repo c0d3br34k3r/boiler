@@ -2,18 +2,24 @@ package au.com.codeka.carrot.expr;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
+import au.com.codeka.carrot.Params;
 import au.com.codeka.carrot.Scope;
 
-public class FunctionTerm implements Term {
+class FunctionTerm implements Term {
 
-	public FunctionTerm(Term result, List<Term> parseParams) {
-		// TODO Auto-generated constructor stub
+	private String name;
+	private List<Term> params;
+
+	FunctionTerm(String name, List<Term> params) {
+		this.name = name;
+		this.params = params;
 	}
 
 	@Override
 	public Object evaluate(Scope scope) {
-		// TODO Auto-generated method stub
-		return null;
+		return scope.getFunction(name).apply(new Params(Lists.transform(params, scope)));
 	}
 
 }

@@ -308,8 +308,7 @@ public class Values {
 				});
 	}
 
-	private static List<Integer> sliceRange(Integer start, Integer stop,
-			Integer step, int len) {
+	private static List<Integer> sliceRange(Integer start, Integer stop, Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
 			throw new IllegalArgumentException();

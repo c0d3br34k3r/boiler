@@ -1,21 +1,23 @@
 package au.com.codeka.carrot.expr;
 
+import static au.com.codeka.carrot.expr.Symbol.COLON;
+import static au.com.codeka.carrot.expr.Symbol.COMMA;
+import static au.com.codeka.carrot.expr.Symbol.DOT;
+import static au.com.codeka.carrot.expr.Symbol.LEFT_BRACKET;
+import static au.com.codeka.carrot.expr.Symbol.LEFT_PARENTHESIS;
+import static au.com.codeka.carrot.expr.Symbol.RIGHT_BRACKET;
+import static au.com.codeka.carrot.expr.Symbol.RIGHT_CURLY_BRACKET;
+import static au.com.codeka.carrot.expr.Symbol.RIGHT_PARENTHESIS;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 import au.com.codeka.carrot.TemplateParseException;
 
 class ValueParser implements TermParser {
-
-	private static final Set<Symbol> ACCESS_TYPE = Sets.immutableEnumSet(
-			Symbol.DOT, Symbol.LEFT_BRACKET, Symbol.LEFT_PARENTHESIS);
 
 	@Override
 	public Term parse(Tokenizer tokenizer) {
@@ -26,7 +28,7 @@ class ValueParser implements TermParser {
 			term = new ValueTerm(token.value());
 			break;
 		case IDENTIFIER:
-			term = new Variable(token.identifier());
+			term = parseIdentifier(tokenizer, token.identifier());
 			break;
 		case SYMBOL:
 			switch (token.symbol()) {
@@ -36,10 +38,10 @@ class ValueParser implements TermParser {
 				return new UnaryTerm(token.symbol().unaryOperator(), parse(tokenizer));
 			case LEFT_PARENTHESIS:
 				term = ExpressionParser.parse(tokenizer);
-				tokenizer.consume(Symbol.RIGHT_PARENTHESIS);
+				tokenizer.consume(RIGHT_PARENTHESIS);
 				break;
 			case LEFT_BRACKET:
-				term = parseList(tokenizer);
+				term = new ListTerm(parseExpressions(tokenizer, RIGHT_BRACKET));
 				break;
 			case LEFT_CURLY_BRACKET:
 				term = parseMap(tokenizer);
@@ -52,77 +54,86 @@ class ValueParser implements TermParser {
 			throw new TemplateParseException("unexpected token %s", token);
 		}
 		for (;;) {
-			Symbol symbol = tokenizer.tryConsume(ACCESS_TYPE);
-			if (symbol == null) {
+			if (tokenizer.tryConsume(DOT)) {
+				term = new IndexTerm(term, new ValueTerm(tokenizer.parseIdentifier()));
+			} else if (tokenizer.tryConsume(LEFT_BRACKET)) {
+				term = parseIndex(tokenizer, term);
+			} else {
 				return term;
 			}
-			switch (symbol) {
-			case DOT:
-				term = new IndexTerm(term, new ValueTerm(tokenizer.parseIdentifier()));
-				break;
-			case LEFT_BRACKET:
-				term = parseIndex(tokenizer, term);
-				break;
-			case LEFT_PARENTHESIS:
-				throw new UnsupportedOperationException();
-			default:
-			}
 		}
 	}
 
-	private static final Set<Symbol> SLICE_SEPARATORS = 
-			Sets.immutableEnumSet(Symbol.COLON, Symbol.RIGHT_BRACKET);
+	private static Term parseIdentifier(Tokenizer tokenizer, String identifier) {
+		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
+			return new FunctionTerm(identifier, parseExpressions(tokenizer,
+					RIGHT_PARENTHESIS));
+		}
+		return new Variable(identifier);
+	}
 
 	private static Term parseIndex(Tokenizer tokenizer, Term seq) {
-		List<Term> params = Arrays.asList(null, null, null);
-		boolean slice = false;
-		int i = 0;
-		for (;;) {
-			if (tokenizer.tryConsume(Symbol.COLON)) {
-				i++;
-				slice = true;
-			} else {
-				params.set(i++, tokenizer.parseExpression());
-				Symbol symbol = tokenizer.tryConsume(SLICE_SEPARATORS);
-				if (symbol == null) {
-					throw new TemplateParseException("expected : or ], got %s", tokenizer.next());
-				}
-				if (symbol == Symbol.RIGHT_BRACKET) {
-					break;
-				}
-				slice = true;
+		Term index;
+		if (tokenizer.tryConsume(COLON)) {
+			index = null;
+		} else {
+			index = tokenizer.parseExpression();
+			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
+				// [i]
+				return new IndexTerm(seq, index);
 			}
+			tokenizer.consume(COLON);
 		}
-		System.out.println(params);
-		return slice
-				? new SliceTerm(seq, params.get(0), params.get(1), params.get(2))
-				: new IndexTerm(seq, params.get(0));
+		if (tokenizer.tryConsume(RIGHT_BRACKET)) {
+			// [:], [i:]
+			return new SliceTerm(seq, index, null, null);
+		}
+		Term stop;
+		if (tokenizer.tryConsume(COLON)) {
+			stop = null;
+		} else {
+			stop = tokenizer.parseExpression();
+			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
+				// [i:j], [:j]
+				return new SliceTerm(seq, index, stop, null);
+			}
+			tokenizer.consume(COLON);
+		}
+		if (tokenizer.tryConsume(RIGHT_BRACKET)) {
+			// [i:j:], [i::], [::], [:j:]
+			// TODO: allow this syntax?
+			return new SliceTerm(seq, index, stop, null);
+		}
+		Term step = tokenizer.parseExpression();
+		tokenizer.consume(RIGHT_BRACKET);
+		// [i:j:k], [i::k], [:j:k], [::k]
+		return new SliceTerm(seq, index, stop, step);
 	}
 
-	private static Term parseList(Tokenizer tokenizer) {
-		if (tokenizer.tryConsume(Symbol.RIGHT_BRACKET)) {
-			return ListTerm.EMPTY;
+	private static List<Term> parseExpressions(Tokenizer tokenizer, Symbol end) {
+		if (tokenizer.tryConsume(RIGHT_CURLY_BRACKET)) {
+			return Collections.emptyList();
 		}
 		List<Term> terms = new ArrayList<>();
 		do {
 			terms.add(tokenizer.parseExpression());
-		} while (tokenizer.tryConsume(Symbol.COMMA));
-		tokenizer.consume(Symbol.RIGHT_BRACKET);
-		return new ListTerm(terms);
+		} while (tokenizer.tryConsume(COMMA));
+		tokenizer.consume(end);
+		return terms;
 	}
 
 	private static Term parseMap(Tokenizer tokenizer) {
-		if (tokenizer.tryConsume(Symbol.RIGHT_CURLY_BRACKET)) {
+		if (tokenizer.tryConsume(RIGHT_CURLY_BRACKET)) {
 			return MapTerm.EMPTY;
 		}
 		Map<String, Term> terms = new HashMap<>();
 		do {
 			String key = parseKey(tokenizer);
-			tokenizer.consume(Symbol.COLON);
+			tokenizer.consume(COLON);
 			Term value = tokenizer.parseExpression();
 			terms.put(key, value);
-		} while (tokenizer.tryConsume(Symbol.COMMA));
-		tokenizer.consume(Symbol.RIGHT_CURLY_BRACKET);
+		} while (tokenizer.tryConsume(COMMA));
+		tokenizer.consume(RIGHT_CURLY_BRACKET);
 		return new MapTerm(terms);
 	}
 

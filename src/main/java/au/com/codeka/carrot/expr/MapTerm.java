@@ -3,7 +3,6 @@ package au.com.codeka.carrot.expr;
 import java.util.Collections;
 import java.util.Map;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 
@@ -31,14 +30,8 @@ class MapTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(final Scope scope) {
-		return Maps.transformValues(items, new Function<Term, Object>() {
-
-			@Override
-			public Object apply(Term input) {
-				return input.evaluate(scope);
-			}
-		});
+	public Object evaluate(Scope scope) {
+		return Maps.transformValues(items, scope);
 	}
 
 	@Override

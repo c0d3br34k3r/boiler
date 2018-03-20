@@ -71,12 +71,12 @@ public enum Symbol implements Token {
 
 	@Override
 	public Object value() {
-		throw new IllegalStateException();
+		throw new IllegalStateException(this + " is not a value");
 	}
 
 	@Override
 	public String identifier() {
-		throw new IllegalStateException();
+		throw new IllegalStateException(this + " is not an identifier");
 	}
 
 	@Override

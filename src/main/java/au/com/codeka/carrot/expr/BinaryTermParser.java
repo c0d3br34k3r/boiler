@@ -18,11 +18,14 @@ final class BinaryTermParser implements TermParser {
 	public Term parse(Tokenizer tokenizer) {
 		Term left = termParser.parse(tokenizer);
 		for (;;) {
-			Symbol symbol = tokenizer.tryConsume(symbols);
-			if (symbol == null) {
+			Token token = tokenizer.peek();
+			if (token.type() == TokenType.SYMBOL && symbols.contains(token.symbol())) {
+				left = new BinaryTerm(left,
+						tokenizer.next().symbol().binaryOperator(),
+						termParser.parse(tokenizer));
+			} else {
 				return left;
 			}
-			left = new BinaryTerm(left, symbol.binaryOperator(), termParser.parse(tokenizer));
 		}
 	}
 

@@ -6,9 +6,12 @@ import java.util.Deque;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 
 import au.com.codeka.carrot.bindings.Composite;
+import au.com.codeka.carrot.expr.TemplateFunction;
+import au.com.codeka.carrot.expr.Term;
 
 /**
  * Scope is a collection of all the bindings that are active. The scope is
@@ -16,7 +19,7 @@ import au.com.codeka.carrot.bindings.Composite;
  * bindings onto the stack and those will be the first one searched for a
  * variable.
  */
-public class Scope {
+public class Scope implements Function<Term, Object> {
 
 	private final Deque<Bindings> stack = new ArrayDeque<>();
 
@@ -74,6 +77,15 @@ public class Scope {
 			}
 		}
 		return null;
+	}
+
+	public TemplateFunction getFunction(String name) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public Object apply(Term input) {
+		return input.evaluate(this);
 	}
 
 }

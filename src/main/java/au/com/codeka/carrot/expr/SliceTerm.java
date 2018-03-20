@@ -1,5 +1,7 @@
 package au.com.codeka.carrot.expr;
 
+import com.google.common.base.MoreObjects;
+
 import au.com.codeka.carrot.Scope;
 
 class SliceTerm implements Term {
@@ -32,7 +34,10 @@ class SliceTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("[%s SLICE %s, %s, %s]", seq, start, stop, step);
+		return String.format("[%s SLICE %s:%s%s]", seq,
+				MoreObjects.firstNonNull(start, ""), 
+				MoreObjects.firstNonNull(stop, ""),
+				step != null ? ":" + step : "");
 	}
 
 }
