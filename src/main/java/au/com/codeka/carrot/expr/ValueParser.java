@@ -1,6 +1,8 @@
 package au.com.codeka.carrot.expr;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +14,8 @@ import au.com.codeka.carrot.TemplateParseException;
 
 class ValueParser implements TermParser {
 
-	private static final Set<Symbol> ACCESS_TYPE =
-			Sets.immutableEnumSet(Symbol.DOT, Symbol.LEFT_BRACKET, Symbol.LEFT_PARENTHESIS);
+	private static final Set<Symbol> ACCESS_TYPE = Sets.immutableEnumSet(
+			Symbol.DOT, Symbol.LEFT_BRACKET, Symbol.LEFT_PARENTHESIS);
 
 	@Override
 	public Term parse(Tokenizer tokenizer) {
@@ -59,14 +61,42 @@ class ValueParser implements TermParser {
 				term = new IndexTerm(term, new ValueTerm(tokenizer.parseIdentifier()));
 				break;
 			case LEFT_BRACKET:
-				term = new IndexTerm(term, ExpressionParser.parse(tokenizer));
-				tokenizer.consume(Symbol.RIGHT_BRACKET);
+				term = parseIndex(tokenizer, term);
 				break;
 			case LEFT_PARENTHESIS:
 				throw new UnsupportedOperationException();
 			default:
 			}
 		}
+	}
+
+	private static final Set<Symbol> SLICE_SEPARATORS = 
+			Sets.immutableEnumSet(Symbol.COLON, Symbol.RIGHT_BRACKET);
+
+	private static Term parseIndex(Tokenizer tokenizer, Term seq) {
+		List<Term> params = Arrays.asList(null, null, null);
+		boolean slice = false;
+		int i = 0;
+		for (;;) {
+			if (tokenizer.tryConsume(Symbol.COLON)) {
+				i++;
+				slice = true;
+			} else {
+				params.set(i++, tokenizer.parseExpression());
+				Symbol symbol = tokenizer.tryConsume(SLICE_SEPARATORS);
+				if (symbol == null) {
+					throw new TemplateParseException("expected : or ], got %s", tokenizer.next());
+				}
+				if (symbol == Symbol.RIGHT_BRACKET) {
+					break;
+				}
+				slice = true;
+			}
+		}
+		System.out.println(params);
+		return slice
+				? new SliceTerm(seq, params.get(0), params.get(1), params.get(2))
+				: new IndexTerm(seq, params.get(0));
 	}
 
 	private static Term parseList(Tokenizer tokenizer) {

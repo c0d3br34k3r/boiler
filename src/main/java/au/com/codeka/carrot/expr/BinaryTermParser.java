@@ -4,11 +4,6 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-/**
- * A factory for binary {@link Term}s.
- *
- * @author Marten Gajda
- */
 final class BinaryTermParser implements TermParser {
 
 	private final TermParser termParser;

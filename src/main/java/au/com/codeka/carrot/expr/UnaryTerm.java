@@ -2,12 +2,6 @@ package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.Scope;
 
-/**
- * An unary {@link Term}. It has an {@link UnaryOperator} and a {@link Term} to
- * which the operator is applied.
- *
- * @author Marten Gajda
- */
 class UnaryTerm implements Term {
 
 	private final UnaryOperator operator;

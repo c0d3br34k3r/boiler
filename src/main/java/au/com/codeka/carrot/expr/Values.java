@@ -101,7 +101,7 @@ public class Values {
 					return Double.parseDouble(str);
 				}
 				return Integer.parseInt(str);
-			} catch (@SuppressWarnings("unused") NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				// continue
 			}
 		} else if (value instanceof Boolean) {
@@ -418,19 +418,19 @@ public class Values {
 		if (seq instanceof List) {
 			return index((List<?>) seq, index);
 		}
-		throw new TemplateParseException("%s is not an index in %s", index, seq);
+		throw new TemplateParseException("%s is not indexable", index, seq);
 	}
 
-	public static String index(String str, int i) {
-		return String.valueOf(str.charAt(getIndex(i, str.length())));
+	public static String index(String str, int index) {
+		return String.valueOf(str.charAt(getIndex(index, str.length())));
 	}
 
-	public static <E> E index(List<E> list, int i) {
-		return list.get(getIndex(i, list.size()));
+	public static <E> E index(List<E> list, int index) {
+		return list.get(getIndex(index, list.size()));
 	}
 
-	private static int getIndex(int i, int len) {
-		return i < 0 ? len + i : i;
+	private static int getIndex(int index, int len) {
+		return index < 0 ? len + index : index;
 	}
 
 	private static final Ordering<Object> ORDER = new Ordering<Object>() {

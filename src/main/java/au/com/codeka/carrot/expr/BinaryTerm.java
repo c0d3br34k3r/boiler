@@ -2,12 +2,6 @@ package au.com.codeka.carrot.expr;
 
 import au.com.codeka.carrot.Scope;
 
-/**
- * A binary {@link Term}. It has a left and a right (Sub-){@link Term} as well
- * as a {@link BinaryOperator}.
- *
- * @author Marten Gajda
- */
 class BinaryTerm implements Term {
 
 	private final Term left;
@@ -22,7 +16,7 @@ class BinaryTerm implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		return operator.apply(left.evaluate(scope), new LazyValue(scope, right));
+		return operator.apply(left, right, scope);
 	}
 
 	@Override

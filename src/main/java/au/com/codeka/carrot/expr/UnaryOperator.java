@@ -8,14 +8,12 @@ enum UnaryOperator {
 			return !Values.isTrue(value);
 		}
 	},
-
 	NEGATIVE {
 		@Override
 		Object apply(Object value) {
 			return Values.negate(value);
 		}
 	},
-
 	POSITIVE {
 		@Override
 		Object apply(Object value) {

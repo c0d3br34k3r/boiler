@@ -10,9 +10,6 @@ import com.google.common.base.CharMatcher;
 
 import au.com.codeka.carrot.TemplateParseException;
 
-/**
- * Converts an input {@link Reader} into a stream of {@link Token}s.
- */
 public class Tokenizer {
 
 	private PushbackReader reader;
@@ -47,7 +44,8 @@ public class Tokenizer {
 	public void consume(Symbol symbol) {
 		Token next = next();
 		if (!next.equals(symbol)) {
-			throw new TemplateParseException("expected %s, got %s", symbol, next);
+			throw new TemplateParseException("expected %s, got %s", symbol,
+					next);
 		}
 	}
 
@@ -62,7 +60,8 @@ public class Tokenizer {
 
 	public Symbol tryConsume(Set<Symbol> allowed) {
 		Token token = peek();
-		if (token.type() == TokenType.SYMBOL && allowed.contains(token.symbol())) {
+		if (token.type() == TokenType.SYMBOL
+				&& allowed.contains(token.symbol())) {
 			return next().symbol();
 		}
 		return null;
@@ -78,8 +77,10 @@ public class Tokenizer {
 
 	public void consumeIdentifier(String value) {
 		Token next = next();
-		if (next.type() != TokenType.IDENTIFIER || !next.identifier().equals(value)) {
-			throw new TemplateParseException("expected identifier %s, got %s", value, next);
+		if (next.type() != TokenType.IDENTIFIER
+				|| !next.identifier().equals(value)) {
+			throw new TemplateParseException("expected identifier %s, got %s",
+					value, next);
 		}
 	}
 
@@ -102,7 +103,8 @@ public class Tokenizer {
 	public String parseIdentifier() {
 		Token next = next();
 		if (next.type() != TokenType.IDENTIFIER) {
-			throw new TemplateParseException("expected identifier, got %s", next);
+			throw new TemplateParseException("expected identifier, got %s",
+					next);
 		}
 		return next.identifier();
 	}
@@ -250,7 +252,8 @@ public class Tokenizer {
 		}
 	}
 
-	private void readUntil(StringBuilder builder, CharMatcher matcher) throws IOException {
+	private void readUntil(StringBuilder builder, CharMatcher matcher)
+			throws IOException {
 		for (;;) {
 			int ch = reader.read();
 			if (ch == -1) {
@@ -269,7 +272,8 @@ public class Tokenizer {
 	private void require(char required) throws IOException {
 		int ch = reader.read();
 		if (ch != required) {
-			throw new TemplateParseException("expected %c, got %c", required, ch);
+			throw new TemplateParseException("expected %c, got %c", required,
+					ch);
 		}
 	}
 
@@ -325,7 +329,8 @@ public class Tokenizer {
 			builder.append(ch);
 			break;
 		case 'u':
-			int codePoint = Integer.parseInt(new String(readFully(reader, 4)), 16);
+			int codePoint = Integer.parseInt(new String(readFully(reader, 4)),
+					16);
 			builder.append(Character.toChars(codePoint));
 			break;
 		case -1:
