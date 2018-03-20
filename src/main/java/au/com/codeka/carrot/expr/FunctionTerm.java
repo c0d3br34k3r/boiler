@@ -2,6 +2,7 @@ package au.com.codeka.carrot.expr;
 
 import java.util.List;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import au.com.codeka.carrot.Params;
@@ -20,6 +21,11 @@ class FunctionTerm implements Term {
 	@Override
 	public Object evaluate(Scope scope) {
 		return scope.getFunction(name).apply(new Params(Lists.transform(params, scope)));
+	}
+
+	@Override
+	public String toString() {
+		return String.format("(%s CALL %s)", name, Joiner.on(", ").join(params));
 	}
 
 }

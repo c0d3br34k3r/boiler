@@ -43,6 +43,7 @@ public class StatementParserTest {
 		Assert.assertEquals(evaluate("quux.quuz.corge"), "grault");
 		Assert.assertEquals(evaluate("quux['qu' + 'uz']['corge']"), "grault");
 		Assert.assertEquals(evaluate("quux['quuz']['garply'][0]"), 3);
+		Assert.assertEquals(evaluate("'ab\\\"'"), "ab\"");
 
 		Assert.assertEquals(evaluate("R[0]"), 1);
 		Assert.assertEquals(evaluate("R[1]"), 2);
@@ -94,6 +95,15 @@ public class StatementParserTest {
 		Assert.assertEquals(evaluate("{alpha: 1, beta: 2}.beta"), 2);
 		Assert.assertEquals(evaluate("{alpha: 1, beta: 2}['alpha']"), 1);
 		Assert.assertEquals(evaluate("{a: 1, b: [true, false][1] ? 4 : 7}['b']"), 7);
+
+		Assert.assertEquals(evaluate("len('abcde')"), 5);
+		Assert.assertEquals(evaluate("len([1, 'foo', []]) * 7"), 21);
+		Assert.assertEquals(evaluate("range(5)"), Arrays.asList(0, 1, 2, 3, 4));
+		Assert.assertEquals(evaluate("max(range(5))"), 4);
+		Assert.assertEquals(evaluate("max(7 * 13, 100)"), 100);
+		Assert.assertEquals(evaluate("upper('hello')"), "HELLO");
+		Assert.assertEquals(evaluate("join([1, 2, 3], ' to the ')"), "1 to the 2 to the 3");
+		Assert.assertEquals(evaluate("join('hello', '.')"), "h.e.l.l.o");
 	}
 
 	@Test
@@ -111,6 +121,7 @@ public class StatementParserTest {
 		syntaxError("1 +");
 		syntaxError("1 1");
 		syntaxError("1 &! 1");
+		syntaxError("max('a', 'b')");
 	}
 
 	private static void syntaxError(String expr) {
@@ -118,7 +129,8 @@ public class StatementParserTest {
 			evaluate(expr);
 			Assert.fail(expr + " was valid");
 		} catch (Exception e) {
-			System.out.printf("%-24s %s (%s)%n", expr, e.getMessage(), e.getClass().getSimpleName());
+			System.out.printf("%-24s %s (%s)%n", expr, e.getMessage(), e.getClass()
+					.getSimpleName());
 		}
 	}
 

@@ -1,17 +1,19 @@
 package au.com.codeka.carrot;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
-import au.com.codeka.carrot.bindings.Composite;
-import au.com.codeka.carrot.expr.TemplateFunction;
 import au.com.codeka.carrot.expr.Term;
+import au.com.codeka.carrot.expr.Values;
 
 /**
  * Scope is a collection of all the bindings that are active. The scope is
@@ -21,66 +23,50 @@ import au.com.codeka.carrot.expr.Term;
  */
 public class Scope implements Function<Term, Object> {
 
-	private final Deque<Bindings> stack = new ArrayDeque<>();
-
-	/**
-	 * Create a new {@link Scope}, with the given initial set of "global"
-	 * bindings.
-	 *
-	 * @param globalBindings A set of "global" bindings that you want first on
-	 *        the stack.
-	 */
-	public Scope(Bindings globalBindings) {
-		stack.add(globalBindings);
+	private static final ImmutableMap<String, TemplateFunction> BUILTIN;
+	static {
+		Builder<String, TemplateFunction> builder = ImmutableMap.builder();
+		putFunctions(Builtin.class, builder);
+		BUILTIN = builder.build();
 	}
 
-	/**
-	 * Push the given bindings onto the stack.
-	 *
-	 * @param bindings The bindings to push.
-	 */
-	public void push(Bindings bindings) {
-		stack.push(bindings);
+	private Map<String, Object> values = new HashMap<>();
+	private ImmutableMap<String, TemplateFunction> functions;
+
+	public <F extends Enum<F> & TemplateFunction> Scope(Map<String, Object> initial) {
+		this(initial, Collections.<Class<F>> emptyList());
 	}
 
-	/**
-	 * Pop the most recent bindings off the stack.
-	 */
-	public void pop() {
-		stack.pop();
+	public <F extends Enum<F> & TemplateFunction> Scope(
+			Map<String, Object> initial,
+			Collection<Class<F>> functionClasses) {
+		values.putAll(initial);
+		Builder<String, TemplateFunction> builder = ImmutableMap.builder();
+		builder.putAll(BUILTIN);
+		for (Class<F> clazz : functionClasses) {
+			putFunctions(clazz, builder);
+		}
+		functions = builder.build();
 	}
 
-	/**
-	 * Extend the current bindings with the given one.
-	 *
-	 * @param bindings The new {@link Bindings}.
-	 */
-	public void extendCurrent(Bindings bindings) {
-		stack.push(new Composite(bindings, stack.pop()));
+	private static <F extends Enum<F> & TemplateFunction> void putFunctions(Class<F> functions,
+			ImmutableMap.Builder<String, TemplateFunction> builder) {
+		for (F function : functions.getEnumConstants()) {
+			builder.put(Values.separatorToCamel(function.name().toLowerCase()), function);
+		}
 	}
 
-	/**
-	 * Resolve the given named variable from the stack of bindings, most
-	 * recently-pushed to last.
-	 *
-	 * @param name The name to resolve.
-	 * @return The resolved value, or null if the value doesn't exist in this
-	 *         scope.
-	 */
 	@Nullable
 	public Object resolve(@Nonnull String name) {
-		Preconditions.checkNotNull(name);
-		for (Bindings bindings : stack) {
-			Object value = bindings.resolve(name);
-			if (value != null) {
-				return value;
-			}
-		}
-		return null;
+		return values.get(name);
+	}
+
+	public void resolve(@Nonnull String name, @Nullable Object value) {
+		values.put(name, value);
 	}
 
 	public TemplateFunction getFunction(String name) {
-		// TODO Auto-generated method stub
+		return functions.get(name);
 	}
 
 	@Override

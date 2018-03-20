@@ -19,7 +19,7 @@ class UnaryTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("[%s %s]", operator, term);
+		return String.format("(%s %s)", operator, term);
 	}
 
 }

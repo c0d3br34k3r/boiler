@@ -23,7 +23,7 @@ class IndexTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("[%s INDEX %s]", term.toString(), index.toString());
+		return String.format("(%s INDEX %s)", term.toString(), index.toString());
 	}
 
 }

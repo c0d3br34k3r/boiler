@@ -1,4 +1,4 @@
-package au.com.codeka.carrot.expr;
+package au.com.codeka.carrot;
 
 import java.util.Collection;
 
@@ -6,9 +6,9 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-import au.com.codeka.carrot.Params;
+import au.com.codeka.carrot.expr.Values;
 
-public enum Builtin implements TemplateFunction {
+enum Builtin implements TemplateFunction {
 
 	BOOL {
 		@Override
@@ -43,13 +43,13 @@ public enum Builtin implements TemplateFunction {
 	MIN {
 		@Override
 		public Object apply(Params params) {
-			return Values.min(params.size() == 1 ? (Iterable<?>) params.get() : params);
+			return Values.min(params.size() == 1 ? Values.toIterable(params.get()) : params);
 		}
 	},
 	MAX {
 		@Override
 		public Object apply(Params params) {
-			return Values.max(params.size() == 1 ? (Iterable<?>) params.get() : params);
+			return Values.max(params.size() == 1 ? Values.toIterable(params.get()) : params);
 		}
 	},
 	RANGE {
@@ -121,7 +121,7 @@ public enum Builtin implements TemplateFunction {
 	JOIN {
 		@Override
 		public Object apply(Params params) {
-			return Joiner.on(params.getStr(1)).join((Iterable<?>) params.get(0));
+			return Joiner.on(params.getStr(1)).join(Values.toIterable(params.get(0)));
 		}
 	},
 	SPLIT {

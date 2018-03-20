@@ -44,7 +44,7 @@ class ValueParser implements TermParser {
 				term = new ListTerm(parseExpressions(tokenizer, RIGHT_BRACKET));
 				break;
 			case LEFT_CURLY_BRACKET:
-				term = parseMap(tokenizer);
+				term = new MapTerm(parseMap(tokenizer));
 				break;
 			default:
 				throw new TemplateParseException("unexpected symbol %s", token.symbol());
@@ -111,7 +111,7 @@ class ValueParser implements TermParser {
 	}
 
 	private static List<Term> parseExpressions(Tokenizer tokenizer, Symbol end) {
-		if (tokenizer.tryConsume(RIGHT_CURLY_BRACKET)) {
+		if (tokenizer.tryConsume(end)) {
 			return Collections.emptyList();
 		}
 		List<Term> terms = new ArrayList<>();
@@ -122,9 +122,9 @@ class ValueParser implements TermParser {
 		return terms;
 	}
 
-	private static Term parseMap(Tokenizer tokenizer) {
+	private static Map<String, Term> parseMap(Tokenizer tokenizer) {
 		if (tokenizer.tryConsume(RIGHT_CURLY_BRACKET)) {
-			return MapTerm.EMPTY;
+			return Collections.emptyMap();
 		}
 		Map<String, Term> terms = new HashMap<>();
 		do {
@@ -134,7 +134,7 @@ class ValueParser implements TermParser {
 			terms.put(key, value);
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(RIGHT_CURLY_BRACKET);
-		return new MapTerm(terms);
+		return terms;
 	}
 
 	private static String parseKey(Tokenizer tokenizer) {

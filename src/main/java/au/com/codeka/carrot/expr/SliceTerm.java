@@ -27,15 +27,14 @@ class SliceTerm implements Term {
 	}
 
 	private static Integer get(Term term, Scope scope) {
-		return term == null
-				? null
+		return term == null ? null
 				: Values.toNumber(term.evaluate(scope)).intValue();
 	}
 
 	@Override
 	public String toString() {
-		return String.format("[%s SLICE %s:%s%s]", seq,
-				MoreObjects.firstNonNull(start, ""), 
+		return String.format("(%s SLICE %s:%s%s)", seq,
+				MoreObjects.firstNonNull(start, ""),
 				MoreObjects.firstNonNull(stop, ""),
 				step != null ? ":" + step : "");
 	}

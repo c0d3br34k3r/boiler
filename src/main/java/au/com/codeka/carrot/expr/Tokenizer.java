@@ -310,7 +310,7 @@ public class Tokenizer {
 		case '\'':
 		case '"':
 		case '\\':
-			builder.append(ch);
+			builder.append((char) ch);
 			break;
 		case 'u':
 			int codePoint = Integer.parseInt(new String(readFully(reader, 4)),

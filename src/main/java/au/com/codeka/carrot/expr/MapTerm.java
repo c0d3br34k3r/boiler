@@ -1,6 +1,5 @@
 package au.com.codeka.carrot.expr;
 
-import java.util.Collections;
 import java.util.Map;
 
 import com.google.common.base.Joiner;
@@ -9,19 +8,6 @@ import com.google.common.collect.Maps;
 import au.com.codeka.carrot.Scope;
 
 class MapTerm implements Term {
-
-	static final Term EMPTY = new Term() {
-
-		@Override
-		public Object evaluate(Scope scope) {
-			return Collections.emptyMap();
-		}
-
-		@Override
-		public String toString() {
-			return "{}";
-		}
-	};
 
 	private final Map<String, Term> items;
 

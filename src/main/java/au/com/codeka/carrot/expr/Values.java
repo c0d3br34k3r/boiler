@@ -14,7 +14,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
-import au.com.codeka.carrot.Bindings;
 import au.com.codeka.carrot.TemplateParseException;
 
 public class Values {
@@ -34,9 +33,6 @@ public class Values {
 		}
 		if (value instanceof Map) {
 			return !((Map<?, ?>) value).isEmpty();
-		}
-		if (value instanceof Bindings) {
-			return !((Bindings) value).isEmpty();
 		}
 		if (value instanceof Iterable) {
 			return !((Iterable<?>) value).iterator().hasNext();
@@ -144,7 +140,7 @@ public class Values {
 		return n1.doubleValue() % n2.doubleValue();
 	}
 
-	public static Iterable<?> toCollection(final Object iterable) {
+	public static Iterable<?> toIterable(final Object iterable) {
 		if (iterable instanceof Iterable) {
 			return (Iterable<?>) iterable;
 		}
@@ -263,7 +259,7 @@ public class Values {
 		return range(start, stop, 1);
 	}
 
-	public static List<Integer> range(final int start, int stop,
+	public static List<Integer> range(final int start, final int stop,
 			final int step) {
 		final int size = Math.max(ceilDivide(stop - start, step), 0);
 		return new AbstractList<Integer>() {
@@ -279,6 +275,11 @@ public class Values {
 			@Override
 			public int size() {
 				return size;
+			}
+
+			@Override
+			public String toString() {
+				return String.format("range(%s, %s, %s)", start, stop, step);
 			}
 		};
 	}
@@ -403,9 +404,6 @@ public class Values {
 	public static Object index(Object indexable, Object index) {
 		if (indexable instanceof Map) {
 			return ((Map<?, ?>) indexable).get(toString(index));
-		}
-		if (indexable instanceof Bindings) {
-			return ((Bindings) indexable).resolve(toString(index));
 		}
 		return index(indexable, toNumber(index).intValue());
 	}

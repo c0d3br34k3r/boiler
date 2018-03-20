@@ -3,9 +3,7 @@ package au.com.codeka.carrot;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import au.com.codeka.carrot.expr.TemplateFunction;
 import au.com.codeka.carrot.expr.Values;
-import au.com.codeka.carrot.expr.Builtin;
 
 public class TemplateEngine {
 
