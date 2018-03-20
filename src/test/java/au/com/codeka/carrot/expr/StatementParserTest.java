@@ -150,7 +150,7 @@ public class StatementParserTest {
 	private static Object evaluate(Term term) {
 		// System.out.println(term);
 		return term.evaluate(
-				new Scope(new MapBindings(ImmutableMap.<String, Object> builder()
+				new Scope(ImmutableMap.<String, Object> builder()
 						.put("i", 6)
 						.put("R", Arrays.asList(1, 2, 3, 4, 5, 6, 7))
 						.put("word", "automobile")
@@ -159,7 +159,7 @@ public class StatementParserTest {
 						.put("quux", ImmutableMap.of("quuz", ImmutableMap.of(
 								"corge", "grault",
 								"garply", ImmutableList.of(3))))
-						.build())));
+						.build()));
 	}
 
 }

@@ -7,6 +7,8 @@ import java.util.AbstractMap;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import au.com.codeka.carrot.EntryBindings;
+
 /**
  * @author Marten Gajda
  */

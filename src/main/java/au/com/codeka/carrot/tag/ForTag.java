@@ -6,9 +6,9 @@ import java.util.Collection;
 
 import au.com.codeka.carrot.CarrotEngine;
 import au.com.codeka.carrot.CarrotException;
+import au.com.codeka.carrot.LoopBindings;
 import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.bindings.Composite;
-import au.com.codeka.carrot.bindings.LoopBindings;
 import au.com.codeka.carrot.bindings.MapBindings;
 import au.com.codeka.carrot.expr.Term;
 import au.com.codeka.carrot.expr.Tokenizer;

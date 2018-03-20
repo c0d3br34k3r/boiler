@@ -140,7 +140,7 @@ public class Values {
 		return n1.doubleValue() % n2.doubleValue();
 	}
 
-	public static Iterable<?> toIterable(final Object iterable) {
+	public static Iterable<?> toIterable(Object iterable) {
 		if (iterable instanceof Iterable) {
 			return (Iterable<?>) iterable;
 		}

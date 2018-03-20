@@ -67,6 +67,18 @@ enum Builtin implements TemplateFunction {
 			}
 		}
 	},
+	ENUMERATE {
+		@Override
+		public Object apply(Params params) {
+			return new Enumeration(Values.toIterable(params.get()));
+		}
+	},
+	ZIP {
+		@Override
+		public Object apply(Params params) {
+			return new Zip(Values.toIterable(params.size() == 1 ? params : params.get()));
+		}
+	},
 	CONTAINS {
 		@Override
 		public Object apply(Params params) {

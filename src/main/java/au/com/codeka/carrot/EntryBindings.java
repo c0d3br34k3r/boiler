@@ -1,4 +1,4 @@
-package au.com.codeka.carrot.bindings;
+package au.com.codeka.carrot;
 
 import java.util.Arrays;
 import java.util.Iterator;

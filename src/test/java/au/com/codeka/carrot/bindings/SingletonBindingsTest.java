@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThat;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
+import au.com.codeka.carrot.EntryBindings;
+
 /**
  * @author marten
  */
