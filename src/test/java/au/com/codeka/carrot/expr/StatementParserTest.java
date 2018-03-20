@@ -53,7 +53,7 @@ public class StatementParserTest {
 		Assert.assertEquals(evaluate("auto[3]"), "o");
 		Assert.assertEquals(evaluate("auto[-2]"), "l");
 		Assert.assertEquals(evaluate("(auto)"), "automobile");
-		Assert.assertEquals(evaluate("(auto)[0]"), "a");
+		Assert.assertEquals(evaluate("(auto)[7]"), "i");
 
 		Assert.assertEquals(evaluate("'1' + 1"), 2);
 		Assert.assertEquals(evaluate("'foo' + 'bar'"), "foobar");

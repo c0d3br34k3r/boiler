@@ -98,13 +98,18 @@ class ValueParser implements TermParser {
 
 	private static String parseKey(Tokenizer tokenizer) {
 		Token token = tokenizer.next();
-		if (token.type() == TokenType.IDENTIFIER) {
+		switch (token.type()) {
+		case IDENTIFIER:
 			return token.identifier();
+		case VALUE:
+			if (token.value() instanceof String) {
+				return (String) token.value();
+			}
+			// fallthrough
+		default:
+			throw new TemplateParseException(
+					"expected string literal or identifier, got %s", token);
 		}
-		if (token.type() != TokenType.VALUE && !(token.value() instanceof String)) {
-			throw new TemplateParseException("expected string key or identifier, got %s", token);
-		}
-		return (String) token.value();
 	}
 
 }
