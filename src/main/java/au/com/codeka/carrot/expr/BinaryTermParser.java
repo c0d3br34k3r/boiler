@@ -12,22 +12,23 @@ import com.google.common.collect.Sets;
 final class BinaryTermParser implements TermParser {
 
 	private final TermParser termParser;
-	private final Set<TokenType> tokenTypes;
+	private final Set<Symbol> symbols;
 
-	BinaryTermParser(TermParser termParser, TokenType first, TokenType... rest) {
+	BinaryTermParser(TermParser termParser, Symbol first, Symbol... rest) {
 		this.termParser = termParser;
-		this.tokenTypes = Sets.immutableEnumSet(first, rest);
+		this.symbols = Sets.immutableEnumSet(first, rest);
 	}
 
 	@Override
 	public Term parse(Tokenizer tokenizer) {
 		Term left = termParser.parse(tokenizer);
-		while (tokenTypes.contains(tokenizer.peek())) {
-			left = new BinaryTerm(left,
-					tokenizer.next().getType().binaryOperator(),
-					termParser.parse(tokenizer));
+		for (;;) {
+			Symbol symbol = tokenizer.tryConsume(symbols);
+			if (symbol == null) {
+				return left;
+			}
+			left = new BinaryTerm(left, symbol.binaryOperator(), termParser.parse(tokenizer));
 		}
-		return left;
 	}
 
 }

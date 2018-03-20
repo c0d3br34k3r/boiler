@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import au.com.codeka.carrot.Bindings;
-import au.com.codeka.carrot.Scope;
 import au.com.codeka.carrot.TemplateParseException;
 
 public class Values {

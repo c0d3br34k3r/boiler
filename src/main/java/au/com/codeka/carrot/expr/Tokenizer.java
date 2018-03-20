@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.util.Set;
 
 import com.google.common.base.CharMatcher;
 
@@ -27,17 +28,11 @@ public class Tokenizer {
 		STREAM, TAG, ECHO;
 	}
 
-	/**
-	 * Returns the type of the next token without consuming it.
-	 * 
-	 * @return the type of the next token
-	 * @throws TemplateParseException if there's an error parsing the token
-	 */
-	public TokenType peek() {
+	public Token peek() {
 		if (peeked == null) {
 			peeked = parse();
 		}
-		return peeked.getType();
+		return peeked;
 	}
 
 	public Token next() {
@@ -49,32 +44,33 @@ public class Tokenizer {
 		return result;
 	}
 
-	/**
-	 * Consumes the next token and asserts that it matches the given type.
-	 *
-	 * @param type the type to match against
-	 * @throws TemplateParseException if there's an error parsing the token, or
-	 *         if it doesn't match the given type
-	 */
-	public void consume(TokenType type) {
+	public void consume(Symbol symbol) {
 		Token next = next();
-		if (next.getType() != type) {
-			throw new TemplateParseException(
-					"Expected token of type %s, got %s", type, next.getType());
+		if (!next.equals(symbol)) {
+			throw new TemplateParseException("expected %s, got %s", symbol, next);
 		}
 	}
 
-	public boolean tryConsume(TokenType type) {
-		if (peek() == type) {
+	public boolean tryConsume(Symbol allowed) {
+		Token token = peek();
+		if (token.equals(allowed)) {
 			next();
 			return true;
 		}
 		return false;
 	}
 
+	public Symbol tryConsume(Set<Symbol> allowed) {
+		Token token = peek();
+		if (token.type() == TokenType.SYMBOL && allowed.contains(token.symbol())) {
+			return next().symbol();
+		}
+		return null;
+	}
+
 	public void end() {
 		Token next = next();
-		if (next.getType() != TokenType.END) {
+		if (next.type() != TokenType.END) {
 			throw new TemplateParseException(
 					"expected end of tokens, got %s", next);
 		}
@@ -82,7 +78,7 @@ public class Tokenizer {
 
 	public void consumeIdentifier(String value) {
 		Token next = next();
-		if (next.getType() != TokenType.IDENTIFIER || !next.getIdentifier().equals(value)) {
+		if (next.type() != TokenType.IDENTIFIER || !next.identifier().equals(value)) {
 			throw new TemplateParseException("expected identifier %s, got %s", value, next);
 		}
 	}
@@ -105,10 +101,10 @@ public class Tokenizer {
 
 	public String parseIdentifier() {
 		Token next = next();
-		if (next.getType() != TokenType.IDENTIFIER) {
+		if (next.type() != TokenType.IDENTIFIER) {
 			throw new TemplateParseException("expected identifier, got %s", next);
 		}
-		return next.getIdentifier();
+		return next.identifier();
 	}
 
 	private static final CharMatcher DIGIT;
@@ -126,24 +122,26 @@ public class Tokenizer {
 	private Token parseToken(int ch) throws IOException {
 		switch (ch) {
 		// @formatter:off
-		case '(': return Token.LEFT_PARENTHESIS;
-		case ')': return Token.RIGHT_PARENTHESIS;
-		case '[': return Token.LEFT_BRACKET;
-		case ']': return Token.RIGHT_BRACKET;
-		case ',': return Token.COMMA;
-		case '+': return Token.PLUS;
-		case '-': return Token.MINUS;
-		case '*': return Token.MULTIPLY;
-		case '/': return Token.DIVIDE;
-		case '?': return Token.QUESTION_MARK;
-		case ':': return Token.COLON;
+		case '(': return Symbol.LEFT_PARENTHESIS;
+		case ')': return Symbol.RIGHT_PARENTHESIS;
+		case '[': return Symbol.LEFT_BRACKET;
+		case ']': return Symbol.RIGHT_BRACKET;
+		case '{': return Symbol.LEFT_CURLY_BRACKET;
+		case '}': return Symbol.RIGHT_CURLY_BRACKET;
+		case ',': return Symbol.COMMA;
+		case '+': return Symbol.PLUS;
+		case '-': return Symbol.MINUS;
+		case '*': return Symbol.STAR;
+		case '/': return Symbol.SLASH;
+		case '?': return Symbol.QUESTION_MARK;
+		case ':': return Symbol.COLON;
 		case '.': return parseDot();
-		case '&': require('&'); return Token.LOGICAL_AND;
-		case '|': require('|'); return Token.LOGICAL_OR;
-		case '%': return tryRead('>') ? end(Mode.TAG) : Token.MODULO;
-		case '=': return tryRead('=') ? Token.EQUAL : Token.ASSIGNMENT;
-		case '!': return tryRead('=') ? Token.NOT_EQUAL : Token.NOT;
-		case '<': return tryRead('=') ? Token.LESS_THAN_OR_EQUAL : Token.LESS_THAN;
+		case '&': require('&'); return Symbol.AND;
+		case '|': require('|'); return Symbol.OR;
+		case '%': return tryRead('>') ? end(Mode.TAG) : Symbol.PERCENT;
+		case '=': return tryRead('=') ? Symbol.EQUALS : Symbol.ASSIGNMENT;
+		case '!': return tryRead('=') ? Symbol.NOT_EQUAL : Symbol.NOT;
+		case '<': return tryRead('=') ? Symbol.LESS_THAN_OR_EQUAL : Symbol.LESS_THAN;
 		case '>': return parseGreaterThan();
 		// @formatter:on
 		case -1:
@@ -168,23 +166,21 @@ public class Tokenizer {
 		StringBuilder builder = new StringBuilder();
 		for (;;) {
 			int next = reader.read();
-			char c;
 			switch (next) {
 			case -1:
 				throw new TemplateParseException("unclosed string");
 			case '\\':
 				readEscapeChar(builder);
-				continue;
+				break;
 			case '\'':
 			case '"':
 				if (next == end) {
-					return Token.valueToken(builder.toString());
+					return Tokens.valueOf(builder.toString());
 				}
 				// fallthrough
 			default:
-				c = (char) next;
+				builder.append((char) next);
 			}
-			builder.append(c);
 		}
 	}
 
@@ -197,7 +193,7 @@ public class Tokenizer {
 			}
 			reader.unread(ch);
 		}
-		return Token.DOT;
+		return Symbol.DOT;
 	}
 
 	private Token parseNumber(char digit) throws IOException {
@@ -220,7 +216,7 @@ public class Tokenizer {
 				break;
 			}
 		}
-		return Token.valueToken(Integer.parseInt(builder.toString()));
+		return Tokens.valueOf(Integer.parseInt(builder.toString()));
 	}
 
 	private Token parseDouble(StringBuilder builder) throws IOException {
@@ -237,7 +233,7 @@ public class Tokenizer {
 				break;
 			}
 		}
-		return Token.valueToken(Double.parseDouble(builder.toString()));
+		return Tokens.valueOf(Double.parseDouble(builder.toString()));
 	}
 
 	private Token parseIdentifier(char first) throws IOException {
@@ -246,11 +242,11 @@ public class Tokenizer {
 		String identifier = builder.toString();
 		switch (identifier) {
 		case "true":
-			return Token.TRUE;
+			return Tokens.TRUE;
 		case "false":
-			return Token.FALSE;
+			return Tokens.FALSE;
 		default:
-			return Token.identifierToken(identifier);
+			return Tokens.identifier(identifier);
 		}
 	}
 
@@ -273,18 +269,10 @@ public class Tokenizer {
 	private void require(char required) throws IOException {
 		int ch = reader.read();
 		if (ch != required) {
-			throw new TemplateParseException("expected [%c], got [%c]", required, ch);
+			throw new TemplateParseException("expected %c, got %c", required, ch);
 		}
 	}
 
-	/**
-	 * "Peeks" at the next character and consumes it if it matches the given
-	 * character.
-	 * 
-	 * @param match the character to match
-	 * @return whether the character was consumed
-	 * @throws IOException
-	 */
 	private boolean tryRead(char match) throws IOException {
 		int ch = reader.read();
 		if (ch == match) {
@@ -302,12 +290,12 @@ public class Tokenizer {
 		case '>':
 			return end(Mode.ECHO);
 		case '=':
-			return Token.GREATER_THAN_OR_EQUAL;
+			return Symbol.GREATER_THAN_OR_EQUAL;
 		default:
 			reader.unread(ch);
 			// fallthrough
 		case -1:
-			return Token.GREATER_THAN;
+			return Symbol.GREATER_THAN;
 		}
 	}
 
@@ -316,7 +304,7 @@ public class Tokenizer {
 			throw new TemplateParseException(
 					"expected end of %s but was end of %s", mode, check);
 		}
-		return Token.END;
+		return Tokens.END;
 	}
 
 	private void readEscapeChar(StringBuilder builder) throws IOException {

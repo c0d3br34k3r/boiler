@@ -4,9 +4,9 @@ class ExpressionParser {
 
 	static Term parse(Tokenizer tokenizer) {
 		Term left = EXPRESSION_PARSER.parse(tokenizer);
-		if (tokenizer.tryConsume(TokenType.QUESTION_MARK)) {
+		if (tokenizer.tryConsume(Symbol.QUESTION_MARK)) {
 			Term first = parse(tokenizer);
-			tokenizer.consume(TokenType.COLON);
+			tokenizer.consume(Symbol.COLON);
 			Term second = parse(tokenizer);
 			left = new ConditionalTerm(left, first, second);
 		}
@@ -22,19 +22,19 @@ class ExpressionParser {
 		        new BinaryTermParser(
 		          new BinaryTermParser(
 		            new ValueParser(),
-		            TokenType.MULTIPLY,
-		            TokenType.DIVIDE,
-		            TokenType.MODULO),
-		          TokenType.PLUS,
-		          TokenType.MINUS),
-		        TokenType.LESS_THAN,
-		        TokenType.LESS_THAN_OR_EQUAL, 
-		        TokenType.GREATER_THAN,
-		        TokenType.GREATER_THAN_OR_EQUAL),
-		      TokenType.EQUAL, 
-		      TokenType.NOT_EQUAL),
-		    TokenType.LOGICAL_AND),
-		  TokenType.LOGICAL_OR);
+		            Symbol.STAR,
+		            Symbol.SLASH,
+		            Symbol.PERCENT),
+		          Symbol.PLUS,
+		          Symbol.MINUS),
+		        Symbol.LESS_THAN,
+		        Symbol.LESS_THAN_OR_EQUAL, 
+		        Symbol.GREATER_THAN,
+		        Symbol.GREATER_THAN_OR_EQUAL),
+		      Symbol.EQUALS, 
+		      Symbol.NOT_EQUAL),
+		    Symbol.AND),
+		  Symbol.OR);
 	// @formatter:on
 
 }

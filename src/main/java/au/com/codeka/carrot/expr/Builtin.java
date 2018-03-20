@@ -8,7 +8,7 @@ import com.google.common.base.Splitter;
 
 import au.com.codeka.carrot.Params;
 
-public enum Builtin implements Func {
+public enum Builtin implements TemplateFunction {
 
 	BOOL {
 		@Override
