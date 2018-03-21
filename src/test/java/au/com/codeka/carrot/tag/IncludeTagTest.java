@@ -11,14 +11,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import au.com.codeka.carrot.Bindings;
-import au.com.codeka.carrot.CarrotEngine;
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.bindings.SingletonBindings;
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
-import au.com.codeka.carrot.tmpl.IncludeTag;
+import com.catascopic.template.Bindings;
+import com.catascopic.template.CarrotEngine;
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.Configuration;
+import com.catascopic.template.bindings.EmptyBindings;
+import com.catascopic.template.bindings.SingletonBindings;
+import com.catascopic.template.resource.MemoryResourceLocator;
+import com.catascopic.template.tag.IncludeTag;
 
 /**
  * Tests for {@link IncludeTag}.

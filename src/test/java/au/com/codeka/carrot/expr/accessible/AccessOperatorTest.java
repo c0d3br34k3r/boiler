@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.catascopic.template.bindings.Composite;
+import com.catascopic.template.bindings.SingletonBindings;
 import com.google.common.collect.ImmutableMap;
 
-import au.com.codeka.carrot.bindings.Composite;
-import au.com.codeka.carrot.bindings.SingletonBindings;
 import au.com.codeka.carrot.util.MockLazyTerm;
 
 /**

@@ -8,13 +8,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.Configuration;
+import com.catascopic.template.resource.ResourcePointer;
+import com.catascopic.template.tag.Node;
+import com.catascopic.template.tag.Parser;
+import com.catascopic.template.tag.TagNode;
+import com.catascopic.template.tag.TemplateParser;
+import com.catascopic.template.tag.TextNode;
+import com.catascopic.template.tag2.EchoTag;
+import com.catascopic.template.tag2.IfTag;
 import com.google.common.io.LineReader;
-
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.resource.ResourcePointer;
-import au.com.codeka.carrot.tag.EchoTag;
-import au.com.codeka.carrot.tag.IfTag;
 
 /**
  * Tests for {@link TemplateParser}.

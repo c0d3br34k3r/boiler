@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.tmpl.NodeType;
-import au.com.codeka.carrot.tmpl.Parser;
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.tag.NodeType;
+import com.catascopic.template.tag.Parser;
 
 /**
  * Tests for {@link Parser}.

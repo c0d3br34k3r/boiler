@@ -15,11 +15,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import au.com.codeka.carrot.CarrotEngine;
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.bindings.MapBindings;
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
+import com.catascopic.template.CarrotEngine;
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.Configuration;
+import com.catascopic.template.bindings.MapBindings;
+import com.catascopic.template.resource.MemoryResourceLocator;
+import com.catascopic.template.tag2.ForTag;
 
 /**
  * Tests for {@link ForTag}.

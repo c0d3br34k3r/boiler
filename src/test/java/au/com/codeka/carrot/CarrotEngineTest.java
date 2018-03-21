@@ -10,16 +10,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.catascopic.template.bindings.Composite;
+import com.catascopic.template.bindings.EmptyBindings;
+import com.catascopic.template.bindings.JsonArrayAsList;
+import com.catascopic.template.bindings.JsonObjectAsBindings;
+import com.catascopic.template.bindings.MapBindings;
+import com.catascopic.template.bindings.SingletonBindings;
+import com.catascopic.template.resource.MemoryResourceLocator;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonParser;
-
-import au.com.codeka.carrot.bindings.Composite;
-import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.bindings.JsonArrayAsList;
-import au.com.codeka.carrot.bindings.JsonObjectAsBindings;
-import au.com.codeka.carrot.bindings.MapBindings;
-import au.com.codeka.carrot.bindings.SingletonBindings;
-import au.com.codeka.carrot.resource.MemoryResourceLocator;
 
 /**
  * These are basically end-to-end tests of the entire shebang.

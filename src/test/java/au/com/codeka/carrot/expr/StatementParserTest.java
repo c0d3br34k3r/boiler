@@ -10,10 +10,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.catascopic.template.Scope;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Tokenizer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
-import au.com.codeka.carrot.Scope;
 
 /**
  * Tests for {@link StatementParserTest}.

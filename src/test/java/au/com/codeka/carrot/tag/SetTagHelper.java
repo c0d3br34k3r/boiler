@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.tmpl.SetNode;
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.tag.SetNode;
 
 /**
  * Tests for {@link SetNode}.

@@ -4,7 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 
-import au.com.codeka.carrot.expr.UnaryOperator;
+import com.catascopic.template.expr.UnaryOperator;
 
 /**
  * @author Marten Gajda

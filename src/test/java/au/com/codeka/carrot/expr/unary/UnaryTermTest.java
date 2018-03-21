@@ -5,13 +5,13 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.bindings.EmptyBindings;
-import au.com.codeka.carrot.expr.Term;
-import au.com.codeka.carrot.expr.UnaryOperator;
-import au.com.codeka.carrot.expr.UnaryTerm;
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.Configuration;
+import com.catascopic.template.Scope;
+import com.catascopic.template.bindings.EmptyBindings;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.UnaryOperator;
+import com.catascopic.template.expr.UnaryTerm;
 
 /**
  * @author Marten Gajda

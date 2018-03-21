@@ -5,7 +5,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 
-import au.com.codeka.carrot.CarrotException;
+import com.catascopic.template.CarrotException;
 
 /**
  * Tests for {@link HtmlHelper}.

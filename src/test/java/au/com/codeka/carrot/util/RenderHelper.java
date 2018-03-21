@@ -6,13 +6,13 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import au.com.codeka.carrot.CarrotEngine;
-import au.com.codeka.carrot.CarrotException;
-import au.com.codeka.carrot.Configuration;
-import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.bindings.MapBindings;
-import au.com.codeka.carrot.tmpl.Parser;
-import au.com.codeka.carrot.tmpl.TemplateParser;
+import com.catascopic.template.CarrotEngine;
+import com.catascopic.template.CarrotException;
+import com.catascopic.template.Configuration;
+import com.catascopic.template.Scope;
+import com.catascopic.template.bindings.MapBindings;
+import com.catascopic.template.tag.Parser;
+import com.catascopic.template.tag.TemplateParser;
 
 /**
  * Helpers for rendering templates in tests.

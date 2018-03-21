@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.catascopic.template.Zip;
 import com.google.common.base.Joiner;
 
 public class Test2 {
