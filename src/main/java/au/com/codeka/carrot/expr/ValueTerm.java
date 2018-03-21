@@ -19,7 +19,7 @@ class ValueTerm implements Term {
 
 	@Override
 	public String toString() {
-		return value instanceof String ? "\"" + value + "\"" : value.toString();
+		return value instanceof String ? "'" + value + "'" : value.toString();
 	}
 
 }

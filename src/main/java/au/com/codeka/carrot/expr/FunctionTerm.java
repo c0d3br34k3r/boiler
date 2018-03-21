@@ -25,7 +25,7 @@ class FunctionTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("(%s CALL %s)", name, Joiner.on(", ").join(params));
+		return String.format("(CALL %s: %s)", name, Joiner.on(", ").join(params));
 	}
 
 }

@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import au.com.codeka.carrot.Scope;
-import au.com.codeka.carrot.bindings.MapBindings;
 
 /**
  * Tests for {@link StatementParserTest}.

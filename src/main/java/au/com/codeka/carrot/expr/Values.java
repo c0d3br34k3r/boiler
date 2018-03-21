@@ -409,11 +409,11 @@ public class Values {
 	}
 
 	public static Object index(Object seq, int index) {
-		if (seq instanceof String) {
-			return index((String) seq, index);
-		}
 		if (seq instanceof List) {
 			return index((List<?>) seq, index);
+		}
+		if (seq instanceof String) {
+			return index((String) seq, index);
 		}
 		throw new TemplateParseException("%s is not indexable", index, seq);
 	}

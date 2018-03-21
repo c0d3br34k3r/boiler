@@ -33,7 +33,7 @@ class SliceTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("(%s SLICE %s:%s%s)", seq,
+		return String.format("(SLICE %s, %s:%s%s)", seq,
 				MoreObjects.firstNonNull(start, ""),
 				MoreObjects.firstNonNull(stop, ""),
 				step != null ? ":" + step : "");

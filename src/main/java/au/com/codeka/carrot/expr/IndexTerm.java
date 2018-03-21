@@ -14,16 +14,12 @@ class IndexTerm implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		Object indexable = term.evaluate(scope);
-		if (indexable == null) {
-			throw new IllegalArgumentException("cannot index null");
-		}
-		return Values.index(indexable, index.evaluate(scope));
+		return Values.index(term.evaluate(scope), index.evaluate(scope));
 	}
 
 	@Override
 	public String toString() {
-		return String.format("(%s INDEX %s)", term.toString(), index.toString());
+		return String.format("(INDEX %s, %s)", term.toString(), index.toString());
 	}
 
 }
