@@ -22,7 +22,7 @@ class UnpackForNode implements Node {
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
 		for (Object item : Values.toIterable(iterable.evaluate(scope))) {
-			Assignment.unpack(scope, varNames, item);
+			Variables.unpack(scope, varNames, item);
 			block.renderContent(writer, scope);
 		}
 	}

@@ -3,13 +3,12 @@ package com.catascopic.template.parse;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.catascopic.template.TemplateParseException;
-import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
+import com.catascopic.template.parse.Variables.Assigner;
 
 public class Parser {
 
@@ -157,7 +156,7 @@ public class Parser {
 	}
 
 	private Node parseFor(Tokenizer tokenizer) {
-		List<String> varNames = parseVarNames(tokenizer);
+		List<String> varNames = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		Term iterable = tokenizer.parseExpression();
 		tokenizer.end();
@@ -172,42 +171,34 @@ public class Parser {
 		return parseEcho(new Tokenizer(reader, Tokenizer.Mode.ECHO));
 	}
 
-	private Node parseEcho(Tokenizer tokenizer) {
+	private static Node parseEcho(Tokenizer tokenizer) {
 		Term term = tokenizer.parseExpression();
 		tokenizer.end();
 		return new Echo(term);
 	}
 
-	private Node parseSet(Tokenizer tokenizer) {
-		Assignment vars = Assignment.parseGroup(tokenizer);
+	private static Node parseSet(Tokenizer tokenizer) {
+		Assigner vars = Variables.parse(tokenizer);
 		tokenizer.end();
 		return new SetNode(vars);
 	}
 
-	private Node parseTemplate(Tokenizer tokenizer) {
+	private static Node parseTemplate(Tokenizer tokenizer) {
 		Term templateName = tokenizer.parseExpression();
-		Assignment vars;
+		Variables vars;
 		if (tokenizer.tryConsume("with")) {
-			vars = Assignment.parseGroup(tokenizer);
+			vars = Variables.parse(tokenizer);
 		} else {
-			vars = Assignment.EMPTY;
+			vars = Variables.EMPTY;
 		}
 		tokenizer.end();
 		return new TemplateNode(templateName, vars);
 	}
 	
-	private Node parseText(Tokenizer tokenizer) {
+	private static Node parseText(Tokenizer tokenizer) {
 		Term textFileName = tokenizer.parseExpression();
 		tokenizer.end();
 		return new TextNode(textFileName);
-	}
-
-	private List<String> parseVarNames(Tokenizer tokenizer) {
-		List<String> varNames = new ArrayList<>();
-		do {
-			varNames.add(tokenizer.parseIdentifier());
-		} while (tokenizer.tryConsume(Symbol.COMMA));
-		return varNames;
 	}
 
 	private Block parseBlock(boolean chainElse) {

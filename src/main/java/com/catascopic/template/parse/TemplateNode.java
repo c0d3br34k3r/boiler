@@ -5,13 +5,14 @@ import java.io.IOException;
 import com.catascopic.template.Scope;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Values;
+import com.catascopic.template.parse.Variables.Assigner;
 
 class TemplateNode implements Node {
 
 	private final Term templateName;
-	private final Assignment vars;
+	private final Assigner vars;
 
-	TemplateNode(Term template, Assignment vars) {
+	TemplateNode(Term template, Assigner vars) {
 		this.templateName = template;
 		this.vars = vars;
 	}
