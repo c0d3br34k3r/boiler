@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.catascopic.template.CarrotException;
-import com.catascopic.template.tag2.EchoTag;
+import com.catascopic.template.tag.EchoTag;
 
 /**
  * Tests for {@link EchoTag}.

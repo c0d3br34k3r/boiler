@@ -8,9 +8,9 @@ import java.nio.file.attribute.FileTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import com.catascopic.template.tag.Node;
-import com.catascopic.template.tag.Parser;
-import com.catascopic.template.tag.TemplateParser;
+import com.catascopic.template.parse.Node;
+import com.catascopic.template.parse.Parser;
+import com.catascopic.template.parse.TemplateParser;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

@@ -1,6 +1,6 @@
 package com.catascopic.template.expr;
 
-public class Tokens {
+class Tokens {
 
 	static final Token TRUE = new ValueToken(true);
 	static final Token FALSE = new ValueToken(false);

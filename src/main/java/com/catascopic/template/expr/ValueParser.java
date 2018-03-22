@@ -35,7 +35,8 @@ class ValueParser implements TermParser {
 			case PLUS:
 			case MINUS:
 			case NOT:
-				return new UnaryTerm(token.symbol().unaryOperator(), parse(tokenizer));
+				return new UnaryTerm(
+						token.symbol().unaryOperator(), parse(tokenizer));
 			case LEFT_PARENTHESIS:
 				term = ExpressionParser.parse(tokenizer);
 				tokenizer.consume(RIGHT_PARENTHESIS);
@@ -47,7 +48,8 @@ class ValueParser implements TermParser {
 				term = new MapTerm(parseMap(tokenizer));
 				break;
 			default:
-				throw new TemplateParseException("unexpected symbol %s", token.symbol());
+				throw new TemplateParseException(
+						"unexpected symbol %s", token.symbol());
 			}
 			break;
 		default:
@@ -55,7 +57,8 @@ class ValueParser implements TermParser {
 		}
 		for (;;) {
 			if (tokenizer.tryConsume(DOT)) {
-				term = new IndexTerm(term, new ValueTerm(tokenizer.parseIdentifier()));
+				term = new IndexTerm(term, new ValueTerm(tokenizer
+						.parseIdentifier()));
 			} else if (tokenizer.tryConsume(LEFT_BRACKET)) {
 				term = parseIndex(tokenizer, term);
 			} else {
@@ -64,7 +67,8 @@ class ValueParser implements TermParser {
 		}
 	}
 
-	private static Term parseIdentifier(Tokenizer tokenizer, String identifier) {
+	private static Term parseIdentifier(Tokenizer tokenizer,
+			String identifier) {
 		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
 			return new FunctionTerm(identifier, parseExpressions(tokenizer,
 					RIGHT_PARENTHESIS));
@@ -110,7 +114,8 @@ class ValueParser implements TermParser {
 		return new SliceTerm(seq, index, stop, step);
 	}
 
-	private static List<Term> parseExpressions(Tokenizer tokenizer, Symbol end) {
+	private static List<Term> parseExpressions(Tokenizer tokenizer,
+			Symbol end) {
 		if (tokenizer.tryConsume(end)) {
 			return Collections.emptyList();
 		}

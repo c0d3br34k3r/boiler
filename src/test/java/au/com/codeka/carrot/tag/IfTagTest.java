@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.catascopic.template.CarrotException;
-import com.catascopic.template.tag2.IfTag;
+import com.catascopic.template.tag.IfTag;
 
 /**
  * Tests for {@link IfTag},

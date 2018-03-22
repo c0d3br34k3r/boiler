@@ -1,4 +1,4 @@
-package au.com.codeka.carrot.expr;
+package com.catascopic.template.expr;
 
 import java.io.PushbackReader;
 import java.io.StringReader;
@@ -16,9 +16,6 @@ import com.catascopic.template.expr.Tokenizer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-/**
- * Tests for {@link StatementParserTest}.
- */
 @RunWith(JUnit4.class)
 public class StatementParserTest {
 
@@ -150,7 +147,7 @@ public class StatementParserTest {
 	private static Object evaluate(Term term) {
 		// System.out.println(term);
 		return term.evaluate(
-				new Scope(ImmutableMap.<String, Object> builder()
+				new Scope(ImmutableMap.<String, Object>builder()
 						.put("i", 6)
 						.put("R", Arrays.asList(1, 2, 3, 4, 5, 6, 7))
 						.put("word", "automobile")

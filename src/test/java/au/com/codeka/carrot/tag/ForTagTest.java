@@ -20,7 +20,7 @@ import com.catascopic.template.CarrotException;
 import com.catascopic.template.Configuration;
 import com.catascopic.template.bindings.MapBindings;
 import com.catascopic.template.resource.MemoryResourceLocator;
-import com.catascopic.template.tag2.ForTag;
+import com.catascopic.template.tag.ForTag;
 
 /**
  * Tests for {@link ForTag}.

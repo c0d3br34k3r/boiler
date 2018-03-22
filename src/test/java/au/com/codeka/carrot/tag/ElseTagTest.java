@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.catascopic.template.CarrotException;
-import com.catascopic.template.tag2.ElseTag;
+import com.catascopic.template.tag.ElseTag;
 
 /**
  * Tests for {@link ElseTag}.

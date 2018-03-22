@@ -1,8 +1,8 @@
 package com.catascopic.template.expr;
 
-import au.com.codeka.carrot.Scope;
+import com.catascopic.template.Scope;
 
-public enum NullTerm implements Term {
+enum NullTerm implements Term {
 
 	INSTANCE;
 

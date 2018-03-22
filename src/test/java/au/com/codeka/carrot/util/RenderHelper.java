@@ -11,8 +11,8 @@ import com.catascopic.template.CarrotException;
 import com.catascopic.template.Configuration;
 import com.catascopic.template.Scope;
 import com.catascopic.template.bindings.MapBindings;
-import com.catascopic.template.tag.Parser;
-import com.catascopic.template.tag.TemplateParser;
+import com.catascopic.template.parse.Parser;
+import com.catascopic.template.parse.TemplateParser;
 
 /**
  * Helpers for rendering templates in tests.

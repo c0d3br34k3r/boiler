@@ -1,9 +1,9 @@
-package au.com.codeka.carrot.expr;
+package com.catascopic.template.expr;
 
-import static au.com.codeka.carrot.expr.Values.camelToSeparator;
-import static au.com.codeka.carrot.expr.Values.range;
-import static au.com.codeka.carrot.expr.Values.separatorToCamel;
-import static au.com.codeka.carrot.expr.Values.slice;
+import static com.catascopic.template.expr.Values.camelToSeparator;
+import static com.catascopic.template.expr.Values.range;
+import static com.catascopic.template.expr.Values.separatorToCamel;
+import static com.catascopic.template.expr.Values.slice;
 
 import java.util.Arrays;
 import java.util.Collections;

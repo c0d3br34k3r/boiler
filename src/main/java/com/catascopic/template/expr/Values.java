@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import com.catascopic.template.TemplateParseException;
@@ -12,10 +13,12 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
-public class Values {
+public final class Values {
+	private Values() {}
 
 	public static boolean isTrue(Object value) {
 		if (value instanceof Boolean) {
@@ -85,7 +88,7 @@ public class Values {
 			}
 		}
 		// TODO: should we be able to add things that aren't strings?
-		return o1.toString() + o2.toString();
+		return toString(o1) + toString(o2);
 	}
 
 	private static Number tryConvertNumber(Object value) {
@@ -143,6 +146,7 @@ public class Values {
 		if (iterable instanceof Iterable) {
 			return (Iterable<?>) iterable;
 		}
+		// TODO: remove this; require entries(map)?
 		if (iterable instanceof Map) {
 			return ((Map<?, ?>) iterable).keySet();
 		}
@@ -247,6 +251,9 @@ public class Values {
 		if (obj instanceof Collection) {
 			return ((Collection<?>) obj).size();
 		}
+		if (obj instanceof Map) {
+			return ((Map<?, ?>) obj).size();
+		}
 		throw new IllegalArgumentException();
 	}
 
@@ -308,7 +315,8 @@ public class Values {
 				});
 	}
 
-	private static List<Integer> sliceRange(Integer start, Integer stop, Integer step, int len) {
+	private static List<Integer> sliceRange(Integer start, Integer stop,
+			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
 			throw new IllegalArgumentException();
@@ -414,7 +422,11 @@ public class Values {
 		if (seq instanceof String) {
 			return index((String) seq, index);
 		}
-		throw new TemplateParseException("%s is not indexable", index, seq);
+		if (seq == null) {
+			throw new TemplateParseException("cannot index null");
+		}
+		throw new TemplateParseException(
+				"%s (%s) is not indexable", seq, seq.getClass());
 	}
 
 	public static String index(String str, int index) {
@@ -443,6 +455,37 @@ public class Values {
 
 	public static Object max(Iterable<?> seq) {
 		return ORDER.max(seq);
+	}
+
+	private static final Function<Entry<?, ?>, List<Object>> ENTRIES =
+			new Function<Entry<?, ?>, List<Object>>() {
+
+				@Override
+				public List<Object> apply(final Entry<?, ?> input) {
+					return new AbstractList<Object>() {
+
+						@Override
+						public Object get(int index) {
+							switch (index) {
+							case 0:
+								return input.getKey();
+							case 1:
+								return input.getValue();
+							default:
+								throw new IndexOutOfBoundsException();
+							}
+						}
+
+						@Override
+						public int size() {
+							return 2;
+						}
+					};
+				}
+			};
+
+	public static Object entries(Map<?, ?> map) {
+		return Collections2.transform(map.entrySet(), ENTRIES);
 	}
 
 }

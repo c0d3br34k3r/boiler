@@ -56,6 +56,16 @@ public class Tokenizer {
 		return false;
 	}
 
+	public boolean tryConsume(String identifier) {
+		Token token = peek();
+		if (token.type() == TokenType.IDENTIFIER
+				&& token.identifier().equals(identifier)) {
+			next();
+			return true;
+		}
+		return false;
+	}
+
 	public void end() {
 		Token next = next();
 		if (next.type() != TokenType.END) {

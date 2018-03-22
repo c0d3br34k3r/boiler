@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-final class BinaryTermParser implements TermParser {
+class BinaryTermParser implements TermParser {
 
 	private final TermParser termParser;
 	private final Set<Symbol> symbols;

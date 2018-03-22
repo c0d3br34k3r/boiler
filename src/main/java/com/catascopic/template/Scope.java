@@ -14,12 +14,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-/**
- * Scope is a collection of all the bindings that are active. The scope is
- * basically a stack: each time you iterate down a node, you can push new
- * bindings onto the stack and those will be the first one searched for a
- * variable.
- */
 public class Scope implements Function<Term, Object> {
 
 	private static final ImmutableMap<String, TemplateFunction> BUILTIN;
@@ -32,8 +26,9 @@ public class Scope implements Function<Term, Object> {
 	private Map<String, Object> values = new HashMap<>();
 	private ImmutableMap<String, TemplateFunction> functions;
 
-	public <F extends Enum<F> & TemplateFunction> Scope(Map<String, Object> initial) {
-		this(initial, Collections.<Class<F>> emptyList());
+	public <F extends Enum<F> & TemplateFunction> Scope(Map<String,
+			Object> initial) {
+		this(initial, Collections.<Class<F>>emptyList());
 	}
 
 	public <F extends Enum<F> & TemplateFunction> Scope(
@@ -48,29 +43,49 @@ public class Scope implements Function<Term, Object> {
 		functions = builder.build();
 	}
 
-	private static <F extends Enum<F> & TemplateFunction> void putFunctions(Class<F> functions,
+	private static <F extends Enum<F> & TemplateFunction> void putFunctions(
+			Class<F> functions,
 			ImmutableMap.Builder<String, TemplateFunction> builder) {
 		for (F function : functions.getEnumConstants()) {
-			builder.put(Values.separatorToCamel(function.name().toLowerCase()), function);
+			builder.put(Values.separatorToCamel(function.name().toLowerCase()),
+					function);
 		}
 	}
 
 	@Nullable
 	public Object resolve(@Nonnull String name) {
-		return values.get(name);
+		Object value = values.get(name);
+		if (value == null) {
+			throw new TemplateParseException("%s is undefined", name);
+		}
+		return value;
 	}
 
-	public void resolve(@Nonnull String name, @Nullable Object value) {
+	public void set(@Nonnull String name, @Nullable Object value) {
 		values.put(name, value);
 	}
 
 	public TemplateFunction getFunction(String name) {
-		return functions.get(name);
+		TemplateFunction func = functions.get(name);
+		if (func == null) {
+			throw new TemplateParseException("function %s is undefined", name);
+		}
+		return func;
 	}
 
 	@Override
 	public Object apply(Term input) {
 		return input.evaluate(this);
+	}
+
+	public void renderTemplate(Appendable writer, String string) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void renderTextFile(Appendable writer, String string) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

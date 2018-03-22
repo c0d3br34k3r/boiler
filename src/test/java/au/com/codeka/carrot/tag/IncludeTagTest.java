@@ -17,8 +17,8 @@ import com.catascopic.template.CarrotException;
 import com.catascopic.template.Configuration;
 import com.catascopic.template.bindings.EmptyBindings;
 import com.catascopic.template.bindings.SingletonBindings;
+import com.catascopic.template.parse.IncludeTag;
 import com.catascopic.template.resource.MemoryResourceLocator;
-import com.catascopic.template.tag.IncludeTag;
 
 /**
  * Tests for {@link IncludeTag}.

@@ -11,8 +11,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.catascopic.template.CarrotException;
-import com.catascopic.template.tag.NodeType;
-import com.catascopic.template.tag.Parser;
+import com.catascopic.template.parse.NodeType;
+import com.catascopic.template.parse.Parser;
 
 /**
  * Tests for {@link Parser}.
