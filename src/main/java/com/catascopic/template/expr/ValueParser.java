@@ -9,13 +9,13 @@ import static com.catascopic.template.expr.Symbol.RIGHT_BRACKET;
 import static com.catascopic.template.expr.Symbol.RIGHT_CURLY_BRACKET;
 import static com.catascopic.template.expr.Symbol.RIGHT_PARENTHESIS;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.catascopic.template.TemplateParseException;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 class ValueParser implements TermParser {
 
@@ -31,34 +31,15 @@ class ValueParser implements TermParser {
 			term = parseIdentifier(tokenizer, token.identifier());
 			break;
 		case SYMBOL:
-			switch (token.symbol()) {
-			case PLUS:
-			case MINUS:
-			case NOT:
-				return new UnaryTerm(
-						token.symbol().unaryOperator(), parse(tokenizer));
-			case LEFT_PARENTHESIS:
-				term = ExpressionParser.parse(tokenizer);
-				tokenizer.consume(RIGHT_PARENTHESIS);
-				break;
-			case LEFT_BRACKET:
-				term = new ListTerm(parseExpressions(tokenizer, RIGHT_BRACKET));
-				break;
-			case LEFT_CURLY_BRACKET:
-				term = new MapTerm(parseMap(tokenizer));
-				break;
-			default:
-				throw new TemplateParseException(
-						"unexpected symbol %s", token.symbol());
-			}
+			term = parseSymbol(token.symbol(), tokenizer);
 			break;
 		default:
 			throw new TemplateParseException("unexpected token %s", token);
 		}
 		for (;;) {
 			if (tokenizer.tryConsume(DOT)) {
-				term = new IndexTerm(term, new ValueTerm(tokenizer
-						.parseIdentifier()));
+				term = new IndexTerm(term,
+						new ValueTerm(tokenizer.parseIdentifier()));
 			} else if (tokenizer.tryConsume(LEFT_BRACKET)) {
 				term = parseIndex(tokenizer, term);
 			} else {
@@ -67,11 +48,30 @@ class ValueParser implements TermParser {
 		}
 	}
 
+	private Term parseSymbol(Symbol symbol, Tokenizer tokenizer) {
+		switch (symbol) {
+		case PLUS:
+		case MINUS:
+		case NOT:
+			return new UnaryTerm(symbol.unaryOperator(), parse(tokenizer));
+		case LEFT_PARENTHESIS:
+			Term term = ExpressionParser.parse(tokenizer);
+			tokenizer.consume(RIGHT_PARENTHESIS);
+			return term;
+		case LEFT_BRACKET:
+			return new ListTerm(parseExpressions(tokenizer, RIGHT_BRACKET));
+		case LEFT_CURLY_BRACKET:
+			return new MapTerm(parseMap(tokenizer));
+		default:
+			throw new TemplateParseException("unexpected symbol %s", symbol);
+		}
+	}
+
 	private static Term parseIdentifier(Tokenizer tokenizer,
 			String identifier) {
 		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
-			return new FunctionTerm(identifier, parseExpressions(tokenizer,
-					RIGHT_PARENTHESIS));
+			return new FunctionTerm(identifier,
+					parseExpressions(tokenizer, RIGHT_PARENTHESIS));
 		}
 		return new Variable(identifier);
 	}
@@ -119,19 +119,19 @@ class ValueParser implements TermParser {
 		if (tokenizer.tryConsume(end)) {
 			return Collections.emptyList();
 		}
-		List<Term> terms = new ArrayList<>();
+		ImmutableList.Builder<Term> terms = ImmutableList.builder();
 		do {
 			terms.add(tokenizer.parseExpression());
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(end);
-		return terms;
+		return terms.build();
 	}
 
 	private static Map<String, Term> parseMap(Tokenizer tokenizer) {
 		if (tokenizer.tryConsume(RIGHT_CURLY_BRACKET)) {
 			return Collections.emptyMap();
 		}
-		Map<String, Term> terms = new HashMap<>();
+		ImmutableMap.Builder<String, Term> terms = ImmutableMap.builder();
 		do {
 			String key = parseKey(tokenizer);
 			tokenizer.consume(COLON);
@@ -139,7 +139,7 @@ class ValueParser implements TermParser {
 			terms.put(key, value);
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(RIGHT_CURLY_BRACKET);
-		return terms;
+		return terms.build();
 	}
 
 	private static String parseKey(Tokenizer tokenizer) {

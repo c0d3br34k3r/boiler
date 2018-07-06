@@ -135,7 +135,9 @@ public class Tokenizer {
 		case '%': return tryRead('>') ? end(Mode.TAG) : Symbol.PERCENT;
 		case '=': return tryRead('=') ? Symbol.EQUALS : Symbol.ASSIGNMENT;
 		case '!': return tryRead('=') ? Symbol.NOT_EQUAL : Symbol.NOT;
-		case '<': return tryRead('=') ? Symbol.LESS_THAN_OR_EQUAL : Symbol.LESS_THAN;
+		case '<': return tryRead('=')
+				? Symbol.LESS_THAN_OR_EQUAL
+				: Symbol.LESS_THAN;
 		case '>': return parseGreaterThan();
 		// @formatter:on
 		case -1:
