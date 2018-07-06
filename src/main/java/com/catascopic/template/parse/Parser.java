@@ -3,12 +3,15 @@ package com.catascopic.template.parse;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
+import com.catascopic.template.parse.ParseResult.Type;
 import com.catascopic.template.parse.Variables.Assigner;
+import com.catascopic.template.parse.Variables.Names;
 
 public class Parser {
 
@@ -38,41 +41,46 @@ public class Parser {
 
 	private enum Mode {
 		TEXT {
+
 			@Override
-			Node parse(Parser parser) throws IOException {
+			ParseResult parse(Parser parser) throws IOException {
 				return parser.parseTextOrTag();
 			}
 		},
 		TAG {
+
 			@Override
-			Node parse(Parser parser) throws IOException {
+			ParseResult parse(Parser parser) throws IOException {
 				return parser.parseTag();
 			}
 		},
 		ECHO {
+
 			@Override
-			Node parse(Parser parser) throws IOException {
+			ParseResult parse(Parser parser) throws IOException {
 				return parser.parseEcho();
 			}
 		},
 		COMMENT {
+
 			@Override
-			Node parse(Parser parser) throws IOException {
+			ParseResult parse(Parser parser) throws IOException {
 				return parser.skipCommentAndParseNext();
 			}
 		},
 		END {
+
 			@Override
-			Node parse(Parser parser) throws IOException {
+			ParseResult parse(Parser parser) throws IOException {
 				// Do something similar with tokens?
 				return MarkerNode.END_DOCUMENT;
 			}
 		};
 
-		abstract Node parse(Parser parser) throws IOException;
+		abstract ParseResult parse(Parser parser) throws IOException;
 	}
 
-	public Node parseNext() throws IOException {
+	public ParseResult parseNext() throws IOException {
 		return mode.parse(this);
 	}
 
@@ -125,8 +133,6 @@ public class Parser {
 			return parseElse(tokenizer);
 		case "for":
 			return parseFor(tokenizer);
-		case "echo":
-			return parseEcho(tokenizer);
 		case "set":
 			return parseSet(tokenizer);
 		case "template":
@@ -152,57 +158,89 @@ public class Parser {
 			return parseIf(tokenizer);
 		}
 		tokenizer.end();
-		return new LastElseNode(parseBlock(false));
+		return parseBlock(false);
 	}
 
 	private Node parseFor(Tokenizer tokenizer) {
-		List<String> varNames = Variables.parseNames(tokenizer);
+		Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		Term iterable = tokenizer.parseExpression();
 		tokenizer.end();
 		Block block = parseBlock(false);
-		if (varNames.size() == 1) {
-			return new ForNode(varNames.get(0), iterable, block);
-		}
-		return new UnpackForNode(varNames, iterable, block);
-	}
-
-	private Node parseEcho() {
-		return parseEcho(new Tokenizer(reader, Tokenizer.Mode.ECHO));
-	}
-
-	private static Node parseEcho(Tokenizer tokenizer) {
-		Term term = tokenizer.parseExpression();
-		tokenizer.end();
-		return new Echo(term);
+		return new ForNode(names, iterable, block);
 	}
 
 	private static Node parseSet(Tokenizer tokenizer) {
-		Assigner vars = Variables.parse(tokenizer);
+		Assigner vars = Variables.parseAssignment(tokenizer);
 		tokenizer.end();
 		return new SetNode(vars);
 	}
 
 	private static Node parseTemplate(Tokenizer tokenizer) {
 		Term templateName = tokenizer.parseExpression();
-		Variables vars;
+		Assigner vars;
 		if (tokenizer.tryConsume("with")) {
-			vars = Variables.parse(tokenizer);
+			vars = Variables.parseAssignment(tokenizer);
 		} else {
 			vars = Variables.EMPTY;
 		}
 		tokenizer.end();
 		return new TemplateNode(templateName, vars);
 	}
-	
+
 	private static Node parseText(Tokenizer tokenizer) {
 		Term textFileName = tokenizer.parseExpression();
 		tokenizer.end();
 		return new TextNode(textFileName);
 	}
 
-	private Block parseBlock(boolean chainElse) {
-		parseTag();
+	private Node parseEcho() {
+		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.ECHO);
+		Term term = tokenizer.parseExpression();
+		tokenizer.end();
+		return new Echo(term);
+	}
+
+	private Block parseBlock(boolean chainElse) throws IOException {
+		List<Node> nodes = new ArrayList<>();
+		for (;;) {
+			ParseResult result = parseNext();
+			switch (result.type()) {
+			case NODE:
+				nodes.add(result.node());
+				break;
+			case ELSE_IF_NODE:
+			case ELSE_NODE:
+				if (!chainElse) {
+					throw new TemplateParseException("else not allowed");
+				}
+				nodes.add(result.node());
+				return new Block(nodes, parseBlock(
+						result.type() == Type.ELSE_IF_NODE));
+			case END_NODE:
+				return new Block(nodes);
+			case END_DOCUMENT:
+				throw new TemplateParseException("unclosed tag");
+			}
+		}
+	}
+
+	private Block parseRoot() throws IOException {
+		List<Node> nodes = new ArrayList<>();
+		for (;;) {
+			ParseResult result = parseNext();
+			switch (result.type()) {
+			case NODE:
+				nodes.add(result.node());
+				break;
+			case ELSE_IF_NODE:
+			case ELSE_NODE:
+			case END_NODE:
+				throw new TemplateParseException("closing tag not allowed");
+			case END_DOCUMENT:
+				return new Block(nodes);
+			}
+		}
 	}
 
 	private Node skipCommentAndParseNext() throws IOException {

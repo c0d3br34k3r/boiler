@@ -11,15 +11,15 @@ class IfNode implements Node {
 	private final Term condition;
 	private final Block block;
 
-	IfNode(Term condition, Block block) {
+	IfNode(Term condition, Block node) {
 		this.condition = condition;
-		this.block = block;
+		this.block = node;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
 		if (Values.isTrue(condition)) {
-			block.renderContent(writer, scope);
+			block.render(writer, scope);
 		} else {
 			block.renderLinked(writer, scope);
 		}

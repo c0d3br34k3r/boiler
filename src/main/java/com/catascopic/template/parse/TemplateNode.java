@@ -10,16 +10,16 @@ import com.catascopic.template.parse.Variables.Assigner;
 class TemplateNode implements Node {
 
 	private final Term templateName;
-	private final Assigner vars;
+	private final Assigner assigner;
 
-	TemplateNode(Term template, Assigner vars) {
+	TemplateNode(Term template, Assigner assigner) {
 		this.templateName = template;
-		this.vars = vars;
+		this.assigner = assigner;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		scope.renderTemplate(writer, Values.toString(templateName.evaluate(scope)), vars);
+		scope.renderTemplate(writer, Values.toString(templateName.evaluate(scope)), assigner);
 	}
 
 }

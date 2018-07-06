@@ -11,50 +11,60 @@ import com.google.common.base.Splitter;
 enum Builtin implements TemplateFunction {
 
 	BOOL {
+
 		@Override
 		public Object apply(Params params) {
 			return Values.isTrue(params.get());
 		}
 	},
 	FLOAT {
+
 		@Override
 		public Object apply(Params params) {
 			return Values.toNumber(params.get()).doubleValue();
 		}
 	},
 	INT {
+
 		@Override
 		public Object apply(Params params) {
 			return Values.toNumber(params.get()).intValue();
 		}
 	},
 	STR {
+
 		@Override
 		public Object apply(Params params) {
 			return params.get().toString();
 		}
 	},
 	LEN {
+
 		@Override
 		public Object apply(Params params) {
 			return Values.len(params.get());
 		}
 	},
 	MIN {
+
 		@Override
 		public Object apply(Params params) {
-			return Values.min(params.size() == 1 ? Values.toIterable(params
-					.get()) : params);
+			return Values.min(params.size() == 1
+					? Values.toIterable(params.get())
+					: params);
 		}
 	},
 	MAX {
+
 		@Override
 		public Object apply(Params params) {
-			return Values.max(params.size() == 1 ? Values.toIterable(params
-					.get()) : params);
+			return Values.max(params.size() == 1
+					? Values.toIterable(params.get())
+					: params);
 		}
 	},
 	RANGE {
+
 		@Override
 		public Object apply(Params params) {
 			switch (params.size()) {
@@ -65,43 +75,51 @@ enum Builtin implements TemplateFunction {
 			case 2:
 				return Values.range(params.getInt(0), params.getInt(1));
 			default:
-				return Values.range(params.getInt(0), params.getInt(1), params
-						.getInt(2));
+				return Values.range(params.getInt(0),
+						params.getInt(1),
+						params.getInt(2));
 			}
 		}
 	},
 	ENUMERATE {
+
 		@Override
 		public Object apply(Params params) {
 			return new Enumeration(Values.toIterable(params.get()));
 		}
 	},
 	ZIP {
+
 		@Override
 		public Object apply(Params params) {
-			return new Zip(params.size() == 1 ?
-					params : Values.toIterable(params.get()));
+			return new Zip(params.size() == 1
+					? params
+					: Values.toIterable(params.get()));
 		}
 	},
 	ENTRIES {
+
 		@Override
 		public Object apply(Params params) {
-			return Values.entries((((Map<?, ?>) params.get())));
+			return Values.entries(((Map<?, ?>) params.get()));
 		}
 	},
 	KEYS {
+
 		@Override
 		public Object apply(Params params) {
 			return ((Map<?, ?>) params.get()).keySet();
 		}
 	},
 	VALUES {
+
 		@Override
 		public Object apply(Params params) {
 			return ((Map<?, ?>) params.get()).values();
 		}
 	},
 	CONTAINS {
+
 		@Override
 		public Object apply(Params params) {
 			Object seq = params.get(0);
@@ -115,30 +133,35 @@ enum Builtin implements TemplateFunction {
 		}
 	},
 	CAPITALIZE {
+
 		@Override
 		public Object apply(Params params) {
 			return Values.capitalize(params.getStr());
 		}
 	},
 	REPLACE {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr(0).startsWith(params.getStr(1));
 		}
 	},
 	STARTS_WITH {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr(0).startsWith(params.getStr(1));
 		}
 	},
 	ENDS_WITH {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr(0).endsWith(params.getStr(1));
 		}
 	},
 	INDEX_OF {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr(0).indexOf(params.getStr(1),
@@ -146,6 +169,7 @@ enum Builtin implements TemplateFunction {
 		}
 	},
 	LAST_INDEX_OF {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr(0).lastIndexOf(params.getStr(1),
@@ -153,6 +177,7 @@ enum Builtin implements TemplateFunction {
 		}
 	},
 	JOIN {
+
 		@Override
 		public Object apply(Params params) {
 			return Joiner.on(params.getStr(1)).join(Values.toIterable(params
@@ -160,45 +185,52 @@ enum Builtin implements TemplateFunction {
 		}
 	},
 	SPLIT {
+
 		@Override
 		public Object apply(Params params) {
 			return Splitter.on(params.getStr(1)).splitToList(params.getStr(0));
 		}
 	},
 	UPPER {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr().toUpperCase();
 		}
 	},
 	LOWER {
+
 		@Override
 		public Object apply(Params params) {
 			return params.getStr().toLowerCase();
 		}
 	},
 	TRIM {
+
 		@Override
 		public Object apply(Params params) {
 			return CharMatcher.whitespace().trimFrom(params.getStr());
 		}
 	},
 	COLLAPSE {
+
 		@Override
 		public Object apply(Params params) {
-			return CharMatcher.whitespace().trimAndCollapseFrom(params.getStr(
-					0), params
-							.getStrOrDefault(1, "_").charAt(0));
+			return CharMatcher.whitespace().trimAndCollapseFrom(
+					params.getStr(0),
+					params.getStrOrDefault(1, "_").charAt(0));
 		}
 	},
 	SEPARATOR_TO_CAMEL {
+
 		@Override
 		public Object apply(Params params) {
-			return Values.separatorToCamel(params.getStr(0), params
-					.getStrOrDefault(1, "_"));
+			return Values.separatorToCamel(params.getStr(0),
+					params.getStrOrDefault(1, "_"));
 		}
 	},
 	CAMEL_TO_SEPARATOR {
+
 		@Override
 		public Object apply(Params params) {
 			return Values.camelToSeparator(params.getStr(0), params

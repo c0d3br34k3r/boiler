@@ -1,6 +1,7 @@
 package com.catascopic.template.expr;
 
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,11 +14,12 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 public final class Values {
+
 	private Values() {}
 
 	public static boolean isTrue(Object value) {
@@ -95,7 +97,7 @@ public final class Values {
 		if (value instanceof String) {
 			String str = (String) value;
 			try {
-				if (str.contains(".")) {
+				if (str.indexOf('.') != -1) {
 					return Double.parseDouble(str);
 				}
 				return Integer.parseInt(str);
@@ -146,10 +148,6 @@ public final class Values {
 		if (iterable instanceof Iterable) {
 			return (Iterable<?>) iterable;
 		}
-		// TODO: remove this; require entries(map)?
-		if (iterable instanceof Map) {
-			return ((Map<?, ?>) iterable).keySet();
-		}
 		if (iterable instanceof String) {
 			return new StringIterable((String) iterable);
 		}
@@ -175,15 +173,15 @@ public final class Values {
 		return Double.compare(a.doubleValue(), b.doubleValue());
 	}
 
-	public static String toString(Object o) {
-		if (o instanceof Number && !(o instanceof Integer)) {
-			Number n = (Number) o;
-			double d = n.doubleValue();
+	public static String toString(Object obj) {
+		if (obj instanceof Number && !(obj instanceof Integer)) {
+			Number number = (Number) obj;
+			double d = number.doubleValue();
 			if (Math.rint(d) == d) {
-				return Integer.toString(n.intValue());
+				return Integer.toString(number.intValue());
 			}
 		}
-		return o.toString();
+		return obj.toString();
 	}
 
 	private static class StringIterable extends AbstractList<String> {
@@ -308,6 +306,7 @@ public final class Values {
 			Integer stop, Integer step) {
 		return Lists.transform(sliceRange(start, stop, step, list.size()),
 				new Function<Integer, E>() {
+
 					@Override
 					public E apply(Integer input) {
 						return list.get(input);
@@ -422,9 +421,6 @@ public final class Values {
 		if (seq instanceof String) {
 			return index((String) seq, index);
 		}
-		if (seq == null) {
-			throw new TemplateParseException("cannot index null");
-		}
 		throw new TemplateParseException(
 				"%s (%s) is not indexable", seq, seq.getClass());
 	}
@@ -457,35 +453,17 @@ public final class Values {
 		return ORDER.max(seq);
 	}
 
+	public static Object entries(Map<?, ?> map) {
+		return Iterables.transform(map.entrySet(), ENTRIES);
+	}
+
 	private static final Function<Entry<?, ?>, List<Object>> ENTRIES =
 			new Function<Entry<?, ?>, List<Object>>() {
 
 				@Override
 				public List<Object> apply(final Entry<?, ?> input) {
-					return new AbstractList<Object>() {
-
-						@Override
-						public Object get(int index) {
-							switch (index) {
-							case 0:
-								return input.getKey();
-							case 1:
-								return input.getValue();
-							default:
-								throw new IndexOutOfBoundsException();
-							}
-						}
-
-						@Override
-						public int size() {
-							return 2;
-						}
-					};
+					return Arrays.asList(input.getKey(), input.getValue());
 				}
 			};
-
-	public static Object entries(Map<?, ?> map) {
-		return Collections2.transform(map.entrySet(), ENTRIES);
-	}
 
 }

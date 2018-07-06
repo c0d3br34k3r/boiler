@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.google.common.collect.UnmodifiableIterator;
 
-class Enumeration implements Iterable<List<?>> {
+class Enumeration implements Iterable<List<Object>> {
 
 	private final Iterable<?> items;
 
@@ -15,9 +15,9 @@ class Enumeration implements Iterable<List<?>> {
 	}
 
 	@Override
-	public Iterator<List<?>> iterator() {
+	public Iterator<List<Object>> iterator() {
 		final Iterator<?> iterator = items.iterator();
-		return new UnmodifiableIterator<List<?>>() {
+		return new UnmodifiableIterator<List<Object>>() {
 
 			int i;
 

@@ -8,15 +8,15 @@ import com.catascopic.template.expr.Values;
 
 class TextNode implements Node {
 
-	private final Term text;
+	private final Term fileName;
 
 	TextNode(Term text) {
-		this.text = text;
+		this.fileName = text;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		scope.renderTextFile(writer, Values.toString(text.evaluate(scope)));
+		scope.renderTextFile(writer, Values.toString(fileName.evaluate(scope)));
 	}
 
 }

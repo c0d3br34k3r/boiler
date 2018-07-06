@@ -7,15 +7,15 @@ import com.catascopic.template.parse.Variables.Assigner;
 
 public class SetNode implements Node {
 
-	private final Assigner vars;
+	private final Assigner assigner;
 
-	SetNode(Assigner vars) {
-		this.vars = vars;
+	SetNode(Assigner assigner) {
+		this.assigner = assigner;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		vars.assign(scope);
+		assigner.assign(scope);
 	}
 
 }

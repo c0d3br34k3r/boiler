@@ -48,8 +48,7 @@ public class Tokenizer {
 	}
 
 	public boolean tryConsume(Symbol allowed) {
-		Token token = peek();
-		if (token.equals(allowed)) {
+		if (peek() == allowed) {
 			next();
 			return true;
 		}

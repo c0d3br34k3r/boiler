@@ -26,9 +26,9 @@ public class Scope implements Function<Term, Object> {
 	private Map<String, Object> values = new HashMap<>();
 	private ImmutableMap<String, TemplateFunction> functions;
 
-	public <F extends Enum<F> & TemplateFunction> Scope(Map<String,
-			Object> initial) {
-		this(initial, Collections.<Class<F>>emptyList());
+	public <F extends Enum<F> & TemplateFunction> Scope(
+			Map<String, Object> initial) {
+		this(initial, Collections.<Class<F>> emptyList());
 	}
 
 	public <F extends Enum<F> & TemplateFunction> Scope(

@@ -1,6 +1,5 @@
 package com.catascopic.template.parse;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,35 +13,57 @@ import com.google.common.collect.ImmutableList;
 
 class Variables {
 
-	static List<String> parseNames(Tokenizer tokenizer) {
-		List<String> varNames = new ArrayList<>();
+	private Variables() {}
+
+	static Names parseNames(Tokenizer tokenizer) {
+		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		do {
-			varNames.add(tokenizer.parseIdentifier());
+			builder.add(tokenizer.parseIdentifier());
 		} while (tokenizer.tryConsume(Symbol.COMMA));
-		return varNames;
+		final List<String> varNames = builder.build();
+
+		if (varNames.size() == 1) {
+			final String varName = varNames.get(0);
+			return new Names() {
+
+				@Override
+				public void assign(Scope scope, Object value) {
+					scope.set(varName, value);
+				}
+			};
+		}
+		return new Names() {
+
+			@Override
+			public void assign(Scope scope, Object value) {
+				unpack(varNames, scope, value);
+			}
+		};
 	}
 
-	static void unpack(Scope scope, List<String> varNames, Object unpack) {
+	private static void unpack(List<String> varNames, Scope scope,
+			Object value) {
 		Iterator<String> iter = varNames.iterator();
-		for (Object unpacked : Values.toIterable(unpack)) {
+		for (Object unpacked : Values.toIterable(value)) {
 			if (!iter.hasNext()) {
-				throw new TemplateParseException(
-						"too many values to unpack");
+				throw new TemplateParseException("too many values to unpack");
 			}
 			scope.set(iter.next(), unpacked);
 		}
 		if (iter.hasNext()) {
-			throw new TemplateParseException(
-					"not enough values to unpack");
+			throw new TemplateParseException("not enough values to unpack");
 		}
 	}
 
-	static Assigner parse(Tokenizer tokenizer) {
+	static Assigner parseAssignment(Tokenizer tokenizer) {
 		ImmutableList.Builder<Assigner> builder = ImmutableList.builder();
 		do {
 			builder.add(parseAssigner(tokenizer));
 		} while (tokenizer.tryConsume(Symbol.COMMA));
-		final ImmutableList<Assigner> assigners = builder.build();
+		final List<Assigner> assigners = builder.build();
+		if (assigners.size() == 1) {
+			return assigners.get(0);
+		}
 		return new Assigner() {
 
 			@Override
@@ -54,7 +75,20 @@ class Variables {
 		};
 	}
 
-	static final Assigner EMPTY_ASSIGNER = new Assigner() {
+	private static Assigner parseAssigner(Tokenizer tokenizer) {
+		final Names names = parseNames(tokenizer);
+		tokenizer.consume(Symbol.ASSIGNMENT);
+		final Term term = tokenizer.parseExpression();
+		return new Assigner() {
+
+			@Override
+			public void assign(Scope scope) {
+				names.assign(scope, term.evaluate(scope));
+			}
+		};
+	}
+
+	static final Assigner EMPTY = new Assigner() {
 
 		@Override
 		public void assign(Scope scope) {
@@ -62,44 +96,14 @@ class Variables {
 		}
 	};
 
-	private final List<Assigner> assigners;
-
-	private Variables(List<Assigner> assigners) {
-		this.assigners = assigners;
-	}
-
-	void assign(Scope scope) {
-		for (Assigner assigner : assigners) {
-			assigner.assign(scope);
-		}
-	}
-
-	private static Assigner parseAssigner(Tokenizer tokenizer) {
-		final List<String> varNames = parseNames(tokenizer);
-		tokenizer.consume(Symbol.ASSIGNMENT);
-		final Term term = tokenizer.parseExpression();
-		if (varNames.size() == 1) {
-			final String varName = varNames.get(0);
-			return new Assigner() {
-
-				@Override
-				public void assign(Scope scope) {
-					scope.set(varName, term.evaluate(scope));
-				}
-			};
-		}
-		return new Assigner() {
-
-			@Override
-			public void assign(Scope scope) {
-				unpack(scope, varNames, term.evaluate(scope));
-			}
-		};
-	}
-
 	interface Assigner {
 
 		void assign(Scope scope);
+	}
+
+	interface Names {
+
+		void assign(Scope scope, Object value);
 	}
 
 }
