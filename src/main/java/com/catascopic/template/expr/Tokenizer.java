@@ -98,7 +98,11 @@ public class Tokenizer {
 	}
 
 	public String parseIdentifier() {
-		return next().identifier();
+		Token next = next();
+		if (next.type() != TokenType.IDENTIFIER) {
+			throw new TemplateParseException("expected identifier, got %s", next);
+		}
+		return next.identifier();
 	}
 
 	private static final CharMatcher DIGIT;

@@ -32,6 +32,7 @@ class Variables {
 				}
 			};
 		}
+		// TODO: allow duplicate variable names in one set statement?
 		return new Names() {
 
 			@Override

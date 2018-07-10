@@ -5,28 +5,31 @@ import java.util.List;
 
 import com.catascopic.template.Scope;
 
-class Block {
+abstract class Block {
 
-	private final List<Node> nodes;
-	private final Block linked;
+	void render(Appendable writer, Scope scope) throws IOException {}
 
-	public Block(List<Node> nodes) {
-		this(nodes, null);
+	void renderElse(Appendable writer, Scope scope) throws IOException {}
+
+	static Block of(List<Node> nodes) {
+		return of(nodes, EmptyNode.INSTANCE);
 	}
 
-	public Block(List<Node> nodes, Block linked) {
-		this.nodes = nodes;
-		this.linked = linked;
-	}
+	static Block of(final List<Node> nodes, final Node alternative) {
+		return new Block() {
 
-	void render(Appendable writer, Scope scope) throws IOException {
-		for (Node node : nodes) {
-			node.render(writer, scope);
-		}
-	}
+			@Override
+			void render(Appendable writer, Scope scope) throws IOException {
+				for (Node node : nodes) {
+					node.render(writer, scope);
+				}
+			}
 
-	void renderLinked(Appendable writer, Scope scope) throws IOException {
-		linked.render(writer, scope);
+			@Override
+			void renderElse(Appendable writer, Scope scope) throws IOException {
+				alternative.render(writer, scope);
+			}
+		};
 	}
 
 }

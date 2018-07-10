@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
 public class StatementParserTest {
 
 	@Test
-	public void testBinaryOperation() {
+	public void testEval() {
 
 		Assert.assertEquals(1, evaluate("+true"));
 		Assert.assertEquals(2, evaluate("1+1"));

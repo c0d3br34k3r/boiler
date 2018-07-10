@@ -117,11 +117,11 @@ public final class Values {
 		return null;
 	}
 
-	public static Number add(Number a, Number b) {
-		if (a instanceof Integer && b instanceof Integer) {
-			return a.intValue() + b.intValue();
+	public static Number add(Number n1, Number n2) {
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return n1.intValue() + n2.intValue();
 		}
-		return a.doubleValue() + b.doubleValue();
+		return n1.doubleValue() + n2.doubleValue();
 	}
 
 	public static Number divide(Object o1, Object o2) {
@@ -156,29 +156,30 @@ public final class Values {
 			return (Iterable<?>) iterable;
 		}
 		if (iterable instanceof String) {
-			return new StringIterable((String) iterable);
+			return stringIterable((String) iterable);
 		}
 		throw new TemplateParseException(
 				"%s (%s) is not iterable",
 				iterable, iterable.getClass().getName());
 	}
 
-	public static boolean isEqual(Object lhs, Object rhs) {
-		if (lhs instanceof Number || rhs instanceof Number) {
-			return compare(lhs, rhs) == 0;
+	public static boolean isEqual(Object o1, Object o2) {
+		// allow for int and double with equal value
+		if (o1 instanceof Number || o2 instanceof Number) {
+			return compare(o1, o2) == 0;
 		}
-		return Objects.equals(lhs, rhs);
+		return Objects.equals(o1, o2);
 	}
 
-	public static int compare(Object a, Object b) {
-		return compare(toNumber(a), toNumber(b));
+	public static int compare(Object o1, Object o2) {
+		return compare(toNumber(o1), toNumber(o2));
 	}
 
-	public static int compare(Number a, Number b) {
-		if (a instanceof Integer && b instanceof Integer) {
-			return Integer.compare(a.intValue(), b.intValue());
+	public static int compare(Number n1, Number n2) {
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return Integer.compare(n1.intValue(), n2.intValue());
 		}
-		return Double.compare(a.doubleValue(), b.doubleValue());
+		return Double.compare(n1.doubleValue(), n2.doubleValue());
 	}
 
 	public static String toString(Object obj) {
@@ -192,23 +193,19 @@ public final class Values {
 		return obj.toString();
 	}
 
-	private static class StringIterable extends AbstractList<String> {
+	public static List<String> stringIterable(final String str) {
+		return new AbstractList<String>() {
 
-		private final String str;
+			@Override
+			public String get(int index) {
+				return String.valueOf(str.charAt(index));
+			}
 
-		public StringIterable(String str) {
-			this.str = str;
-		}
-
-		@Override
-		public String get(int index) {
-			return String.valueOf(str.charAt(index));
-		}
-
-		@Override
-		public int size() {
-			return str.length();
-		}
+			@Override
+			public int size() {
+				return str.length();
+			}
+		};
 	}
 
 	private static final CharMatcher UPPER = CharMatcher.inRange('A', 'Z');
