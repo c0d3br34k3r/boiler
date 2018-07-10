@@ -2,9 +2,7 @@ package com.catascopic.template;
 
 import java.util.List;
 
-import com.google.common.collect.ForwardingList;
-
-public class Params extends ForwardingList<Object> {
+public class Params {
 
 	private List<Object> list;
 
@@ -12,16 +10,18 @@ public class Params extends ForwardingList<Object> {
 		this.list = list;
 	}
 
-	@Override
-	protected List<Object> delegate() {
-		return list;
-	}
-
-	public Object get() {
-		if (size() != 1) {
-			throw new IllegalStateException();
+	@SuppressWarnings("unchecked")
+	public <T> T get() {
+		if (list.size() != 1) {
+			throw new TemplateParseException(
+					"expected 1 param, got %d", list.size());
 		}
-		return get(0);
+		return (T) list.get(0);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T get(int i) {
+		return (T) list.get(i);
 	}
 
 	public int getInt() {
@@ -29,11 +29,7 @@ public class Params extends ForwardingList<Object> {
 	}
 
 	public int getInt(int index) {
-		return (int) get(index);
-	}
-
-	public int getIntOrDefault(int index, int defaultValue) {
-		return getOrDefault(index, defaultValue);
+		return (int) list.get(index);
 	}
 
 	public String getStr() {
@@ -41,16 +37,20 @@ public class Params extends ForwardingList<Object> {
 	}
 
 	public String getStr(int index) {
-		return (String) get(index);
-	}
-
-	public String getStrOrDefault(int index, String defaultValue) {
-		return getOrDefault(index, defaultValue);
+		return (String) list.get(index);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T getOrDefault(int index, T defaultValue) {
-		return index < size() ? (T) get(index) : defaultValue;
+	public <T> T getOrDefault(int index, T defaultValue) {
+		return index < list.size() ? (T) list.get(index) : defaultValue;
+	}
+	
+	public List<Object> asList() {
+		return list;
+	}
+
+	public int size() {
+		return list.size();
 	}
 
 }

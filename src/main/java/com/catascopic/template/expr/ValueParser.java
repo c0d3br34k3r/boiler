@@ -87,11 +87,12 @@ class ValueParser implements TermParser {
 				return new IndexTerm(seq, index);
 			}
 			tokenizer.consume(COLON);
+			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
+				// [i:]
+				return new SliceTerm(seq, index, null, null);
+			}
 		}
-		if (tokenizer.tryConsume(RIGHT_BRACKET)) {
-			// [:], [i:]
-			return new SliceTerm(seq, index, null, null);
-		}
+		// [:] is not allowed since lists are immutable
 		Term stop;
 		if (tokenizer.tryConsume(COLON)) {
 			stop = null;
@@ -103,11 +104,7 @@ class ValueParser implements TermParser {
 			}
 			tokenizer.consume(COLON);
 		}
-		if (tokenizer.tryConsume(RIGHT_BRACKET)) {
-			// [i:j:], [i::], [::], [:j:]
-			// TODO: allow this syntax?
-			return new SliceTerm(seq, index, stop, null);
-		}
+		// [i:j:], [i::], [::], [:j:] is not allowed because it's redundant
 		Term step = tokenizer.parseExpression();
 		tokenizer.consume(RIGHT_BRACKET);
 		// [i:j:k], [i::k], [:j:k], [::k]

@@ -51,7 +51,7 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			return Values.min(params.size() == 1
 					? Values.toIterable(params.get())
-					: params);
+					: params.asList());
 		}
 	},
 	MAX {
@@ -60,7 +60,14 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			return Values.max(params.size() == 1
 					? Values.toIterable(params.get())
-					: params);
+					: params.asList());
+		}
+	},
+	ABS {
+
+		@Override
+		public Object apply(Params params) {
+			return Values.abs((Number) params.get());
 		}
 	},
 	RANGE {
@@ -69,7 +76,8 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			switch (params.size()) {
 			case 0:
-				throw new IllegalArgumentException();
+				throw new TemplateParseException(
+						"range must have at least 1 param");
 			case 1:
 				return Values.range(params.getInt());
 			case 2:
@@ -93,7 +101,7 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return new Zip(params.size() == 1
-					? params
+					? params.asList()
 					: Values.toIterable(params.get()));
 		}
 	},
@@ -129,7 +137,9 @@ enum Builtin implements TemplateFunction {
 			if (seq instanceof Collection) {
 				return ((Collection<?>) seq).contains(params.get());
 			}
-			throw new IllegalArgumentException();
+			throw new TemplateParseException(
+					"%s (%s) is not a container",
+					seq, seq.getClass().getName());
 		}
 	},
 	CAPITALIZE {
@@ -218,7 +228,7 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			return CharMatcher.whitespace().trimAndCollapseFrom(
 					params.getStr(0),
-					params.getStrOrDefault(1, "_").charAt(0));
+					params.getOrDefault(1, " ").charAt(0));
 		}
 	},
 	SEPARATOR_TO_CAMEL {
@@ -226,7 +236,7 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return Values.separatorToCamel(params.getStr(0),
-					params.getStrOrDefault(1, "_"));
+					params.getOrDefault(1, "_"));
 		}
 	},
 	CAMEL_TO_SEPARATOR {
@@ -234,12 +244,11 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return Values.camelToSeparator(params.getStr(0), params
-					.getStrOrDefault(1, "_"));
+					.getOrDefault(1, "_"));
 		}
 	};
 
 	// TODO: other possibilities:
-	// abs
 	// sum
 	// exp
 	// sqrt

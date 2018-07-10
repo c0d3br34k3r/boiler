@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Values;
 import com.google.common.base.Function;
@@ -52,8 +49,7 @@ public class Scope implements Function<Term, Object> {
 		}
 	}
 
-	@Nullable
-	public Object resolve(@Nonnull String name) {
+	public Object resolve(String name) {
 		Object value = values.get(name);
 		if (value == null) {
 			throw new TemplateParseException("%s is undefined", name);
@@ -61,7 +57,7 @@ public class Scope implements Function<Term, Object> {
 		return value;
 	}
 
-	public void set(@Nonnull String name, @Nullable Object value) {
+	public void set(String name, Object value) {
 		values.put(name, value);
 	}
 

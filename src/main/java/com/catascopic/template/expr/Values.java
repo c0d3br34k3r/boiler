@@ -63,14 +63,21 @@ public final class Values {
 			return (Boolean) value ? 1 : 0;
 		}
 		throw new TemplateParseException(
-				"cannot convert %s (%s) to a number", value, value.getClass());
+				"cannot convert %s (%s) to a number",
+				value, value.getClass().getName());
 	}
 
 	private static Number parseNumber(String value) {
-		if (value.contains(".")) {
-			return Double.parseDouble(value);
+		try {
+			if (value.contains(".")) {
+				return Double.parseDouble(value);
+			}
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			throw new TemplateParseException(
+					String.format("cannot convert %s (%s) to a number",
+							value, value.getClass().getName()), e);
 		}
-		return Integer.parseInt(value);
 	}
 
 	public static Object add(Object o1, Object o2) {
@@ -152,7 +159,8 @@ public final class Values {
 			return new StringIterable((String) iterable);
 		}
 		throw new TemplateParseException(
-				"not iterable: %s (%s)", iterable, iterable.getClass());
+				"%s (%s) is not iterable",
+				iterable, iterable.getClass().getName());
 	}
 
 	public static boolean isEqual(Object lhs, Object rhs) {
@@ -252,7 +260,9 @@ public final class Values {
 		if (obj instanceof Map) {
 			return ((Map<?, ?>) obj).size();
 		}
-		throw new IllegalArgumentException();
+		throw new TemplateParseException(
+				"%s (%s) does not have a length",
+				obj, obj.getClass().getName());
 	}
 
 	public static List<Integer> range(int stop) {
@@ -318,7 +328,7 @@ public final class Values {
 			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
-			throw new IllegalArgumentException();
+			throw new TemplateParseException("step cannot be 0");
 		}
 		int istart;
 		int istop;
@@ -353,7 +363,7 @@ public final class Values {
 			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
-			throw new IllegalArgumentException();
+			throw new TemplateParseException("step cannot be 0");
 		}
 		int istart;
 		int istop;
@@ -380,7 +390,8 @@ public final class Values {
 		if (seq instanceof List) {
 			return slice((List<?>) seq, start, stop, step);
 		}
-		throw new IllegalArgumentException();
+		throw new TemplateParseException(
+				"%s (%s) is not indexable", seq, seq.getClass().getName());
 	}
 
 	public static Object slice(Object seq, int start) {
@@ -422,7 +433,7 @@ public final class Values {
 			return index((String) seq, index);
 		}
 		throw new TemplateParseException(
-				"%s (%s) is not indexable", seq, seq.getClass());
+				"%s (%s) is not indexable", seq, seq.getClass().getName());
 	}
 
 	public static String index(String str, int index) {
@@ -434,7 +445,12 @@ public final class Values {
 	}
 
 	private static int getIndex(int index, int len) {
-		return index < 0 ? len + index : index;
+		int adjusted = index < 0 ? len + index : index;
+		if (adjusted < 0 || adjusted >= len) {
+			throw new TemplateParseException(
+					"index %s is out of bounds", index);
+		}
+		return adjusted;
 	}
 
 	private static final Ordering<Object> ORDER = new Ordering<Object>() {
@@ -451,6 +467,13 @@ public final class Values {
 
 	public static Object max(Iterable<?> seq) {
 		return ORDER.max(seq);
+	}
+
+	public static Object abs(Number num) {
+		if (num instanceof Integer) {
+			return Math.abs(num.intValue());
+		}
+		return Math.abs(num.doubleValue());
 	}
 
 	public static Object entries(Map<?, ?> map) {

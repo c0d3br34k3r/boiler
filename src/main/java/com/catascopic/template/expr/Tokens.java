@@ -1,5 +1,7 @@
 package com.catascopic.template.expr;
 
+import com.catascopic.template.TemplateParseException;
+
 class Tokens {
 
 	static final Token TRUE = new ValueToken(true);
@@ -36,17 +38,17 @@ class Tokens {
 
 		@Override
 		public Object value() {
-			throw new IllegalStateException(this + " is not a value");
+			throw new TemplateParseException(this + " is not a value");
 		}
 
 		@Override
 		public String identifier() {
-			throw new IllegalStateException(this + " is not an identifier");
+			throw new TemplateParseException(this + " is not an identifier");
 		}
 
 		@Override
 		public Symbol symbol() {
-			throw new IllegalStateException(this + " is not a symbol");
+			throw new TemplateParseException(this + " is not a symbol");
 		}
 	}
 

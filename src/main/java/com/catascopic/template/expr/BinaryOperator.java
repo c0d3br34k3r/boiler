@@ -34,6 +34,9 @@ enum BinaryOperator {
 			return Values.modulo(left, right);
 		}
 	},
+
+	// EXPONENT?
+
 	GREATER_THAN {
 		@Override
 		Object apply(Object left, Object right) {
