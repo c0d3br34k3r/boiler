@@ -13,10 +13,10 @@ public class TemplateParserTest {
 
 	@Test
 	public void test() throws IOException {
-		String result = render("<% set a, b, c = '123' %>"
+		String result = render("<% set a, b, c = range(0, 3) %>"
 				+ "<% if a == 2 %>foo"
-				+ "<% else if a == 2 %>bar"
-				+ "<% else if a == 3 %>baz"
+				+ "<% else if b == 2 %>bar"
+				+ "<% else if c == 2 %>baz"
 				+ "<% end %>"
 				+ "what");
 		System.out.println(result);
@@ -24,7 +24,9 @@ public class TemplateParserTest {
 
 	private static String render(String string) throws IOException {
 		StringWriter writer = new StringWriter();
-		Parser.parse(new StringReader(string)).render(writer,
+		Node document = Parser.parse(new StringReader(string));
+		System.out.println(document);
+		document.render(writer,
 				new Scope(Collections.<String, Object> emptyMap()));
 		return writer.toString();
 	}

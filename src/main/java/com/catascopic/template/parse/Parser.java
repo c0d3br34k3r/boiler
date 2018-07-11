@@ -15,6 +15,7 @@ import com.catascopic.template.parse.Variables.Names;
 public class Parser {
 
 	public static Node parse(Reader reader) throws IOException {
+		// TODO: exceptions should contain location in template file
 		return new Parser(reader).parseRoot();
 	}
 
@@ -162,9 +163,9 @@ public class Parser {
 				if (!elseAllowed) {
 					throw new TemplateParseException("else not allowed");
 				}
-				return Block.of(nodes, result.getNode());
+				return new Block(nodes, result.getNode());
 			case END_TAG:
-				return Block.of(nodes);
+				return new Block(nodes);
 			case END_DOCUMENT:
 				throw new TemplateParseException("unclosed tag");
 			}
@@ -184,7 +185,7 @@ public class Parser {
 				throw new TemplateParseException("unbalanced %s tag",
 						result.type());
 			case END_DOCUMENT:
-				return new BlockNode(Block.of(nodes));
+				return new BlockNode(new Block(nodes));
 			}
 		}
 	}

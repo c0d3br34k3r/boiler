@@ -9,6 +9,7 @@ import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
 import com.catascopic.template.expr.Values;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 class Variables {
@@ -21,7 +22,7 @@ class Variables {
 			builder.add(tokenizer.parseIdentifier());
 		} while (tokenizer.tryConsume(Symbol.COMMA));
 		final List<String> varNames = builder.build();
-
+		// TODO: make named classes
 		if (varNames.size() == 1) {
 			final String varName = varNames.get(0);
 			return new Names() {
@@ -29,6 +30,11 @@ class Variables {
 				@Override
 				public void assign(Scope scope, Object value) {
 					scope.set(varName, value);
+				}
+
+				@Override
+				public String toString() {
+					return varName;
 				}
 			};
 		}
@@ -38,6 +44,11 @@ class Variables {
 			@Override
 			public void assign(Scope scope, Object value) {
 				unpack(varNames, scope, value);
+			}
+
+			@Override
+			public String toString() {
+				return Joiner.on(", ").join(varNames);
 			}
 		};
 	}
@@ -73,6 +84,11 @@ class Variables {
 					assigner.assign(scope);
 				}
 			}
+
+			@Override
+			public String toString() {
+				return Joiner.on(", ").join(assigners);
+			}
 		};
 	}
 
@@ -86,6 +102,11 @@ class Variables {
 			public void assign(Scope scope) {
 				names.assign(scope, term.evaluate(scope));
 			}
+
+			@Override
+			public String toString() {
+				return names + " = " + term;
+			}
 		};
 	}
 
@@ -94,6 +115,11 @@ class Variables {
 		@Override
 		public void assign(Scope scope) {
 			// do nothing
+		}
+
+		@Override
+		public String toString() {
+			return "empty";
 		}
 	};
 

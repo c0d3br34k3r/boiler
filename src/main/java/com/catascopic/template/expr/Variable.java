@@ -12,7 +12,7 @@ class Variable implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		return scope.resolve(name);
+		return scope.get(name);
 	}
 
 	@Override

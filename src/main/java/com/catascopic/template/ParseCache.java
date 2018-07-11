@@ -1,22 +1,19 @@
 package com.catascopic.template;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import com.catascopic.template.parse.ContentNode;
 import com.catascopic.template.parse.Node;
 import com.catascopic.template.parse.Parser;
-import com.catascopic.template.parse.TemplateParser;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListenableFutureTask;
+import com.google.common.cache.Cache;
+import com.google.common.io.CharStreams;
 
 /**
  * Helper class used to cache parsed template files.
@@ -25,37 +22,48 @@ public class ParseCache {
 
 	private static final long DEFAULT_SIZE = 256;
 
-	private final LoadingCache<Path, CacheEntry> cache;
+	private final Cache<Path, CacheEntry> cache;
 
-	// TODO: Dammit
-	public ParseCache(final Configuration config) {
-		cache = CacheBuilder.newBuilder().maximumSize(DEFAULT_SIZE)
-				.build(new CacheLoader<Path, CacheEntry>() {
+	public Node getDocument(final Path path, final boolean template)
+			throws ExecutionException, IOException {
+		if (!Files.isRegularFile(path)) {
+			cache.invalidate(path);
+		}
+		CacheEntry entry = cache.get(path, new Callable<CacheEntry>() {
 
-					@Override
-					public CacheEntry load(Path key) throws IOException, CarrotException {
-						try (Reader reader = Files.newBufferedReader(key, config.getCharset())) {
-							return new CacheEntry(
-									TemplateParser.parse(new Parser(reader), config),
-									Files.getLastModifiedTime(key));
-						}
-					}
-				});
+			@Override
+			public CacheEntry call() throws Exception {
+				return readDocument(path, template);
+			}
+		});
+		if (Files.getLastModifiedTime(path).compareTo(entry.modified) > 0) {
+			entry = readDocument(path, template);
+			cache.put(path, entry);
+		}
+		return entry.node;
 	}
 
-	public Node getDocument(Path path) throws CarrotException {
-		try {
-			return cache.get(path).node;
-		} catch (ExecutionException e) {
-			throw new CarrotException(e);
+	private static CacheEntry readDocument(Path path, boolean template)
+			throws IOException {
+		try (BufferedReader in = Files.newBufferedReader(path,
+				StandardCharsets.UTF_8)) {
+			Node document;
+			if (template) {
+				document = Parser.parse(in);
+			} else {
+				document = new ContentNode(CharStreams.toString(in));
+			}
+			return new CacheEntry(document,
+					Files.getLastModifiedTime(path));
 		}
 	}
 
 	private static class CacheEntry {
+
 		Node node;
 		FileTime modified;
 
-		public CacheEntry(Node node, FileTime modifiedTime) {
+		CacheEntry(Node node, FileTime modifiedTime) {
 			this.node = node;
 			this.modified = modifiedTime;
 		}

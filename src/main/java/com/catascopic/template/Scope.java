@@ -1,58 +1,51 @@
 package com.catascopic.template;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.catascopic.template.expr.Term;
-import com.catascopic.template.expr.Values;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
-public class Scope implements Function<Term, Object> {
+public class Scope implements Resolver, Function<Term, Object> {
 
-	private static final ImmutableMap<String, TemplateFunction> BUILTIN;
-	static {
-		Builder<String, TemplateFunction> builder = ImmutableMap.builder();
-		putFunctions(Builtin.class, builder);
-		BUILTIN = builder.build();
-	}
+	private static final Resolver BASE = new Resolver() {
 
+		@Override
+		public Object get(String name) {
+			throw new TemplateParseException("%s cannot be resolved", name);
+		}
+	};
+
+	private final Resolver parent;
+	private final Path dir;
+	private final TemplateEngine engine;
 	private Map<String, Object> values = new HashMap<>();
-	private ImmutableMap<String, TemplateFunction> functions;
 
-	public <F extends Enum<F> & TemplateFunction> Scope(
-			Map<String, Object> initial) {
-		this(initial, Collections.<Class<F>> emptyList());
+	static Scope create(TemplateEngine engine, Path dir) {
+		return new Scope(engine, dir, BASE);
 	}
 
-	public <F extends Enum<F> & TemplateFunction> Scope(
-			Map<String, Object> initial,
-			Collection<Class<F>> functionClasses) {
-		values.putAll(initial);
-		Builder<String, TemplateFunction> builder = ImmutableMap.builder();
-		builder.putAll(BUILTIN);
-		for (Class<F> clazz : functionClasses) {
-			putFunctions(clazz, builder);
-		}
-		functions = builder.build();
+	static Scope create(TemplateEngine engine, 
+			Path dir,
+			Map<String, Object> values) {
+		Scope scope = create(engine, dir);
+		scope.values.putAll(values);
+		return scope;
 	}
 
-	private static <F extends Enum<F> & TemplateFunction> void putFunctions(
-			Class<F> functions,
-			ImmutableMap.Builder<String, TemplateFunction> builder) {
-		for (F function : functions.getEnumConstants()) {
-			builder.put(Values.separatorToCamel(function.name().toLowerCase()),
-					function);
-		}
+	private Scope(TemplateEngine engine, Path dir, Resolver parent) {
+		this.engine = engine;
+		this.dir = dir;
+		this.parent = parent;
 	}
 
-	public Object resolve(String name) {
+	@Override
+	public Object get(String name) {
 		Object value = values.get(name);
 		if (value == null) {
-			throw new TemplateParseException("%s is undefined", name);
+			return parent.get(name);
 		}
 		return value;
 	}
@@ -62,11 +55,7 @@ public class Scope implements Function<Term, Object> {
 	}
 
 	public TemplateFunction getFunction(String name) {
-		TemplateFunction func = functions.get(name);
-		if (func == null) {
-			throw new TemplateParseException("function %s is undefined", name);
-		}
-		return func;
+		return engine.getFunction(name);
 	}
 
 	@Override
@@ -74,14 +63,18 @@ public class Scope implements Function<Term, Object> {
 		return input.evaluate(this);
 	}
 
-	public void renderTemplate(Appendable writer, String string) {
-		// TODO Auto-generated method stub
-
+	public void renderTemplate(Appendable writer, String fileName)
+			throws IOException {
+		engine.getTemplate(fileName).render(writer, this);
 	}
 
-	public void renderTextFile(Appendable writer, String string) {
-		// TODO Auto-generated method stub
+	public void renderTextFile(Appendable writer, String fileName)
+			throws IOException {
+		engine.getTextFile(fileName).render(writer, this);
+	}
 
+	public Scope extend() {
+		return new Scope(engine, dir, this);
 	}
 
 }

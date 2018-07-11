@@ -19,8 +19,15 @@ class TemplateNode implements Node {
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		scope.renderTemplate(writer, Values.toString(templateName.evaluate(
-				scope)), assigner);
+		Scope extended = scope.extend();
+		assigner.assign(extended);
+		extended.renderTemplate(writer,
+				Values.toString(templateName.evaluate(scope)));
+	}
+
+	@Override
+	public String toString() {
+		return "template: " + templateName.toString();
 	}
 
 }

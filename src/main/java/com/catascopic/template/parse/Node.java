@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.catascopic.template.Scope;
 
-interface Node {
+public interface Node {
 
 	void render(Appendable writer, Scope scope) throws IOException;
 

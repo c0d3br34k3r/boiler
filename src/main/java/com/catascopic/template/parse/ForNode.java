@@ -27,4 +27,9 @@ class ForNode implements Node {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "for " + names + " in " + iterable + ": " + block;
+	}
+
 }

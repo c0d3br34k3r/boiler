@@ -19,4 +19,9 @@ class TextNode implements Node {
 		scope.renderTextFile(writer, Values.toString(fileName.evaluate(scope)));
 	}
 
+	@Override
+	public String toString() {
+		return "text: " + fileName.toString();
+	}
+
 }

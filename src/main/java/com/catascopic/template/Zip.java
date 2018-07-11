@@ -7,6 +7,7 @@ import java.util.List;
 import com.catascopic.template.expr.Values;
 import com.google.common.collect.UnmodifiableIterator;
 
+// TODO: move to Values or something
 class Zip implements Iterable<List<?>> {
 
 	private final Iterable<?> iterables;

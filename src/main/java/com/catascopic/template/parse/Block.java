@@ -5,31 +5,35 @@ import java.util.List;
 
 import com.catascopic.template.Scope;
 
-abstract class Block {
+class Block {
 
-	void render(Appendable writer, Scope scope) throws IOException {}
+	private final List<Node> nodes;
+	private final Node elseNode;
 
-	void renderElse(Appendable writer, Scope scope) throws IOException {}
-
-	static Block of(List<Node> nodes) {
-		return of(nodes, EmptyNode.INSTANCE);
+	Block(List<Node> nodes) {
+		this(nodes, EmptyNode.INSTANCE);
 	}
 
-	static Block of(final List<Node> nodes, final Node alternative) {
-		return new Block() {
+	Block(List<Node> nodes, Node elseNode) {
+		this.nodes = nodes;
+		this.elseNode = elseNode;
+	}
 
-			@Override
-			void render(Appendable writer, Scope scope) throws IOException {
-				for (Node node : nodes) {
-					node.render(writer, scope);
-				}
-			}
+	void render(Appendable writer, Scope scope) throws IOException {
+		for (Node node : nodes) {
+			node.render(writer, scope);
+		}
+	}
 
-			@Override
-			void renderElse(Appendable writer, Scope scope) throws IOException {
-				alternative.render(writer, scope);
-			}
-		};
+	void renderElse(Appendable writer, Scope scope) throws IOException {
+		elseNode.render(writer, scope);
+	}
+
+	@Override
+	public String toString() {
+		return elseNode == EmptyNode.INSTANCE
+				? nodes.toString()
+				: nodes.toString() + " else " + elseNode;
 	}
 
 }

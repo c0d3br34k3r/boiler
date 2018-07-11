@@ -17,4 +17,9 @@ class BlockNode implements Node {
 		block.render(writer, scope);
 	}
 
+	@Override
+	public String toString() {
+		return block.toString();
+	}
+
 }

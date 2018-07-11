@@ -19,4 +19,9 @@ class Echo implements Node {
 		writer.append(Values.toString(term.evaluate(scope)));
 	}
 
+	@Override
+	public String toString() {
+		return term.toString();
+	}
+
 }
