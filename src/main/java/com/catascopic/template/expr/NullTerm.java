@@ -8,7 +8,7 @@ enum NullTerm implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		return null;
+		return NullValue.NULL;
 	}
 
 }

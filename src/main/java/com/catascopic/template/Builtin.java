@@ -190,8 +190,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Joiner.on(params.getStr(1)).join(Values.toIterable(params
-					.get(0)));
+			return Joiner.on(params.getStr(1)).join(
+					Values.toIterable(params.get(0)));
 		}
 	},
 	SPLIT {

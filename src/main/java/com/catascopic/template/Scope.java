@@ -6,36 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.catascopic.template.expr.Term;
+import com.catascopic.template.parse.Node;
 import com.google.common.base.Function;
 
 public class Scope implements Resolver, Function<Term, Object> {
-
-	private static final Resolver BASE = new Resolver() {
-
-		@Override
-		public Object get(String name) {
-			throw new TemplateParseException("%s cannot be resolved", name);
-		}
-	};
 
 	private final Resolver parent;
 	private final Path dir;
 	private final TemplateEngine engine;
 	private Map<String, Object> values = new HashMap<>();
 
-	static Scope create(TemplateEngine engine, Path dir) {
-		return new Scope(engine, dir, BASE);
-	}
-
-	static Scope create(TemplateEngine engine, 
-			Path dir,
-			Map<String, Object> values) {
-		Scope scope = create(engine, dir);
-		scope.values.putAll(values);
-		return scope;
-	}
-
-	private Scope(TemplateEngine engine, Path dir, Resolver parent) {
+	Scope(TemplateEngine engine, Path dir, Resolver parent) {
 		this.engine = engine;
 		this.dir = dir;
 		this.parent = parent;
@@ -44,6 +25,7 @@ public class Scope implements Resolver, Function<Term, Object> {
 	@Override
 	public Object get(String name) {
 		Object value = values.get(name);
+		// TODO: null masking
 		if (value == null) {
 			return parent.get(name);
 		}
@@ -65,16 +47,19 @@ public class Scope implements Resolver, Function<Term, Object> {
 
 	public void renderTemplate(Appendable writer, String fileName)
 			throws IOException {
-		engine.getTemplate(fileName).render(writer, this);
+		Path file = dir.resolve(fileName);
+		getDocument(file, true).render(writer,
+				new Scope(engine, file.getParent(), this));
 	}
 
 	public void renderTextFile(Appendable writer, String fileName)
 			throws IOException {
-		engine.getTextFile(fileName).render(writer, this);
+		getDocument(dir.resolve(fileName), false).render(writer, null);
 	}
 
-	public Scope extend() {
-		return new Scope(engine, dir, this);
+	private Node getDocument(Path file, boolean template)
+			throws IOException {
+		return engine.cache().getDocument(file, template);
 	}
 
 }

@@ -6,13 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import com.catascopic.template.parse.ContentNode;
 import com.catascopic.template.parse.Node;
 import com.catascopic.template.parse.Parser;
-import com.google.common.cache.Cache;
 import com.google.common.io.CharStreams;
 
 /**
@@ -20,41 +20,38 @@ import com.google.common.io.CharStreams;
  */
 public class ParseCache {
 
-	private static final long DEFAULT_SIZE = 256;
+	private final Map<List<Object>, CacheEntry> cache;
 
-	private final Cache<Path, CacheEntry> cache;
+	public ParseCache() {
+		this(new LruMap<List<Object>, CacheEntry>(99));
+	}
 
-	public Node getDocument(final Path path, final boolean template)
-			throws ExecutionException, IOException {
-		if (!Files.isRegularFile(path)) {
-			cache.invalidate(path);
-		}
-		CacheEntry entry = cache.get(path, new Callable<CacheEntry>() {
+	public ParseCache(Map<List<Object>, CacheEntry> map) {
+		this.cache = map;
+	}
 
-			@Override
-			public CacheEntry call() throws Exception {
-				return readDocument(path, template);
+	public Node getDocument(Path path, boolean template) throws IOException {
+		// TODO: make dedicated key object?
+		List<Object> key = Arrays.<Object> asList(path, template);
+		CacheEntry entry;
+		synchronized (cache) {
+			entry = cache.get(key);
+			if (entry == null) {
+				entry = new CacheEntry(path, template);
+				cache.put(key, entry);
+			} else {
+				entry.refresh(path, template);
 			}
-		});
-		if (Files.getLastModifiedTime(path).compareTo(entry.modified) > 0) {
-			entry = readDocument(path, template);
-			cache.put(path, entry);
 		}
 		return entry.node;
 	}
 
-	private static CacheEntry readDocument(Path path, boolean template)
-			throws IOException {
+	private static Node parse(Path path, boolean template) throws IOException {
 		try (BufferedReader in = Files.newBufferedReader(path,
 				StandardCharsets.UTF_8)) {
-			Node document;
-			if (template) {
-				document = Parser.parse(in);
-			} else {
-				document = new ContentNode(CharStreams.toString(in));
-			}
-			return new CacheEntry(document,
-					Files.getLastModifiedTime(path));
+			return template
+					? Parser.parse(in)
+					: new ContentNode(CharStreams.toString(in));
 		}
 	}
 
@@ -63,9 +60,18 @@ public class ParseCache {
 		Node node;
 		FileTime modified;
 
-		CacheEntry(Node node, FileTime modifiedTime) {
-			this.node = node;
-			this.modified = modifiedTime;
+		CacheEntry(Path path, boolean template) throws IOException {
+			node = parse(path, template);
+			modified = Files.getLastModifiedTime(path);
+		}
+
+		void refresh(Path path, boolean template) throws IOException {
+			FileTime fileTime = Files.getLastModifiedTime(path);
+			if (!fileTime.equals(modified)) {
+				node = parse(path, template);
+				modified = fileTime;
+			}
 		}
 	}
+
 }

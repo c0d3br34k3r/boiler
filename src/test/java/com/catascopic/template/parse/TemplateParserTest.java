@@ -13,7 +13,7 @@ public class TemplateParserTest {
 
 	@Test
 	public void test() throws IOException {
-		String result = render("<% set a, b, c = range(0, 3) %>"
+		String result = render("<% set a, b, c = '123' %>"
 				+ "<% if a == 2 %>foo"
 				+ "<% else if b == 2 %>bar"
 				+ "<% else if c == 2 %>baz"
@@ -27,7 +27,8 @@ public class TemplateParserTest {
 		Node document = Parser.parse(new StringReader(string));
 		System.out.println(document);
 		document.render(writer,
-				new Scope(Collections.<String, Object> emptyMap()));
+				Scope.create(null, null, Collections
+						.<String, Object> emptyMap()));
 		return writer.toString();
 	}
 

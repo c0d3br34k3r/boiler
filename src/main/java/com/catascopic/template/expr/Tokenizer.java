@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 
+import com.catascopic.template.Keyword;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
@@ -97,10 +98,15 @@ public class Tokenizer {
 		return ExpressionParser.parse(this);
 	}
 
+	public Keyword parseKeyword() {
+		return Keyword.get(parseIdentifier());
+	}
+
 	public String parseIdentifier() {
 		Token next = next();
 		if (next.type() != TokenType.IDENTIFIER) {
-			throw new TemplateParseException("expected identifier, got %s", next);
+			throw new TemplateParseException("expected identifier, got %s",
+					next);
 		}
 		return next.identifier();
 	}
@@ -327,8 +333,8 @@ public class Tokenizer {
 			builder.append((char) ch);
 			break;
 		case 'u':
-			int codePoint = Integer.parseInt(new String(readFully(reader, 4)),
-					16);
+			int codePoint = Integer.parseInt(
+					new String(readFully(reader, 4)), 16);
 			builder.append(Character.toChars(codePoint));
 			break;
 		case -1:

@@ -21,6 +21,7 @@ public class Parser {
 
 	private final PushbackReader reader;
 	private Mode mode = Mode.TEXT;
+	private Node node;
 
 	Parser(Reader reader) {
 		this.reader = new PushbackReader(reader, 1);
@@ -30,10 +31,17 @@ public class Parser {
 		return mode.parse(this);
 	}
 
+	Node getNode() {
+		if (node == null) {
+			throw new IllegalStateException();
+		}
+		return node;
+	}
+
 	private NodeResult parseTextOrTag() throws IOException {
 		String content = parseContent();
 		return !content.isEmpty()
-				? NodeResult.node(new ContentNode(content))
+				? result(NodeResult.NODE, new ContentNode(content))
 				: parseNext();
 	}
 
@@ -76,20 +84,20 @@ public class Parser {
 		mode = Mode.TEXT;
 		switch (tagName) {
 		case "if":
-			return NodeResult.node(parseIf(tokenizer));
+			return result(NodeResult.NODE, parseIf(tokenizer));
 		case "else":
-			return NodeResult.elseNode(parseElse(tokenizer));
+			return result(NodeResult.ELSE, parseElse(tokenizer));
 		case "for":
-			return NodeResult.node(parseFor(tokenizer));
+			return result(NodeResult.NODE, parseFor(tokenizer));
 		case "set":
-			return NodeResult.node(parseSet(tokenizer));
+			return result(NodeResult.NODE, parseSet(tokenizer));
 		case "template":
-			return NodeResult.node(parseTemplate(tokenizer));
+			return result(NodeResult.NODE, parseTemplate(tokenizer));
 		case "text":
-			return NodeResult.node(parseText(tokenizer));
+			return result(NodeResult.NODE, parseText(tokenizer));
 		case "end":
 			tokenizer.end();
-			return NodeResult.endTag();
+			return result(NodeResult.END_TAG);
 		default:
 			throw new TemplateParseException("unknown tag: " + tagName);
 		}
@@ -143,27 +151,27 @@ public class Parser {
 		return new TextNode(textFileName);
 	}
 
-	private Node parseEcho() {
+	private NodeResult parseEcho() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.ECHO);
 		Term term = tokenizer.parseExpression();
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return new Echo(term);
+		return result(NodeResult.NODE, new Echo(term));
 	}
 
 	private Block parseBlock(boolean elseAllowed) throws IOException {
 		List<Node> nodes = new ArrayList<>();
 		for (;;) {
 			NodeResult result = parseNext();
-			switch (result.type()) {
+			switch (result) {
 			case NODE:
-				nodes.add(result.getNode());
+				nodes.add(getNode());
 				break;
 			case ELSE:
 				if (!elseAllowed) {
 					throw new TemplateParseException("else not allowed");
 				}
-				return new Block(nodes, result.getNode());
+				return new Block(nodes, getNode());
 			case END_TAG:
 				return new Block(nodes);
 			case END_DOCUMENT:
@@ -176,14 +184,13 @@ public class Parser {
 		List<Node> nodes = new ArrayList<>();
 		for (;;) {
 			NodeResult result = parseNext();
-			switch (result.type()) {
+			switch (result) {
 			case NODE:
-				nodes.add(result.getNode());
+				nodes.add(getNode());
 				break;
 			case ELSE:
 			case END_TAG:
-				throw new TemplateParseException("unbalanced %s tag",
-						result.type());
+				throw new TemplateParseException("unbalanced %s tag", result);
 			case END_DOCUMENT:
 				return new BlockNode(new Block(nodes));
 			}
@@ -213,6 +220,20 @@ public class Parser {
 		throw new TemplateParseException("unclosed comment");
 	}
 
+	private NodeResult endDocument() {
+		return result(NodeResult.END_DOCUMENT);
+	}
+
+	private NodeResult result(NodeResult type, Node node) {
+		this.node = node;
+		return type;
+	}
+
+	private NodeResult result(NodeResult type) {
+		this.node = null;
+		return type;
+	}
+
 	private enum Mode {
 		TEXT {
 
@@ -232,7 +253,7 @@ public class Parser {
 
 			@Override
 			NodeResult parse(Parser parser) throws IOException {
-				return NodeResult.node(parser.parseEcho());
+				return parser.parseEcho();
 			}
 		},
 		COMMENT {
@@ -246,11 +267,19 @@ public class Parser {
 
 			@Override
 			NodeResult parse(Parser parser) throws IOException {
-				return NodeResult.endDocument();
+				return parser.endDocument();
 			}
 		};
 
 		abstract NodeResult parse(Parser parser) throws IOException;
+	}
+
+	private enum NodeResult {
+
+		NODE,
+		ELSE,
+		END_TAG,
+		END_DOCUMENT;
 	}
 
 }

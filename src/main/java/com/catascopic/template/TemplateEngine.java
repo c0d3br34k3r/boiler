@@ -1,12 +1,11 @@
 package com.catascopic.template;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 
 import com.catascopic.template.expr.Values;
-import com.catascopic.template.parse.Node;
-import com.catascopic.template.value.Value;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -20,6 +19,7 @@ public class TemplateEngine {
 	}
 
 	private final ImmutableMap<String, TemplateFunction> functions;
+	private ParseCache cache;
 
 	private static <F extends Enum<F> & TemplateFunction> ImmutableMap<String, TemplateFunction> buildFunctionMap(
 			Collection<Class<F>> functionClasses) {
@@ -35,34 +35,29 @@ public class TemplateEngine {
 			Class<F> functions,
 			ImmutableMap.Builder<String, TemplateFunction> builder) {
 		for (F function : functions.getEnumConstants()) {
-			builder.put(Values.separatorToCamel(function.name().toLowerCase()),
-					function);
+			builder.put(Values.separatorToCamel(
+					function.name().toLowerCase()), function);
 		}
 	}
 
-	public void render(Path file,
-			Appendable writer,
-			Map<String, Value> parameters) {
+	public void render(Path file, Appendable writer, Resolver parameters)
+			throws IOException {
+		cache.getDocument(file, true).render(writer, new Scope(
+				this, file.getParent(), parameters));
+	}
 
-		Node template;
-		Scope.create(this, file.getParent());
-
-		template.render(writer, scope);
+	public void render(Path file, Appendable writer,
+			Map<String, Object> parameters) throws IOException {
+		cache.getDocument(file, true).render(writer, new Scope(
+				this, file.getParent(), Resolvers.fromMap(parameters)));
 	}
 
 	TemplateFunction getFunction(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return functions.get(name);
 	}
 
-	Node getTemplate(String fileName) {
-		// TODO Auto-generated method stub
-
-	}
-
-	Node getTextFile(String fileName) {
-		// TODO Auto-generated method stub
-		return null;
+	ParseCache cache() {
+		return cache;
 	}
 
 }
