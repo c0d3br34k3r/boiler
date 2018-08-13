@@ -8,10 +8,10 @@ import java.util.Set;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.Values;
 import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
-import com.catascopic.template.expr.Values;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 

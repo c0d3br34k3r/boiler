@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.catascopic.template.expr.Values;
 import com.google.common.collect.UnmodifiableIterator;
 
 // TODO: move to Values or something

@@ -22,4 +22,12 @@ public class ContentNode implements Node {
 		return content;
 	}
 
+	boolean endsWithBlankLine() {
+
+	}
+
+	boolean beginsWithBlankLine() {
+
+	}
+
 }

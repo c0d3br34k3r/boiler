@@ -1,9 +1,9 @@
 package com.catascopic.template.expr;
 
-import static com.catascopic.template.expr.Values.camelToSeparator;
-import static com.catascopic.template.expr.Values.range;
-import static com.catascopic.template.expr.Values.separatorToCamel;
-import static com.catascopic.template.expr.Values.slice;
+import static com.catascopic.template.Values.camelToSeparator;
+import static com.catascopic.template.Values.range;
+import static com.catascopic.template.Values.separatorToCamel;
+import static com.catascopic.template.Values.slice;
 
 import java.util.Arrays;
 import java.util.Collections;

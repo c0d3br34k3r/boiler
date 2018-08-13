@@ -12,6 +12,7 @@ import org.junit.runners.JUnit4;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.Values;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 

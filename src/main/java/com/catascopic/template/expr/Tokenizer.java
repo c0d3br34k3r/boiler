@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 
-import com.catascopic.template.Keyword;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
@@ -96,10 +95,6 @@ public class Tokenizer {
 
 	public Term parseExpression() {
 		return ExpressionParser.parse(this);
-	}
-
-	public Keyword parseKeyword() {
-		return Keyword.get(parseIdentifier());
 	}
 
 	public String parseIdentifier() {

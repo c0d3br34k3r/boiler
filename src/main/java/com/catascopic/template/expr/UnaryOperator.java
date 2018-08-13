@@ -1,5 +1,7 @@
 package com.catascopic.template.expr;
 
+import com.catascopic.template.Values;
+
 enum UnaryOperator {
 
 	NOT {

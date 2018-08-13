@@ -33,6 +33,9 @@ public class Scope implements Locals, Function<Term, Object> {
 		Object value = values.get(name);
 		// TODO: null masking
 		if (value == null) {
+			if (values.containsKey(name)) {
+				return null;
+			}
 			return parent.get(name);
 		}
 		return value;

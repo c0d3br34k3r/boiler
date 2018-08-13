@@ -1,4 +1,4 @@
-package com.catascopic.template.expr;
+package com.catascopic.template;
 
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import com.catascopic.template.TemplateEvalException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;

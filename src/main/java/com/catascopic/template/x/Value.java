@@ -1,4 +1,4 @@
-package com.catascopic.template.value;
+package com.catascopic.template.x;
 
 public interface Value {
 
