@@ -1,7 +1,6 @@
 package com.catascopic.template;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +27,11 @@ public class TemplateEngine {
 				this, file.getParent(), params));
 	}
 
-	public String print(Path file, Map<String, Object> params)
+	public String render(Path file, Map<String, Object> params)
 			throws IOException {
-		StringWriter writer = new StringWriter();
-		render(file, writer, params);
-		return writer.toString();
+		StringBuilder output = new StringBuilder();
+		render(file, output, params);
+		return output.toString();
 	}
 
 	TemplateFunction getFunction(String name) {

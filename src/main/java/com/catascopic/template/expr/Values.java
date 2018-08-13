@@ -434,14 +434,22 @@ public final class Values {
 	}
 
 	public static String index(String str, int index) {
-		return String.valueOf(str.charAt(getIndex(index, str.length())));
+		return String.valueOf(str.charAt(getIndex(index, str)));
 	}
 
 	public static <E> E index(List<E> list, int index) {
-		return list.get(getIndex(index, list.size()));
+		return list.get(getIndex(index, list));
 	}
 
-	private static int getIndex(int index, int len) {
+	public static int getIndex(int index, List<?> seq) {
+		return getIndex(index, seq.size());
+	}
+
+	public static int getIndex(int index, String str) {
+		return getIndex(index, str.length());
+	}
+
+	public static int getIndex(int index, int len) {
 		int adjusted = index < 0 ? len + index : index;
 		if (adjusted < 0 || adjusted >= len) {
 			throw new TemplateParseException(
