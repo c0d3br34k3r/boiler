@@ -6,20 +6,34 @@ import java.io.Reader;
 public class LineReader {
 
 	private Reader reader;
+	private int lineNumber; // = 0
+	private int columnNumber; // = 0
 	private boolean skipLf;
-	private int lineNumber;
-	private int columnNumber;
-	private int next;
 	private char[] buf;
 	private int pos;
+	private int next;
+
+	public LineReader(Reader reader, int size) throws IOException {
+		this.reader = reader;
+		if (size <= 0) {
+			throw new IllegalArgumentException();
+		}
+		this.buf = new char[size];
+		this.pos = size;
+		next = read();
+	}
+
+	public LineReader(Reader in) throws IOException {
+		this(in, 1);
+	}
 
 	public boolean hasNext() {
 		return next != -1;
 	}
 
 	public char next() throws IOException {
-		if (pos < buf.length) {
-			return buf[pos++];
+		if (!hasNext()) {
+			throw new IllegalStateException();
 		}
 		char c = (char) next;
 		next = read();
@@ -27,40 +41,37 @@ public class LineReader {
 	}
 
 	private int read() throws IOException {
-		int ch = reader.read();
-		columnNumber++;
+		if (pos < buf.length) {
+			return buf[pos++];
+		}
+		int c = reader.read();
+		columnNumber = 0;
 		if (skipLf) {
-			if (ch == '\n') {
-				ch = reader.read();
+			if (c == '\n') {
+				c = reader.read();
 			}
 			skipLf = false;
 		}
-		switch (ch) {
+		switch (c) {
 		case '\r':
 			skipLf = true;
 			// fallthrough
 		case '\n':
-			columnNumber = 0;
 			lineNumber++;
+			columnNumber = 0;
 			return '\n';
-		default:
 		}
-		return ch;
+		return c;
 	}
 
-	public int lineNumber() {
-		return lineNumber;
-	}
-
-	public int columnNumber() {
-		return columnNumber;
-	}
-
-	public void unread(char c) throws IOException {
+	public void unread(int c) throws IOException {
 		if (pos == 0) {
 			throw new IOException("Pushback buffer overflow");
 		}
-		buf[--pos] = c;
+		if (hasNext()) {
+			buf[--pos] = (char) next;
+		}
+		next = c;
 	}
 
 	public void unread(char cbuf[], int off, int len) throws IOException {
@@ -73,6 +84,14 @@ public class LineReader {
 
 	public void unread(char cbuf[]) throws IOException {
 		unread(cbuf, 0, cbuf.length);
+	}
+
+	public int lineNumber() {
+		return lineNumber;
+	}
+
+	public int columnNumber() {
+		return columnNumber;
 	}
 
 }
