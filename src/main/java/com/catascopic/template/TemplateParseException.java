@@ -1,5 +1,6 @@
 package com.catascopic.template;
 
+@SuppressWarnings("serial")
 public class TemplateParseException extends RuntimeException {
 
 	public TemplateParseException(String message, Throwable cause) {

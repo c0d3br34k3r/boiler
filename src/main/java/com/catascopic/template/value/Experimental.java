@@ -1,4 +1,4 @@
-package com.catascopic.template;
+package com.catascopic.template.value;
 
 import java.io.IOException;
 import java.io.PushbackReader;

@@ -12,18 +12,18 @@ import com.catascopic.template.expr.Tokenizer;
 import com.catascopic.template.parse.Variables.Assigner;
 import com.catascopic.template.parse.Variables.Names;
 
-public class Parser {
+public class TemplateParser {
 
 	public static Node parse(Reader reader) throws IOException {
 		// TODO: exceptions should contain location in template file
-		return new Parser(reader).parseRoot();
+		return new TemplateParser(reader).parseRoot();
 	}
 
 	private final PushbackReader reader;
 	private Mode mode = Mode.TEXT;
 	private Node node;
 
-	Parser(Reader reader) {
+	TemplateParser(Reader reader) {
 		this.reader = new PushbackReader(reader, 1);
 	}
 
@@ -238,40 +238,40 @@ public class Parser {
 		TEXT {
 
 			@Override
-			NodeResult parse(Parser parser) throws IOException {
+			NodeResult parse(TemplateParser parser) throws IOException {
 				return parser.parseTextOrTag();
 			}
 		},
 		TAG {
 
 			@Override
-			NodeResult parse(Parser parser) throws IOException {
+			NodeResult parse(TemplateParser parser) throws IOException {
 				return parser.parseTag();
 			}
 		},
 		ECHO {
 
 			@Override
-			NodeResult parse(Parser parser) throws IOException {
+			NodeResult parse(TemplateParser parser) throws IOException {
 				return parser.parseEcho();
 			}
 		},
 		COMMENT {
 
 			@Override
-			NodeResult parse(Parser parser) throws IOException {
+			NodeResult parse(TemplateParser parser) throws IOException {
 				return parser.skipCommentAndParseNext();
 			}
 		},
 		END {
 
 			@Override
-			NodeResult parse(Parser parser) throws IOException {
+			NodeResult parse(TemplateParser parser) throws IOException {
 				return parser.endDocument();
 			}
 		};
 
-		abstract NodeResult parse(Parser parser) throws IOException;
+		abstract NodeResult parse(TemplateParser parser) throws IOException;
 	}
 
 	private enum NodeResult {

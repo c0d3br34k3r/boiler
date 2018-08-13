@@ -11,7 +11,7 @@ import org.junit.runners.JUnit4;
 import com.catascopic.template.CarrotException;
 import com.catascopic.template.Configuration;
 import com.catascopic.template.parse.Node;
-import com.catascopic.template.parse.Parser;
+import com.catascopic.template.parse.TemplateParser;
 import com.catascopic.template.parse.TagNode;
 import com.catascopic.template.parse.TemplateParser;
 import com.catascopic.template.parse.ContentNode;
@@ -85,7 +85,7 @@ public class TemplateParserTest {
 		TemplateParser templateParser = new TemplateParser(new Configuration.Builder().build());
 		try {
 			Node node =
-					templateParser.parse(new Parser(
+					templateParser.parse(new TemplateParser(
 							new LineReader(new ResourcePointer(null), new StringReader(input))));
 			assertThat(node).isNotNull();
 			return node;

@@ -24,7 +24,7 @@ public class TemplateParserTest {
 
 	private static String render(String string) throws IOException {
 		StringWriter writer = new StringWriter();
-		Node document = Parser.parse(new StringReader(string));
+		Node document = TemplateParser.parse(new StringReader(string));
 		System.out.println(document);
 		document.render(writer,
 				Scope.create(null, null, Collections

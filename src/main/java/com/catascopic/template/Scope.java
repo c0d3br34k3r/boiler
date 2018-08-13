@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.catascopic.template.expr.Term;
-import com.catascopic.template.parse.Node;
 import com.google.common.base.Function;
 
 public class Scope implements Resolver, Function<Term, Object> {
@@ -16,7 +15,14 @@ public class Scope implements Resolver, Function<Term, Object> {
 	private final TemplateEngine engine;
 	private Map<String, Object> values = new HashMap<>();
 
-	Scope(TemplateEngine engine, Path dir, Resolver parent) {
+	Scope(TemplateEngine engine, Path dir, Map<String, Object> params) {
+		this.engine = engine;
+		this.dir = dir;
+		this.parent = BASE;
+		values.putAll(params);
+	}
+
+	private Scope(TemplateEngine engine, Path dir, Resolver parent) {
 		this.engine = engine;
 		this.dir = dir;
 		this.parent = parent;
@@ -48,18 +54,21 @@ public class Scope implements Resolver, Function<Term, Object> {
 	public void renderTemplate(Appendable writer, String fileName)
 			throws IOException {
 		Path file = dir.resolve(fileName);
-		getDocument(file, true).render(writer,
+		engine.getTemplate(file).render(writer,
 				new Scope(engine, file.getParent(), this));
 	}
 
 	public void renderTextFile(Appendable writer, String fileName)
 			throws IOException {
-		getDocument(dir.resolve(fileName), false).render(writer, null);
+		writer.append(engine.getTextFile(dir.resolve(fileName)));
 	}
 
-	private Node getDocument(Path file, boolean template)
-			throws IOException {
-		return engine.cache().getDocument(file, template);
-	}
+	private static final Resolver BASE = new Resolver() {
+
+		@Override
+		public Object get(String name) {
+			throw new TemplateEvalException("%s could not be resolved", name);
+		}
+	};
 
 }

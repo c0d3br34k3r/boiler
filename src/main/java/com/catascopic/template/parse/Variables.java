@@ -1,7 +1,10 @@
 package com.catascopic.template.parse;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateParseException;
@@ -21,36 +24,11 @@ class Variables {
 		do {
 			builder.add(tokenizer.parseIdentifier());
 		} while (tokenizer.tryConsume(Symbol.COMMA));
-		final List<String> varNames = builder.build();
-		// TODO: make named classes
+		List<String> varNames = builder.build();
 		if (varNames.size() == 1) {
-			final String varName = varNames.get(0);
-			return new Names() {
-
-				@Override
-				public void assign(Scope scope, Object value) {
-					scope.set(varName, value);
-				}
-
-				@Override
-				public String toString() {
-					return varName;
-				}
-			};
+			return new Name(varNames.get(0));
 		}
-		// TODO: allow duplicate variable names in one set statement?
-		return new Names() {
-
-			@Override
-			public void assign(Scope scope, Object value) {
-				unpack(varNames, scope, value);
-			}
-
-			@Override
-			public String toString() {
-				return Joiner.on(", ").join(varNames);
-			}
-		};
+		return new UnpackNames(varNames);
 	}
 
 	private static void unpack(List<String> varNames, Scope scope,
@@ -131,6 +109,55 @@ class Variables {
 	interface Names {
 
 		void assign(Scope scope, Object value);
+	}
+
+	private static class Name implements Names {
+
+		private final String varName;
+
+		Name(String varName) {
+			this.varName = varName;
+		}
+
+		@Override
+		public void assign(Scope scope, Object value) {
+			scope.set(varName, value);
+		}
+
+		@Override
+		public String toString() {
+			return varName;
+		}
+	}
+
+	private static class UnpackNames implements Names {
+
+		private final List<String> varNames;
+
+		UnpackNames(List<String> varNames) {
+			Set<String> unique = new HashSet<>();
+			List<String> duplicates = new ArrayList<>();
+			for (String name : varNames) {
+				if (!unique.add(name)) {
+					duplicates.add(name);
+				}
+			}
+			if (!duplicates.isEmpty()) {
+				throw new TemplateParseException("duplicate variable names: %s",
+						Joiner.on(", ").join(duplicates));
+			}
+			this.varNames = varNames;
+		}
+
+		@Override
+		public void assign(Scope scope, Object value) {
+			unpack(varNames, scope, value);
+		}
+
+		@Override
+		public String toString() {
+			return Joiner.on(", ").join(varNames);
+		}
 	}
 
 }

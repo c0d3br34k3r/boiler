@@ -9,11 +9,7 @@ public class LruMap<K, V> extends LinkedHashMap<K, V> {
 	private final int maxEntries;
 
 	public LruMap(int maxEntries) {
-		this(maxEntries, 0.75f);
-	}
-
-	public LruMap(int maxEntries, float loadFactor) {
-		super(maxEntries + 1, loadFactor, true);
+		super(16, 0.75f, true);
 		this.maxEntries = maxEntries;
 	}
 

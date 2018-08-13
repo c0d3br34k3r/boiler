@@ -258,12 +258,6 @@ enum Builtin implements TemplateFunction {
 	// date and time functions
 	// distinctValues
 
-	@Override
-	public Object apply(Params params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	String functionName() {
 		return Values.separatorToCamel(name().toLowerCase());
 	}

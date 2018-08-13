@@ -1,63 +1,79 @@
 package com.catascopic.template;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.catascopic.template.ParseCache.TemplateCache;
+import com.catascopic.template.ParseCache.TextCache;
 import com.catascopic.template.expr.Values;
+import com.catascopic.template.parse.Node;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public class TemplateEngine {
 
-	private static final ImmutableMap<String, TemplateFunction> BUILTIN;
-	static {
-		Builder<String, TemplateFunction> builder = ImmutableMap.builder();
-		putFunctions(Builtin.class, builder);
-		BUILTIN = builder.build();
-	}
-
 	private final ImmutableMap<String, TemplateFunction> functions;
-	private ParseCache cache;
+	private ParseCache<Node> templateCache = new TemplateCache();
+	private ParseCache<String> textCache = new TextCache();
 
-	private static <F extends Enum<F> & TemplateFunction> ImmutableMap<String, TemplateFunction> buildFunctionMap(
-			Collection<Class<F>> functionClasses) {
-		Builder<String, TemplateFunction> builder = ImmutableMap.builder();
-		builder.putAll(BUILTIN);
-		for (Class<F> clazz : functionClasses) {
-			putFunctions(clazz, builder);
-		}
-		return builder.build();
-	}
-
-	private static <F extends Enum<F> & TemplateFunction> void putFunctions(
-			Class<F> functions,
-			ImmutableMap.Builder<String, TemplateFunction> builder) {
-		for (F function : functions.getEnumConstants()) {
-			builder.put(Values.separatorToCamel(
-					function.name().toLowerCase()), function);
-		}
-	}
-
-	public void render(Path file, Appendable writer, Resolver parameters)
-			throws IOException {
-		cache.getDocument(file, true).render(writer, new Scope(
-				this, file.getParent(), parameters));
+	private TemplateEngine(Map<String, TemplateFunction> functions) {
+		this.functions = ImmutableMap.copyOf(functions);
 	}
 
 	public void render(Path file, Appendable writer,
-			Map<String, Object> parameters) throws IOException {
-		cache.getDocument(file, true).render(writer, new Scope(
-				this, file.getParent(), Resolvers.fromMap(parameters)));
+			Map<String, Object> params) throws IOException {
+		templateCache.get(file).render(writer, new Scope(
+				this, file.getParent(), params));
+	}
+
+	public String print(Path file, Map<String, Object> params)
+			throws IOException {
+		StringWriter writer = new StringWriter();
+		render(file, writer, params);
+		return writer.toString();
 	}
 
 	TemplateFunction getFunction(String name) {
 		return functions.get(name);
 	}
 
-	ParseCache cache() {
-		return cache;
+	Node getTemplate(Path file) throws IOException {
+		return templateCache.get(file);
+	}
+
+	String getTextFile(Path file) throws IOException {
+		return textCache.get(file);
+	}
+
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static class Builder {
+
+		private Map<String, TemplateFunction> functions = new HashMap<>();
+
+		private Builder() {
+			addFunctions(Builtin.class);
+		}
+
+		public <F extends Enum<F> & TemplateFunction> void addFunctions(
+				Class<F> functionEnum) {
+			for (F function : functionEnum.getEnumConstants()) {
+				functions.put(Values.separatorToCamel(
+						function.name().toLowerCase()), function);
+			}
+		}
+
+		public void addFunction(String name, TemplateFunction function) {
+			functions.put(name, function);
+		}
+
+		public TemplateEngine build() {
+			return new TemplateEngine(functions);
+		}
 	}
 
 }

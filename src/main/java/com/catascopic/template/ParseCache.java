@@ -1,75 +1,81 @@
 package com.catascopic.template;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-import com.catascopic.template.parse.ContentNode;
 import com.catascopic.template.parse.Node;
-import com.catascopic.template.parse.Parser;
-import com.google.common.io.CharStreams;
+import com.catascopic.template.parse.TemplateParser;
 
 /**
  * Helper class used to cache parsed template files.
  */
-public class ParseCache {
+abstract class ParseCache<T> {
 
-	private final Map<List<Object>, CacheEntry> cache;
+	private final Map<Path, CacheEntry> cache;
 
-	public ParseCache() {
-		this(new LruMap<List<Object>, CacheEntry>(99));
+	protected ParseCache() {
+		this(100);
 	}
 
-	public ParseCache(Map<List<Object>, CacheEntry> map) {
-		this.cache = map;
+	protected ParseCache(int size) {
+		this.cache = new LruMap<Path, CacheEntry>(size);
 	}
 
-	public Node getDocument(Path path, boolean template) throws IOException {
-		// TODO: make dedicated key object?
-		List<Object> key = Arrays.<Object> asList(path, template);
+	T get(Path file) throws IOException {
 		CacheEntry entry;
 		synchronized (cache) {
-			entry = cache.get(key);
+			entry = cache.get(file);
 			if (entry == null) {
-				entry = new CacheEntry(path, template);
-				cache.put(key, entry);
+				entry = new CacheEntry(file);
+				cache.put(file, entry);
 			} else {
-				entry.refresh(path, template);
+				entry.refresh(file);
 			}
 		}
-		return entry.node;
+		return entry.parsed;
 	}
 
-	private static Node parse(Path path, boolean template) throws IOException {
-		try (BufferedReader in = Files.newBufferedReader(path,
-				StandardCharsets.UTF_8)) {
-			return template
-					? Parser.parse(in)
-					: new ContentNode(CharStreams.toString(in));
-		}
-	}
+	protected abstract T parse(Path file) throws IOException;
 
-	private static class CacheEntry {
+	private class CacheEntry {
 
-		Node node;
+		T parsed;
 		FileTime modified;
 
-		CacheEntry(Path path, boolean template) throws IOException {
-			node = parse(path, template);
-			modified = Files.getLastModifiedTime(path);
+		CacheEntry(Path file) throws IOException {
+			parsed = parse(file);
+			modified = Files.getLastModifiedTime(file);
 		}
 
-		void refresh(Path path, boolean template) throws IOException {
-			FileTime fileTime = Files.getLastModifiedTime(path);
+		void refresh(Path file) throws IOException {
+			FileTime fileTime = Files.getLastModifiedTime(file);
 			if (!fileTime.equals(modified)) {
-				node = parse(path, template);
+				parsed = parse(file);
 				modified = fileTime;
+			}
+		}
+	}
+
+	static class TextCache extends ParseCache<String> {
+
+		@Override
+		protected String parse(Path file) throws IOException {
+			return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+		}
+	}
+
+	static class TemplateCache extends ParseCache<Node> {
+
+		@Override
+		protected Node parse(Path file) throws IOException {
+			try (Reader reader = Files.newBufferedReader(file,
+					StandardCharsets.UTF_8)) {
+				return TemplateParser.parse(reader);
 			}
 		}
 	}
