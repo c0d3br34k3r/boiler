@@ -8,22 +8,22 @@ import java.util.Map;
 import com.catascopic.template.expr.Term;
 import com.google.common.base.Function;
 
-public class Scope implements Resolver, Function<Term, Object> {
+public class Scope implements Locals, Function<Term, Object> {
 
-	private final Resolver parent;
+	private final Locals parent;
 	private final Path dir;
-	private final TemplateEngine engine;
+	private final TemplateResolver resolver;
 	private Map<String, Object> values = new HashMap<>();
 
-	Scope(TemplateEngine engine, Path dir, Map<String, Object> params) {
-		this.engine = engine;
+	Scope(TemplateResolver resolver, Path dir, Map<String, Object> params) {
+		this.resolver = resolver;
 		this.dir = dir;
 		this.parent = BASE;
 		values.putAll(params);
 	}
 
-	private Scope(TemplateEngine engine, Path dir, Resolver parent) {
-		this.engine = engine;
+	private Scope(TemplateResolver resolver, Path dir, Locals parent) {
+		this.resolver = resolver;
 		this.dir = dir;
 		this.parent = parent;
 	}
@@ -43,7 +43,7 @@ public class Scope implements Resolver, Function<Term, Object> {
 	}
 
 	public TemplateFunction getFunction(String name) {
-		return engine.getFunction(name);
+		return resolver.getFunction(name);
 	}
 
 	@Override
@@ -54,16 +54,16 @@ public class Scope implements Resolver, Function<Term, Object> {
 	public void renderTemplate(Appendable writer, String fileName)
 			throws IOException {
 		Path file = dir.resolve(fileName);
-		engine.getTemplate(file).render(writer,
-				new Scope(engine, file.getParent(), this));
+		resolver.getTemplate(file).render(writer,
+				new Scope(resolver, file.getParent(), this));
 	}
 
 	public void renderTextFile(Appendable writer, String fileName)
 			throws IOException {
-		writer.append(engine.getTextFile(dir.resolve(fileName)));
+		writer.append(resolver.getTextFile(dir.resolve(fileName)));
 	}
 
-	private static final Resolver BASE = new Resolver() {
+	private static final Locals BASE = new Locals() {
 
 		@Override
 		public Object get(String name) {

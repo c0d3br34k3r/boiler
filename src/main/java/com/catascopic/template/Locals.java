@@ -1,6 +1,6 @@
 package com.catascopic.template;
 
-interface Resolver {
+interface Locals {
 
 	Object get(String name);
 

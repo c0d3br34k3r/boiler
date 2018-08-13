@@ -7,18 +7,15 @@ import java.util.Map;
 
 import com.catascopic.template.ParseCache.TemplateCache;
 import com.catascopic.template.ParseCache.TextCache;
-import com.catascopic.template.expr.Values;
 import com.catascopic.template.parse.Node;
-import com.google.common.collect.ImmutableMap;
 
-public class TemplateEngine {
+public class TemplateEngine extends TemplateResolver {
 
-	private final ImmutableMap<String, TemplateFunction> functions;
 	private ParseCache<Node> templateCache = new TemplateCache();
 	private ParseCache<String> textCache = new TextCache();
 
-	private TemplateEngine(Map<String, TemplateFunction> functions) {
-		this.functions = ImmutableMap.copyOf(functions);
+	TemplateEngine(Map<String, TemplateFunction> functions) {
+		super(functions);
 	}
 
 	public void render(Path file, Appendable writer,
@@ -34,20 +31,14 @@ public class TemplateEngine {
 		return output.toString();
 	}
 
-	TemplateFunction getFunction(String name) {
-		return functions.get(name);
-	}
-
+	@Override
 	Node getTemplate(Path file) throws IOException {
 		return templateCache.get(file);
 	}
 
+	@Override
 	String getTextFile(Path file) throws IOException {
 		return textCache.get(file);
-	}
-
-	public static Builder builder() {
-		return new Builder();
 	}
 
 	public static class Builder {
@@ -58,12 +49,9 @@ public class TemplateEngine {
 			addFunctions(Builtin.class);
 		}
 
-		public <F extends Enum<F> & TemplateFunction> void addFunctions(
+		private <F extends Enum<F> & TemplateFunction> void addFunctions(
 				Class<F> functionEnum) {
-			for (F function : functionEnum.getEnumConstants()) {
-				functions.put(Values.separatorToCamel(
-						function.name().toLowerCase()), function);
-			}
+			TemplateResolver.addFunctions(functions, functionEnum);
 		}
 
 		public void addFunction(String name, TemplateFunction function) {
