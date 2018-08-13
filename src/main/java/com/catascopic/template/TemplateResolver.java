@@ -1,19 +1,15 @@
 package com.catascopic.template;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.catascopic.template.expr.Values;
 import com.catascopic.template.parse.Node;
-import com.catascopic.template.parse.TemplateParser;
 import com.google.common.collect.ImmutableMap;
 
-public abstract class TemplateResolver {
+abstract class TemplateResolver {
 
 	private final ImmutableMap<String, TemplateFunction> functions;
 
@@ -42,27 +38,23 @@ public abstract class TemplateResolver {
 		}
 	}
 
-	private static final Map<String, TemplateFunction> BUILTIN;
-	static {
-		Map<String, TemplateFunction> builder = new HashMap<>();
-		addFunctions(builder, Builtin.class);
-		BUILTIN = ImmutableMap.copyOf(builder);
+	private static Map<String, TemplateFunction> builtinOnly() {
+		Map<String, TemplateFunction> funtions = new HashMap<>();
+		addFunctions(funtions, Builtin.class);
+		return funtions;
 	}
 
-	public static final TemplateResolver DEFAULT = new TemplateResolver(
-			BUILTIN) {
+	static final TemplateResolver DEFAULT = new TemplateResolver(
+			builtinOnly()) {
 
 		@Override
 		Node getTemplate(Path file) throws IOException {
-			try (Reader reader = Files.newBufferedReader(file,
-					StandardCharsets.UTF_8)) {
-				return TemplateParser.parse(reader);
-			}
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		String getTextFile(Path file) throws IOException {
-			return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+			throw new UnsupportedOperationException();
 		}
 	};
 
