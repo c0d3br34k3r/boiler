@@ -63,6 +63,14 @@ abstract class ParseCache<T> {
 
 	static class TextCache extends ParseCache<String> {
 
+		TextCache() {
+			super();
+		}
+
+		TextCache(int size) {
+			super(size);
+		}
+
 		@Override
 		protected String parse(Path file) throws IOException {
 			return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
@@ -70,6 +78,14 @@ abstract class ParseCache<T> {
 	}
 
 	static class TemplateCache extends ParseCache<Node> {
+
+		TemplateCache() {
+			super();
+		}
+
+		TemplateCache(int size) {
+			super(size);
+		}
 
 		@Override
 		protected Node parse(Path file) throws IOException {

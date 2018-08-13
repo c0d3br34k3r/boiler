@@ -53,6 +53,7 @@ public class Scope implements Locals, Function<Term, Object> {
 
 	public void renderTemplate(Appendable writer, String fileName)
 			throws IOException {
+		// TODO: dir could be null
 		Path file = dir.resolve(fileName);
 		resolver.getTemplate(file).render(writer,
 				new Scope(resolver, file.getParent(), this));

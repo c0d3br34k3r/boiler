@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 
 import com.catascopic.template.parse.Node;
@@ -24,33 +23,35 @@ public class Template {
 
 	public void render(TemplateEngine engine, Path workingDirectory,
 			Appendable writer, Map<String, Object> params) throws IOException {
-		render((TemplateResolver) engine, workingDirectory, writer, params);
+		renderInternal(engine, workingDirectory, writer, params);
 	}
 
 	public String render(TemplateEngine engine, Path workingDirectory,
 			Map<String, Object> params) throws IOException {
-		return render((TemplateResolver) engine, workingDirectory, params);
-	}
-
-	private void render(TemplateResolver resolver, Path workingDirectory,
-			Appendable writer, Map<String, Object> params) throws IOException {
-		node.render(writer, new Scope(resolver, workingDirectory, params));
-	}
-
-	private String render(TemplateResolver engine, Path workingDirectory,
-			Map<String, Object> params) throws IOException {
-		StringBuilder output = new StringBuilder();
-		render(engine, workingDirectory, output, params);
-		return output.toString();
+		return renderInternal(engine, workingDirectory, params);
 	}
 
 	public void render(Appendable writer, Map<String, Object> params)
 			throws IOException {
-		render(TemplateResolver.DEFAULT, Paths.get("."), writer, params);
+		renderInternal(TemplateResolver.DEFAULT, null, writer, params);
 	}
 
 	public String render(Map<String, Object> params) throws IOException {
-		return render(TemplateResolver.DEFAULT, Paths.get("."), params);
+		return renderInternal(TemplateResolver.DEFAULT, null, params);
+	}
+
+	private void renderInternal(TemplateResolver resolver,
+			Path workingDirectory,
+			Appendable writer, Map<String, Object> params) throws IOException {
+		node.render(writer, new Scope(resolver, workingDirectory, params));
+	}
+
+	private String renderInternal(TemplateResolver engine,
+			Path workingDirectory,
+			Map<String, Object> params) throws IOException {
+		StringBuilder output = new StringBuilder();
+		renderInternal(engine, workingDirectory, output, params);
+		return output.toString();
 	}
 
 }

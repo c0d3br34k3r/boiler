@@ -11,11 +11,14 @@ import com.catascopic.template.parse.Node;
 
 public class TemplateEngine extends TemplateResolver {
 
-	private ParseCache<Node> templateCache = new TemplateCache();
-	private ParseCache<String> textCache = new TextCache();
+	private ParseCache<Node> templateCache;
+	private ParseCache<String> textCache;
 
-	TemplateEngine(Map<String, TemplateFunction> functions) {
+	private TemplateEngine(Map<String, TemplateFunction> functions,
+			int cacheSize) {
 		super(functions);
+		this.templateCache = new TemplateCache(cacheSize);
+		this.textCache = new TextCache(cacheSize);
 	}
 
 	public void render(Path file, Appendable writer,
@@ -44,22 +47,30 @@ public class TemplateEngine extends TemplateResolver {
 	public static class Builder {
 
 		private Map<String, TemplateFunction> functions = new HashMap<>();
+		private int cacheSize = 50;
 
 		private Builder() {
 			addFunctions(Builtin.class);
 		}
 
-		private <F extends Enum<F> & TemplateFunction> void addFunctions(
+		private <F extends Enum<F> & TemplateFunction> Builder addFunctions(
 				Class<F> functionEnum) {
 			TemplateResolver.addFunctions(functions, functionEnum);
+			return this;
 		}
 
-		public void addFunction(String name, TemplateFunction function) {
+		public Builder addFunction(String name, TemplateFunction function) {
 			functions.put(name, function);
+			return this;
+		}
+
+		public Builder cacheSize(int size) {
+			cacheSize = size;
+			return this;
 		}
 
 		public TemplateEngine build() {
-			return new TemplateEngine(functions);
+			return new TemplateEngine(functions, cacheSize);
 		}
 	}
 
