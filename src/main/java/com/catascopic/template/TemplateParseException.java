@@ -3,20 +3,49 @@ package com.catascopic.template;
 @SuppressWarnings("serial")
 public class TemplateParseException extends RuntimeException {
 
-	public TemplateParseException(String message, Throwable cause) {
-		super(message, cause);
+	private final int lineNumber;
+	private final int columnNumber;
+
+	TemplateParseException(int lineNumber, int columnNumber, String message) {
+		super(location(lineNumber, columnNumber) + ", " + message);
+		this.lineNumber = lineNumber;
+		this.columnNumber = columnNumber;
 	}
 
-	public TemplateParseException(String message) {
-		super(message);
+	TemplateParseException(int lineNumber, int columnNumber, Throwable e) {
+		super(location(lineNumber, columnNumber), e);
+		this.lineNumber = lineNumber;
+		this.columnNumber = columnNumber;
 	}
 
-	public TemplateParseException(String format, Object... args) {
-		super(String.format(format, args));
+	TemplateParseException(int lineNumber, int columnNumber, String message,
+			Throwable e) {
+		super(location(lineNumber, columnNumber) + ", " + message, e);
+		this.lineNumber = lineNumber;
+		this.columnNumber = columnNumber;
 	}
 
-	public TemplateParseException(Throwable cause) {
-		super(cause);
+	TemplateParseException(int lineNumber, int columnNumber, String format,
+			Object... args) {
+		this(lineNumber, columnNumber, String.format(format, args));
+	}
+
+	TemplateParseException(int lineNumber, int columnNumber, Throwable e,
+			String format, Object... args) {
+		this(lineNumber, columnNumber, String.format(format, args), e);
+	}
+
+	private static String location(int lineNumber, int columnNumber) {
+		return String.format("line %d, column %d", lineNumber + 1,
+				columnNumber + 1);
+	}
+
+	public int lineNumber() {
+		return lineNumber;
+	}
+
+	public int columnNumber() {
+		return columnNumber;
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.catascopic.template.Scope;
+import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
 import com.catascopic.template.expr.Symbol;
@@ -36,12 +37,12 @@ class Variables {
 		Iterator<String> iter = varNames.iterator();
 		for (Object unpacked : Values.toIterable(value)) {
 			if (!iter.hasNext()) {
-				throw new TemplateParseException("too many values to unpack");
+				throw new TemplateEvalException("too many values to unpack");
 			}
 			scope.set(iter.next(), unpacked);
 		}
 		if (iter.hasNext()) {
-			throw new TemplateParseException("not enough values to unpack");
+			throw new TemplateEvalException("not enough values to unpack");
 		}
 	}
 

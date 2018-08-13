@@ -33,7 +33,7 @@ class Block {
 	public String toString() {
 		return elseNode == EmptyNode.INSTANCE
 				? nodes.toString()
-				: nodes.toString() + " else " + elseNode;
+				: nodes + " else " + elseNode;
 	}
 
 }

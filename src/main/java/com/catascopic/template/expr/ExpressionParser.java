@@ -31,7 +31,7 @@ class ExpressionParser {
 		        Symbol.LESS_THAN_OR_EQUAL, 
 		        Symbol.GREATER_THAN,
 		        Symbol.GREATER_THAN_OR_EQUAL),
-		      Symbol.EQUALS, 
+		      Symbol.EQUAL, 
 		      Symbol.NOT_EQUAL),
 		    Symbol.AND),
 		  Symbol.OR);

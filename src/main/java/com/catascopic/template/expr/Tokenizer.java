@@ -2,19 +2,18 @@ package com.catascopic.template.expr;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.PushbackReader;
-import java.io.Reader;
 
+import com.catascopic.template.LineReader;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
 public class Tokenizer {
 
-	private PushbackReader reader;
+	private LineReader reader;
 	private Token peeked;
 	private final Mode mode;
 
-	public Tokenizer(PushbackReader reader, Mode mode) {
+	public Tokenizer(LineReader reader, Mode mode) {
 		this.reader = reader;
 		this.mode = mode;
 	}
@@ -42,8 +41,7 @@ public class Tokenizer {
 	public void consume(Symbol symbol) {
 		Token next = next();
 		if (next.symbol() != symbol) {
-			throw new TemplateParseException(
-					"expected %s, got %s", symbol, next);
+			throw reader.parseError("expected %s, got %s", symbol, next);
 		}
 	}
 
@@ -68,15 +66,14 @@ public class Tokenizer {
 	public void end() {
 		Token next = next();
 		if (next.type() != TokenType.END) {
-			throw new TemplateParseException(
-					"expected end of tokens, got %s", next);
+			throw reader.parseError("expected end of tokens, got %s", next);
 		}
 	}
 
 	public void consumeIdentifier(String value) {
 		Token next = next();
 		if (!next.identifier().equals(value)) {
-			throw new TemplateParseException(
+			throw reader.parseError(
 					"expected identifier %s, got %s", value, next);
 		}
 	}
@@ -89,7 +86,7 @@ public class Tokenizer {
 			} while (CharMatcher.whitespace().matches((char) ch));
 			return parseToken(ch);
 		} catch (IOException e) {
-			throw new TemplateParseException(e);
+			throw reader.parseError(e);
 		}
 	}
 
@@ -100,8 +97,7 @@ public class Tokenizer {
 	public String parseIdentifier() {
 		Token next = next();
 		if (next.type() != TokenType.IDENTIFIER) {
-			throw new TemplateParseException("expected identifier, got %s",
-					next);
+			throw reader.parseError("expected identifier, got %s", next);
 		}
 		return next.identifier();
 	}
@@ -138,7 +134,7 @@ public class Tokenizer {
 		case '&': require('&'); return Symbol.AND;
 		case '|': require('|'); return Symbol.OR;
 		case '%': return tryRead('>') ? end(Mode.TAG) : Symbol.PERCENT;
-		case '=': return tryRead('=') ? Symbol.EQUALS : Symbol.ASSIGNMENT;
+		case '=': return tryRead('=') ? Symbol.EQUAL : Symbol.ASSIGNMENT;
 		case '!': return tryRead('=') ? Symbol.NOT_EQUAL : Symbol.NOT;
 		case '<': return tryRead('=')
 				? Symbol.LESS_THAN_OR_EQUAL
@@ -159,8 +155,8 @@ public class Tokenizer {
 		if (IDENTIFIER_START.matches(c)) {
 			return parseIdentifier(c);
 		}
-		throw new TemplateParseException(
-				"unexpected char '%c' (%s)", ch, Character.getName(ch));
+		throw reader.parseError("unexpected char '%c' (%s)", ch,
+				Character.getName(ch));
 	}
 
 	private Token parseString(char end) throws IOException {
@@ -169,7 +165,7 @@ public class Tokenizer {
 			int next = reader.read();
 			switch (next) {
 			case -1:
-				throw new TemplateParseException("unclosed string");
+				throw reader.parseError("unclosed string");
 			case '\\':
 				readEscapeChar(builder);
 				break;
@@ -271,8 +267,7 @@ public class Tokenizer {
 	private void require(char required) throws IOException {
 		int ch = reader.read();
 		if (ch != required) {
-			throw new TemplateParseException(
-					"expected '%c', got '%c'", required, ch);
+			throw reader.parseError("expected '%c', got '%c'", required, ch);
 		}
 	}
 
@@ -304,8 +299,8 @@ public class Tokenizer {
 
 	private Token end(Mode check) {
 		if (mode != check) {
-			throw new TemplateParseException(
-					"expected end of %s but was end of %s", mode, check);
+			throw reader.parseError("expected end of %s but was end of %s",
+					mode, check);
 		}
 		return Tokens.END;
 	}
@@ -328,31 +323,29 @@ public class Tokenizer {
 			builder.append((char) ch);
 			break;
 		case 'u':
-			int codePoint = Integer.parseInt(
-					new String(readFully(reader, 4)), 16);
-			builder.append(Character.toChars(codePoint));
+			builder.append(readCodePoint());
 			break;
 		case -1:
-			throw new TemplateParseException("unclosed string");
+			throw reader.parseError("unclosed string");
 		default:
-			throw new TemplateParseException("unexpected escaped '%c'", ch);
+			throw reader.parseError("unexpected escaped '%c'", ch);
 		}
 	}
 
-	public static char[] readFully(Reader in, int size) throws IOException {
-		char[] buf = new char[size];
-		int total = 0;
-		while (total < buf.length) {
-			int result = in.read(buf, total, buf.length - total);
-			if (result == -1) {
+	public char readCodePoint() throws IOException {
+		char[] buf = new char[4];
+		for (int i = 0; i < 4; i++) {
+			int ch = reader.read();
+			if (ch == -1) {
 				throw new EOFException();
 			}
-			total += result;
+			buf[i] = (char) ch;
 		}
-		if (total < size) {
-			throw new EOFException();
-		}
-		return buf;
+		return (char) Integer.parseInt(new String(buf), 16);
+	}
+
+	public TemplateParseException parseError(String format, Object... args) {
+		return reader.parseError(format, args);
 	}
 
 }

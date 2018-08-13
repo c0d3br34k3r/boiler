@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.catascopic.template.Scope;
 
 enum EmptyNode implements Node {
+
 	INSTANCE;
 
 	@Override

@@ -20,7 +20,7 @@ class SetNode implements Node {
 
 	@Override
 	public String toString() {
-		return "set " + assigner.toString();
+		return "set " + assigner;
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.catascopic.template.expr;
 
-import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
 
 class Tokens {
@@ -39,17 +38,17 @@ class Tokens {
 
 		@Override
 		public Object value() {
-			throw new TemplateParseException(this + " is not a value");
+			throw new IllegalStateException(this + " is not a value");
 		}
 
 		@Override
 		public String identifier() {
-			throw new TemplateParseException(this + " is not an identifier");
+			throw new IllegalStateException(this + " is not an identifier");
 		}
 
 		@Override
 		public Symbol symbol() {
-			throw new TemplateParseException(this + " is not a symbol");
+			throw new IllegalStateException(this + " is not a symbol");
 		}
 	}
 
@@ -74,7 +73,8 @@ class Tokens {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj instanceof ValueToken && ((ValueToken) obj).value == value;
+			return obj instanceof ValueToken
+					&& ((ValueToken) obj).value == value;
 		}
 
 		@Override
@@ -104,7 +104,8 @@ class Tokens {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj instanceof IdentifierToken && ((ValueToken) obj).value == value;
+			return obj instanceof IdentifierToken
+					&& ((ValueToken) obj).value == value;
 		}
 
 		@Override

@@ -75,7 +75,7 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			switch (params.size()) {
 			case 0:
-				throw new TemplateParseException(
+				throw new TemplateEvalException(
 						"range must have at least 1 param");
 			case 1:
 				return Values.range(params.<Integer> get());
@@ -136,7 +136,7 @@ enum Builtin implements TemplateFunction {
 			if (seq instanceof Collection) {
 				return ((Collection<?>) seq).contains(params.get());
 			}
-			throw new TemplateParseException(
+			throw new TemplateEvalException(
 					"%s (%s) is not a container",
 					seq, seq.getClass().getName());
 		}

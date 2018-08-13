@@ -16,7 +16,7 @@ public enum Symbol implements Token {
 	NOT(UnaryOperator.NOT),
 	AND(BinaryOperator.AND),
 	OR(BinaryOperator.OR),
-	EQUALS(BinaryOperator.EQUAL),
+	EQUAL(BinaryOperator.EQUAL),
 	NOT_EQUAL(BinaryOperator.NOT_EQUAL),
 	LESS_THAN(BinaryOperator.LESS_THAN),
 	GREATER_THAN(BinaryOperator.GREATER_THAN),

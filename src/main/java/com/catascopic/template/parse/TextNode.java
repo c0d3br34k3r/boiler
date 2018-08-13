@@ -21,7 +21,7 @@ class TextNode implements Node {
 
 	@Override
 	public String toString() {
-		return "text: " + fileName.toString();
+		return "text: " + fileName;
 	}
 
 }

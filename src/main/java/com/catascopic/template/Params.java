@@ -13,7 +13,7 @@ public class Params {
 	@SuppressWarnings("unchecked")
 	public <T> T get() {
 		if (list.size() != 1) {
-			throw new TemplateParseException(
+			throw new TemplateEvalException(
 					"expected 1 param, got %d", list.size());
 		}
 		return (T) list.get(0);

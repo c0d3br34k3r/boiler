@@ -11,41 +11,28 @@ public class LineReader {
 	private boolean skipLf;
 	private char[] buf;
 	private int pos;
-	private int next;
 
-	public LineReader(Reader reader, int size) throws IOException {
+	public LineReader(Reader reader, int size) {
 		this.reader = reader;
 		if (size <= 0) {
 			throw new IllegalArgumentException();
 		}
 		this.buf = new char[size];
 		this.pos = size;
-		next = read();
 	}
 
-	public LineReader(Reader in) throws IOException {
+	public LineReader(Reader in) {
 		this(in, 1);
 	}
 
-	public boolean hasNext() {
-		return next != -1;
-	}
-
-	public char next() throws IOException {
-		if (!hasNext()) {
-			throw new IllegalStateException();
-		}
-		char c = (char) next;
-		next = read();
-		return c;
-	}
-
-	private int read() throws IOException {
+	public int read() throws IOException {
 		if (pos < buf.length) {
 			return buf[pos++];
 		}
 		int c = reader.read();
-		columnNumber = 0;
+		if (c != -1) {
+			columnNumber++;
+		}
 		if (skipLf) {
 			if (c == '\n') {
 				c = reader.read();
@@ -64,26 +51,11 @@ public class LineReader {
 		return c;
 	}
 
-	public void unread(int c) throws IOException {
+	public void unread(int c) {
 		if (pos == 0) {
-			throw new IOException("Pushback buffer overflow");
+			throw new IllegalStateException();
 		}
-		if (hasNext()) {
-			buf[--pos] = (char) next;
-		}
-		next = c;
-	}
-
-	public void unread(char cbuf[], int off, int len) throws IOException {
-		if (len > pos) {
-			throw new IOException("Pushback buffer overflow");
-		}
-		pos -= len;
-		System.arraycopy(cbuf, off, buf, pos, len);
-	}
-
-	public void unread(char cbuf[]) throws IOException {
-		unread(cbuf, 0, cbuf.length);
+		buf[--pos] = (char) c;
 	}
 
 	public int lineNumber() {
@@ -92,6 +64,30 @@ public class LineReader {
 
 	public int columnNumber() {
 		return columnNumber;
+	}
+
+	public TemplateParseException parseError(String message, Throwable cause) {
+		return new TemplateParseException(lineNumber, columnNumber, message,
+				cause);
+	}
+
+	public TemplateParseException parseError(String message) {
+		return new TemplateParseException(lineNumber, columnNumber, message);
+	}
+
+	public TemplateParseException parseError(Throwable cause) {
+		return new TemplateParseException(lineNumber, columnNumber, cause);
+	}
+
+	public TemplateParseException parseError(String format, Object... args) {
+		return new TemplateParseException(lineNumber, columnNumber, format,
+				args);
+	}
+
+	public TemplateParseException parseError(Throwable e, String format,
+			Object... args) {
+		return new TemplateParseException(lineNumber, columnNumber, e, format,
+				args);
 	}
 
 }
