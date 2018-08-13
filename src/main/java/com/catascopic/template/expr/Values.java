@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.TemplateEvalException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
@@ -62,7 +62,7 @@ public final class Values {
 		if (value instanceof Boolean) {
 			return (Boolean) value ? 1 : 0;
 		}
-		throw new TemplateParseException(
+		throw new TemplateEvalException(
 				"cannot convert %s (%s) to a number",
 				value, value.getClass().getName());
 	}
@@ -74,7 +74,7 @@ public final class Values {
 			}
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			throw new TemplateParseException(
+			throw new TemplateEvalException(
 					String.format("cannot convert %s (%s) to a number",
 							value, value.getClass().getName()), e);
 		}
@@ -158,7 +158,7 @@ public final class Values {
 		if (iterable instanceof String) {
 			return stringIterable((String) iterable);
 		}
-		throw new TemplateParseException(
+		throw new TemplateEvalException(
 				"%s (%s) is not iterable",
 				iterable, iterable.getClass().getName());
 	}
@@ -257,7 +257,7 @@ public final class Values {
 		if (obj instanceof Map) {
 			return ((Map<?, ?>) obj).size();
 		}
-		throw new TemplateParseException(
+		throw new TemplateEvalException(
 				"%s (%s) does not have a length",
 				obj, obj.getClass().getName());
 	}
@@ -325,7 +325,7 @@ public final class Values {
 			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
-			throw new TemplateParseException("step cannot be 0");
+			throw new TemplateEvalException("step cannot be 0");
 		}
 		int istart;
 		int istop;
@@ -360,7 +360,7 @@ public final class Values {
 			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
-			throw new TemplateParseException("step cannot be 0");
+			throw new TemplateEvalException("step cannot be 0");
 		}
 		int istart;
 		int istop;
@@ -387,7 +387,7 @@ public final class Values {
 		if (seq instanceof List) {
 			return slice((List<?>) seq, start, stop, step);
 		}
-		throw new TemplateParseException(
+		throw new TemplateEvalException(
 				"%s (%s) is not indexable", seq, seq.getClass().getName());
 	}
 
@@ -429,7 +429,7 @@ public final class Values {
 		if (seq instanceof String) {
 			return index((String) seq, index);
 		}
-		throw new TemplateParseException(
+		throw new TemplateEvalException(
 				"%s (%s) is not indexable", seq, seq.getClass().getName());
 	}
 
@@ -452,7 +452,7 @@ public final class Values {
 	public static int getIndex(int index, int len) {
 		int adjusted = index < 0 ? len + index : index;
 		if (adjusted < 0 || adjusted >= len) {
-			throw new TemplateParseException(
+			throw new TemplateEvalException(
 					"index %s is out of bounds", index);
 		}
 		return adjusted;
@@ -489,7 +489,7 @@ public final class Values {
 			new Function<Entry<?, ?>, List<Object>>() {
 
 				@Override
-				public List<Object> apply(final Entry<?, ?> input) {
+				public List<Object> apply(Entry<?, ?> input) {
 					return Arrays.asList(input.getKey(), input.getValue());
 				}
 			};
