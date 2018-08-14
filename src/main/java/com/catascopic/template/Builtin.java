@@ -175,9 +175,8 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			String str = params.<String> get(0);
-			Values.index(str, (int) params.get(1));
 			int index = params.size() >= 3
-					? Values.getIndex(params.<Integer> get(1), str)
+					? Values.getIndex(params.<Integer> get(2), str)
 					: 0;
 			return params.<String> get(0).indexOf(params.<String> get(1),
 					index);

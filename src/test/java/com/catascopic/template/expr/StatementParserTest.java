@@ -1,6 +1,5 @@
 package com.catascopic.template.expr;
 
-import java.io.PushbackReader;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,8 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.LineReader;
+import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.TestUtil;
 import com.catascopic.template.Values;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -141,7 +142,7 @@ public class StatementParserTest {
 		try {
 			evaluate(expr, false);
 			Assert.fail(expr + " was valid");
-		} catch (TemplateParseException e) {
+		} catch (TemplateParseException | TemplateEvalException e) {
 			System.out.printf("%-24s %s%n", expr, e.getMessage());
 		}
 	}
@@ -162,23 +163,23 @@ public class StatementParserTest {
 	}
 
 	private static Tokenizer createParser(String str) {
-		return new Tokenizer(new PushbackReader(new StringReader(str)),
+		return new Tokenizer(new LineReader(new StringReader(str)),
 				Tokenizer.Mode.STREAM);
 	}
 
 	private static Object evaluate(Term term) {
 		// System.out.println(term);
-		return term.evaluate(
-				new Scope(ImmutableMap.<String, Object>builder()
-						.put("i", 6)
-						.put("R", Arrays.asList(1, 2, 3, 4, 5, 6, 7))
-						.put("word", "automobile")
-						.put("foo", Collections.nCopies(10, 7))
-						.put("bar", ImmutableMap.of("baz", "qux"))
-						.put("quux", ImmutableMap.of("quuz", ImmutableMap.of(
-								"corge", "grault",
-								"garply", ImmutableList.of(3))))
-						.build()));
+		return term.evaluate(TestUtil.testScope(ImmutableMap
+				.<String, Object> builder()
+				.put("i", 6)
+				.put("R", Arrays.asList(1, 2, 3, 4, 5, 6, 7))
+				.put("word", "automobile")
+				.put("foo", Collections.nCopies(10, 7))
+				.put("bar", ImmutableMap.of("baz", "qux"))
+				.put("quux", ImmutableMap.of("quuz", ImmutableMap.of(
+						"corge", "grault",
+						"garply", ImmutableList.of(3))))
+				.build()));
 	}
 
 }

@@ -40,7 +40,7 @@ public class Tokenizer {
 
 	public void consume(Symbol symbol) {
 		Token next = next();
-		if (next.symbol() != symbol) {
+		if (next.type() != TokenType.SYMBOL || next.symbol() != symbol) {
 			throw reader.parseError("expected %s, got %s", symbol, next);
 		}
 	}
@@ -242,6 +242,8 @@ public class Tokenizer {
 			return Tokens.TRUE;
 		case "false":
 			return Tokens.FALSE;
+		case "null":
+			return Tokens.NULL;
 		default:
 			return Tokens.identifier(identifier);
 		}

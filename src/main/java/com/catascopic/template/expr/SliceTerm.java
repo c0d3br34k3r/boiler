@@ -26,9 +26,10 @@ class SliceTerm implements Term {
 	}
 
 	private static Integer get(Term term, Scope scope) {
-		return term == null
+		Object value = term.evaluate(scope);
+		return value == null
 				? null
-				: Values.toNumber(term.evaluate(scope)).intValue();
+				: Values.toNumber(value).intValue();
 	}
 
 	@Override

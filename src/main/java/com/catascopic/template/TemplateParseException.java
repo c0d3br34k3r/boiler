@@ -7,7 +7,7 @@ public class TemplateParseException extends RuntimeException {
 	private final int columnNumber;
 
 	TemplateParseException(int lineNumber, int columnNumber, String message) {
-		super(location(lineNumber, columnNumber) + ", " + message);
+		super("[" + location(lineNumber, columnNumber) + "] " + message);
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
 	}
@@ -20,7 +20,7 @@ public class TemplateParseException extends RuntimeException {
 
 	TemplateParseException(int lineNumber, int columnNumber, String message,
 			Throwable e) {
-		super(location(lineNumber, columnNumber) + ", " + message, e);
+		super("[" + location(lineNumber, columnNumber) + "] " + message, e);
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
 	}
@@ -37,7 +37,7 @@ public class TemplateParseException extends RuntimeException {
 
 	private static String location(int lineNumber, int columnNumber) {
 		return String.format("line %d, column %d", lineNumber + 1,
-				columnNumber + 1);
+				columnNumber);
 	}
 
 	public int lineNumber() {

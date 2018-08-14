@@ -78,7 +78,7 @@ class ValueParser implements TermParser {
 	private static Term parseIndex(Tokenizer tokenizer, Term seq) {
 		Term index;
 		if (tokenizer.tryConsume(COLON)) {
-			index = null;
+			index = NullTerm.NULL;
 		} else {
 			index = tokenizer.parseExpression();
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
@@ -88,18 +88,18 @@ class ValueParser implements TermParser {
 			tokenizer.consume(COLON);
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
 				// [i:]
-				return new SliceTerm(seq, index, null, null);
+				return new SliceTerm(seq, index, NullTerm.NULL, NullTerm.NULL);
 			}
 		}
 		// [:] is not allowed since lists are immutable
 		Term stop;
 		if (tokenizer.tryConsume(COLON)) {
-			stop = null;
+			stop = NullTerm.NULL;
 		} else {
 			stop = tokenizer.parseExpression();
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
 				// [i:j], [:j]
-				return new SliceTerm(seq, index, stop, null);
+				return new SliceTerm(seq, index, stop, NullTerm.NULL);
 			}
 			tokenizer.consume(COLON);
 		}
