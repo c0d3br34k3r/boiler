@@ -3,7 +3,7 @@ package com.catascopic.template;
 import java.io.IOException;
 import java.io.Reader;
 
-public class LineReader {
+public class PositionReader {
 
 	private Reader reader;
 	private int lineNumber; // = 0
@@ -12,7 +12,7 @@ public class LineReader {
 	private char[] buf;
 	private int pos;
 
-	public LineReader(Reader reader, int size) {
+	public PositionReader(Reader reader, int size) {
 		this.reader = reader;
 		if (size <= 0) {
 			throw new IllegalArgumentException();
@@ -21,7 +21,7 @@ public class LineReader {
 		this.pos = size;
 	}
 
-	public LineReader(Reader in) {
+	public PositionReader(Reader in) {
 		this(in, 1);
 	}
 
@@ -84,9 +84,10 @@ public class LineReader {
 				args);
 	}
 
-	public TemplateParseException parseError(Throwable e, String format,
+	public TemplateParseException parseError(Throwable cause, String format,
 			Object... args) {
-		return new TemplateParseException(lineNumber, columnNumber, e, format,
+		return new TemplateParseException(lineNumber, columnNumber, cause,
+				format,
 				args);
 	}
 

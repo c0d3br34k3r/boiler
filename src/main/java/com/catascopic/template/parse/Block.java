@@ -11,7 +11,7 @@ class Block {
 	private final Node elseNode;
 
 	Block(List<Node> nodes) {
-		this(nodes, EmptyNode.INSTANCE);
+		this(nodes, EMPTY);
 	}
 
 	Block(List<Node> nodes, Node elseNode) {
@@ -31,9 +31,17 @@ class Block {
 
 	@Override
 	public String toString() {
-		return elseNode == EmptyNode.INSTANCE
+		return "{ " + (elseNode == EMPTY
 				? nodes.toString()
-				: nodes + " else " + elseNode;
+				: nodes + "} else {" + elseNode) + " }";
 	}
+
+	private static final Node EMPTY = new Node() {
+
+		@Override
+		public void render(Appendable writer, Scope scope) throws IOException {
+			// do nothing
+		}
+	};
 
 }

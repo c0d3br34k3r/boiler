@@ -20,7 +20,7 @@ class IndexTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("(INDEX %s, %s)", term.toString(), index.toString());
+		return String.format("%s[%s]", term, index);
 	}
 
 }

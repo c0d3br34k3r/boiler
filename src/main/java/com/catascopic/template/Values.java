@@ -189,7 +189,7 @@ public final class Values {
 				return Integer.toString(number.intValue());
 			}
 		}
-		return obj.toString();
+		return String.valueOf(obj);
 	}
 
 	public static List<String> stringIterable(final String str) {

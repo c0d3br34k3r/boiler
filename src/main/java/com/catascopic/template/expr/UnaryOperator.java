@@ -5,18 +5,21 @@ import com.catascopic.template.Values;
 enum UnaryOperator {
 
 	NOT {
+
 		@Override
 		Object apply(Object value) {
 			return !Values.isTrue(value);
 		}
 	},
 	NEGATIVE {
+
 		@Override
 		Object apply(Object value) {
 			return Values.negate(value);
 		}
 	},
 	POSITIVE {
+
 		@Override
 		Object apply(Object value) {
 			return Values.toNumber(value);

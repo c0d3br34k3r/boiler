@@ -5,7 +5,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.catascopic.template.LineReader;
+import com.catascopic.template.PositionReader;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
 import com.catascopic.template.parse.Variables.Assigner;
@@ -17,12 +17,12 @@ public class TemplateParser {
 		return new TemplateParser(reader).parseRoot();
 	}
 
-	private final LineReader reader;
+	private final PositionReader reader;
 	private Mode mode = Mode.TEXT;
 	private Node node;
 
 	TemplateParser(Reader reader) {
-		this.reader = new LineReader(reader, 1);
+		this.reader = new PositionReader(reader, 1);
 	}
 
 	NodeResult parseNext() throws IOException {
@@ -162,7 +162,7 @@ public class TemplateParser {
 		Term term = tokenizer.parseExpression();
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return result(NodeResult.NODE, new Echo(term));
+		return result(NodeResult.NODE, new EchoNode(term));
 	}
 
 	private Block parseBlock(boolean elseAllowed) throws IOException {

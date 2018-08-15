@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.catascopic.template.LineReader;
+import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.TestUtil;
@@ -70,7 +70,6 @@ public class StatementParserTest {
 		Assert.assertEquals(10, evaluate("true + 9"));
 
 		Assert.assertEquals(4, evaluate("1 ? 4 : 5"));
-		Assert.assertEquals(12, evaluate("false ? 4 : 2 * 6"));
 		Assert.assertEquals(12, evaluate("false ? 4 : 2 * 6"));
 		Assert.assertEquals(4, evaluate("i ? 4 : 5"));
 		Assert.assertEquals(9, evaluate("i - 6 ? 2 + 5 : 3 * 3"));
@@ -163,7 +162,7 @@ public class StatementParserTest {
 	}
 
 	private static Tokenizer createParser(String str) {
-		return new Tokenizer(new LineReader(new StringReader(str)),
+		return new Tokenizer(new PositionReader(new StringReader(str)),
 				Tokenizer.Mode.STREAM);
 	}
 

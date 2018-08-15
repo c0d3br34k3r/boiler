@@ -6,11 +6,11 @@ import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.expr.Term;
 
-class Echo implements Node {
+class EchoNode implements Node {
 
 	private final Term term;
 
-	Echo(Term term) {
+	EchoNode(Term term) {
 		this.term = term;
 	}
 

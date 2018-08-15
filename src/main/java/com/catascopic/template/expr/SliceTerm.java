@@ -34,7 +34,21 @@ class SliceTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("(SLICE %s, %s, %s, %s)", seq, start, stop, step);
+		if (step == NullTerm.NULL) {
+			return String.format("%s[%s:%s]",
+					seq,
+					nullTermToEmpty(start),
+					nullTermToEmpty(stop));
+		}
+		return String.format("%s[%s:%s:%s]",
+				seq,
+				nullTermToEmpty(start),
+				nullTermToEmpty(stop),
+				step);
+	}
+
+	private static String nullTermToEmpty(Term term) {
+		return term == NullTerm.NULL ? "" : term.toString();
 	}
 
 }

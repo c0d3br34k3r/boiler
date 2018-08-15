@@ -1,6 +1,5 @@
 package com.catascopic.template.parse;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Set;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateEvalException;
-import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
 import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
@@ -21,9 +19,17 @@ class Variables {
 	private Variables() {}
 
 	static Names parseNames(Tokenizer tokenizer) {
+		return parseNames(tokenizer, new HashSet<String>());
+	}
+
+	private static Names parseNames(Tokenizer tokenizer, Set<String> unique) {
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		do {
-			builder.add(tokenizer.parseIdentifier());
+			String name = tokenizer.parseIdentifier();
+			if (!unique.add(name)) {
+				tokenizer.parseError("duplicate variable name: %s", name);
+			}
+			builder.add(name);
 		} while (tokenizer.tryConsume(Symbol.COMMA));
 		List<String> varNames = builder.build();
 		if (varNames.size() == 1) {
@@ -48,8 +54,9 @@ class Variables {
 
 	static Assigner parseAssignment(Tokenizer tokenizer) {
 		ImmutableList.Builder<Assigner> builder = ImmutableList.builder();
+		HashSet<String> unique = new HashSet<String>();
 		do {
-			builder.add(parseAssigner(tokenizer));
+			builder.add(parseAssigner(tokenizer, unique));
 		} while (tokenizer.tryConsume(Symbol.COMMA));
 		final List<Assigner> assigners = builder.build();
 		if (assigners.size() == 1) {
@@ -71,8 +78,9 @@ class Variables {
 		};
 	}
 
-	private static Assigner parseAssigner(Tokenizer tokenizer) {
-		final Names names = parseNames(tokenizer);
+	private static Assigner parseAssigner(Tokenizer tokenizer,
+			Set<String> unique) {
+		final Names names = parseNames(tokenizer, unique);
 		tokenizer.consume(Symbol.ASSIGNMENT);
 		final Term term = tokenizer.parseExpression();
 		return new Assigner() {
@@ -136,17 +144,6 @@ class Variables {
 		private final List<String> varNames;
 
 		UnpackNames(List<String> varNames) {
-			Set<String> unique = new HashSet<>();
-			List<String> duplicates = new ArrayList<>();
-			for (String name : varNames) {
-				if (!unique.add(name)) {
-					duplicates.add(name);
-				}
-			}
-			if (!duplicates.isEmpty()) {
-				throw new TemplateParseException("duplicate variable names: %s",
-						Joiner.on(", ").join(duplicates));
-			}
 			this.varNames = varNames;
 		}
 

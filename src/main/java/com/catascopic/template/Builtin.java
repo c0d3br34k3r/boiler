@@ -100,8 +100,8 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return new Zip(params.size() == 1
-					? params.asList()
-					: Values.toIterable(params.get()));
+					? Values.toIterable(params.get())
+					: params.asList());
 		}
 	},
 	ENTRIES {
@@ -214,6 +214,7 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
+			// TODO: Ascii.toUpperCase?
 			return params.<String> get().toUpperCase();
 		}
 	},

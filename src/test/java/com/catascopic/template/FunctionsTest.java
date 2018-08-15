@@ -10,7 +10,7 @@ public class FunctionsTest {
 
 	@Test
 	public void testReader() throws IOException {
-		LineReader reader = new LineReader(new StringReader("8888"));
+		PositionReader reader = new PositionReader(new StringReader("8888"));
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());

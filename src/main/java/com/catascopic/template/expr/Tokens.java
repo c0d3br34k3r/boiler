@@ -7,7 +7,6 @@ class Tokens {
 	static final Token TRUE = new ValueToken(true);
 	static final Token FALSE = new ValueToken(false);
 	static final Token NULL = new ValueToken(null);
-
 	static final Token END = new AbstractToken(TokenType.END) {
 
 		@Override

@@ -1,19 +1,18 @@
 package com.catascopic.template.expr;
 
-import java.io.EOFException;
 import java.io.IOException;
 
-import com.catascopic.template.LineReader;
+import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
 public class Tokenizer {
 
-	private LineReader reader;
+	private PositionReader reader;
 	private Token peeked;
 	private final Mode mode;
 
-	public Tokenizer(LineReader reader, Mode mode) {
+	public Tokenizer(PositionReader reader, Mode mode) {
 		this.reader = reader;
 		this.mode = mode;
 	}
@@ -313,11 +312,11 @@ public class Tokenizer {
 		case 't':
 			builder.append('\t');
 			break;
-		case 'n':
-			builder.append('\n');
-			break;
 		case 'r':
 			builder.append('\r');
+			break;
+		case 'n':
+			builder.append('\n');
 			break;
 		case '\'':
 		case '"':
@@ -339,11 +338,16 @@ public class Tokenizer {
 		for (int i = 0; i < 4; i++) {
 			int ch = reader.read();
 			if (ch == -1) {
-				throw new EOFException();
+				throw reader.parseError("unfinished unicode escape");
 			}
 			buf[i] = (char) ch;
 		}
-		return (char) Integer.parseInt(new String(buf), 16);
+		String escape = new String(buf);
+		try {
+			return (char) Integer.parseInt(escape, 16);
+		} catch (NumberFormatException e) {
+			throw reader.parseError(e, "invalid unicode escape: %s", escape);
+		}
 	}
 
 	public TemplateParseException parseError(String format, Object... args) {

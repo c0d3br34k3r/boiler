@@ -3,7 +3,6 @@ package com.catascopic.template.expr;
 import java.util.Map;
 
 import com.catascopic.template.Scope;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 
 class MapTerm implements Term {
@@ -21,7 +20,7 @@ class MapTerm implements Term {
 
 	@Override
 	public String toString() {
-		return "{" + Joiner.on(", ").withKeyValueSeparator(": ").join(items) + "}";
+		return items.toString();
 	}
 
 }

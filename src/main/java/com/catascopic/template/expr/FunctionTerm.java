@@ -19,12 +19,13 @@ class FunctionTerm implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		return scope.getFunction(name).apply(new Params(Lists.transform(params, scope)));
+		return scope.getFunction(name).apply(new Params(Lists.transform(params,
+				scope)));
 	}
 
 	@Override
 	public String toString() {
-		return String.format("(CALL %s: %s)", name, Joiner.on(", ").join(params));
+		return String.format("%s(%s)", name, Joiner.on(", ").join(params));
 	}
 
 }

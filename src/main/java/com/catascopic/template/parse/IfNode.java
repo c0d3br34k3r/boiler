@@ -27,7 +27,7 @@ class IfNode implements Node {
 
 	@Override
 	public String toString() {
-		return "if " + condition + ": " + block;
+		return "if (" + condition + ") " + block;
 	}
 
 }

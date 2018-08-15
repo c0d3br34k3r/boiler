@@ -20,7 +20,7 @@ class Enumeration implements Iterable<List<Object>> {
 		final Iterator<?> iterator = items.iterator();
 		return new UnmodifiableIterator<List<Object>>() {
 
-			int i;
+			int i; // = 0
 
 			@Override
 			public boolean hasNext() {
