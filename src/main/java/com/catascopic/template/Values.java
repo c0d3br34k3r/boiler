@@ -13,6 +13,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -132,9 +133,12 @@ public final class Values {
 		return n1.doubleValue() / n2.doubleValue();
 	}
 
-	public static Number multiply(Object o1, Object o2) {
-		Number n1 = toNumber(o1);
+	public static Object multiply(Object o1, Object o2) {
+		Number n1 = tryConvertNumber(o1);
 		Number n2 = toNumber(o2);
+		if (n1 == null) {
+			return Strings.repeat(toString(o1), n2.intValue());
+		}
 		if (n1 instanceof Integer && n2 instanceof Integer) {
 			return n1.intValue() * n2.intValue();
 		}
@@ -418,6 +422,7 @@ public final class Values {
 		if (indexable instanceof Map) {
 			return ((Map<?, ?>) indexable).get(toString(index));
 		}
+		// TODO: alternate indexable interface?
 		return index(indexable, toNumber(index).intValue());
 	}
 

@@ -104,6 +104,9 @@ enum Builtin implements TemplateFunction {
 					: params.asList());
 		}
 	},
+
+	// TODO: GROUP?
+
 	ENTRIES {
 
 		@Override

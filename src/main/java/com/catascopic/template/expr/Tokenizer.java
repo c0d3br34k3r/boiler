@@ -71,9 +71,9 @@ public class Tokenizer {
 
 	public void consumeIdentifier(String value) {
 		Token next = next();
-		if (!next.identifier().equals(value)) {
-			throw reader.parseError(
-					"expected identifier %s, got %s", value, next);
+		if (next.type() != TokenType.IDENTIFIER
+				|| !next.identifier().equals(value)) {
+			throw reader.parseError("expected %s, got %s", value, next);
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.catascopic.template.Scope;
+import com.google.common.base.Joiner;
 
 class Block {
 
@@ -32,8 +33,9 @@ class Block {
 	@Override
 	public String toString() {
 		return "{ " + (elseNode == EMPTY
-				? nodes.toString()
-				: nodes + "} else {" + elseNode) + " }";
+				? Joiner.on(" ").join(nodes)
+				: Joiner.on(" ").join(nodes)
+				+ " } else { " + elseNode) + " }";
 	}
 
 	private static final Node EMPTY = new Node() {

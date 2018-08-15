@@ -11,14 +11,22 @@ import com.catascopic.template.parse.TemplateParser;
 
 public class Template {
 
-	private final Node node;
-
-	public Template(Reader reader) throws IOException {
-		this.node = TemplateParser.parse(reader);
+	public static Template parse(String text) {
+		try {
+			return parse(new StringReader(text));
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
 	}
 
-	public Template(String text) throws IOException {
-		this(new StringReader(text));
+	public static Template parse(Reader reader) throws IOException {
+		return new Template(TemplateParser.parse(reader));
+	}
+
+	private final Node node;
+
+	public Template(Node node) {
+		this.node = node;
 	}
 
 	public void render(TemplateEngine engine, Path workingDirectory,
@@ -52,6 +60,11 @@ public class Template {
 		StringBuilder output = new StringBuilder();
 		renderInternal(engine, workingDirectory, output, params);
 		return output.toString();
+	}
+
+	@Override
+	public String toString() {
+		return node.toString();
 	}
 
 }

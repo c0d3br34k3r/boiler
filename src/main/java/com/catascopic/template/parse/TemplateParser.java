@@ -196,7 +196,7 @@ public class TemplateParser {
 				break;
 			case ELSE:
 			case END_TAG:
-				throw reader.parseError("unbalanced %s tag", result);
+				throw reader.parseError("unbalanced %s", result);
 			case END_DOCUMENT:
 				return new BlockNode(new Block(nodes));
 			}
