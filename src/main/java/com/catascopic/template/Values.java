@@ -265,6 +265,46 @@ public final class Values {
 				obj, obj.getClass().getName());
 	}
 
+	public static Object indexOf(Object seq, Object obj) {
+		return indexOf(seq, obj, 0);
+	}
+
+	public static Object indexOf(Object seq, Object obj, int fromIndex) {
+		if (seq instanceof String) {
+			if (!(obj instanceof String)) {
+				throw new TemplateEvalException("%s (%s) is not a String",
+						obj, obj.getClass().getName());
+			}
+			return ((String) seq).indexOf((String) obj, fromIndex);
+		}
+		if (seq instanceof List) {
+			List<?> list = ((List<?>) seq);
+			return list.subList(fromIndex, list.size()).indexOf(obj);
+		}
+		throw new TemplateEvalException("%s (%s) is not a sequence",
+				seq, seq.getClass().getName());
+	}
+
+	public static Object lastIndexOf(Object seq, Object obj) {
+		return lastIndexOf(seq, obj, len(seq));
+	}
+
+	public static Object lastIndexOf(Object seq, Object obj, int fromIndex) {
+		if (seq instanceof String) {
+			if (!(obj instanceof String)) {
+				throw new TemplateEvalException("%s (%s) is not a String",
+						obj, obj.getClass().getName());
+			}
+			return ((String) seq).lastIndexOf((String) obj, fromIndex);
+		}
+		if (seq instanceof List) {
+			List<?> list = ((List<?>) seq);
+			return list.subList(0, fromIndex).lastIndexOf(obj);
+		}
+		throw new TemplateEvalException("%s (%s) is not a sequence",
+				seq, seq.getClass().getName());
+	}
+
 	public static List<Integer> range(int stop) {
 		return range(0, stop);
 	}

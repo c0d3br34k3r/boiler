@@ -1,6 +1,7 @@
 package com.catascopic.template;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.CharMatcher;
@@ -79,12 +80,9 @@ enum Builtin implements TemplateFunction {
 						"range must have at least 1 param");
 			case 1:
 				return Values.range(params.<Integer> get());
-			case 2:
-				return Values.range(params.<Integer> get(0),
-						params.<Integer> get(1));
 			default:
 				return Values.range(params.<Integer> get(0),
-						params.<Integer> get(1), params.<Integer> get(2));
+						params.<Integer> get(1), params.getOrDefault(2, 1));
 			}
 		}
 	},
@@ -177,24 +175,20 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			String str = params.<String> get(0);
-			int index = params.size() >= 3
-					? Values.getIndex(params.<Integer> get(2), str)
-					: 0;
-			return params.<String> get(0).indexOf(params.<String> get(1),
-					index);
+			if (params.size() <= 2) {
+				return Values.indexOf(params.get(0), params.get(1));
+			}
+			return Values.indexOf(params.get(0), params.get(1), params.<Integer> get(1));
 		}
 	},
 	LAST_INDEX_OF {
 
 		@Override
 		public Object apply(Params params) {
-			String str = params.<String> get(0);
-			int index = params.size() >= 3
-					? Values.getIndex(params.<Integer> get(1), str)
-					: str.length() - 1;
-			return params.<String> get(0).indexOf(params.<String> get(1),
-					index);
+			if (params.size() <= 2) {
+				return Values.lastIndexOf(params.get(0), params.get(1));
+			}
+			return Values.lastIndexOf(params.get(0), params.get(1), params.<Integer> get(1));
 		}
 	},
 	JOIN {
