@@ -60,7 +60,7 @@ public class TemplateParser {
 				int ch2 = reader.read();
 				switch (ch2) {
 				case '<':
-					mode = Mode.ECHO;
+					mode = Mode.EVAL;
 					break loop;
 				case '%':
 					mode = Mode.TAG;
@@ -157,12 +157,12 @@ public class TemplateParser {
 		return new TextNode(textFileName);
 	}
 
-	private NodeResult parseEcho() {
-		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.ECHO);
+	private NodeResult parseEval() {
+		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
 		Term term = tokenizer.parseExpression();
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return result(NodeResult.NODE, new EchoNode(term));
+		return result(NodeResult.NODE, new EvalNode(term));
 	}
 
 	private Block parseBlock(boolean elseAllowed) throws IOException {
@@ -262,11 +262,11 @@ public class TemplateParser {
 				return parser.parseTag();
 			}
 		},
-		ECHO {
+		EVAL {
 
 			@Override
 			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.parseEcho();
+				return parser.parseEval();
 			}
 		},
 		COMMENT {

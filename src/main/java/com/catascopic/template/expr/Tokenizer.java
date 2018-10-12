@@ -18,7 +18,7 @@ public class Tokenizer {
 	}
 
 	public enum Mode {
-		STREAM, TAG, ECHO;
+		STREAM, TAG, EVAL;
 	}
 
 	public Token peek() {
@@ -287,7 +287,7 @@ public class Tokenizer {
 		int ch = reader.read();
 		switch (ch) {
 		case '>':
-			return end(Mode.ECHO);
+			return end(Mode.EVAL);
 		case '=':
 			return Symbol.GREATER_THAN_OR_EQUAL;
 		default:

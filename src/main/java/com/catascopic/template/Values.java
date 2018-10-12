@@ -247,7 +247,8 @@ public final class Values {
 	}
 
 	public static String capitalize(String str) {
-		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+		return Character.toUpperCase(str.charAt(0))
+				+ str.substring(1).toLowerCase();
 	}
 
 	public static int len(Object obj) {
