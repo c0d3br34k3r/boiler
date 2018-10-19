@@ -67,6 +67,27 @@ public final class Values {
 				value, value.getClass().getName());
 	}
 
+	private static Number tryConvertNumber(Object value) {
+		if (value instanceof Number) {
+			return (Number) value;
+		}
+		if (value instanceof Boolean) {
+			return (Boolean) value ? 1 : 0;
+		}
+		if (value instanceof String) {
+			String str = (String) value;
+			try {
+				if (str.indexOf('.') != -1) {
+					return Double.parseDouble(str);
+				}
+				return Integer.parseInt(str);
+			} catch (NumberFormatException e) {
+				// continue
+			}
+		}
+		return null;
+	}
+
 	private static Number parseNumber(String value) {
 		try {
 			if (value.contains(".")) {
@@ -98,23 +119,6 @@ public final class Values {
 		}
 		// TODO: should we be able to add things that aren't strings?
 		return toString(o1) + toString(o2);
-	}
-
-	private static Number tryConvertNumber(Object value) {
-		if (value instanceof String) {
-			String str = (String) value;
-			try {
-				if (str.indexOf('.') != -1) {
-					return Double.parseDouble(str);
-				}
-				return Integer.parseInt(str);
-			} catch (NumberFormatException e) {
-				// continue
-			}
-		} else if (value instanceof Boolean) {
-			return (Boolean) value ? 1 : 0;
-		}
-		return null;
 	}
 
 	public static Number add(Number n1, Number n2) {
