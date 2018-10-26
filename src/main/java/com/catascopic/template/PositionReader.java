@@ -3,7 +3,7 @@ package com.catascopic.template;
 import java.io.IOException;
 import java.io.Reader;
 
-public class PositionReader {
+public class PositionReader implements Locatable {
 
 	private Reader reader;
 	private int lineNumber; // = 0
@@ -14,9 +14,6 @@ public class PositionReader {
 
 	public PositionReader(Reader reader, int size) {
 		this.reader = reader;
-		if (size <= 0) {
-			throw new IllegalArgumentException();
-		}
 		this.buf = new char[size];
 		this.pos = size;
 	}
@@ -64,31 +61,6 @@ public class PositionReader {
 
 	public int columnNumber() {
 		return columnNumber;
-	}
-
-	public TemplateParseException parseError(String message, Throwable cause) {
-		return new TemplateParseException(lineNumber, columnNumber, message,
-				cause);
-	}
-
-	public TemplateParseException parseError(String message) {
-		return new TemplateParseException(lineNumber, columnNumber, message);
-	}
-
-	public TemplateParseException parseError(Throwable cause) {
-		return new TemplateParseException(lineNumber, columnNumber, cause);
-	}
-
-	public TemplateParseException parseError(String format, Object... args) {
-		return new TemplateParseException(lineNumber, columnNumber, format,
-				args);
-	}
-
-	public TemplateParseException parseError(Throwable cause, String format,
-			Object... args) {
-		return new TemplateParseException(lineNumber, columnNumber, cause,
-				format,
-				args);
 	}
 
 }

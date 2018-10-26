@@ -1,6 +1,5 @@
 package com.catascopic.template;
 
-import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -139,9 +138,12 @@ public final class Values {
 
 	public static Object multiply(Object o1, Object o2) {
 		Number n1 = tryConvertNumber(o1);
-		Number n2 = toNumber(o2);
+		Number n2 = tryConvertNumber(o2);
 		if (n1 == null) {
 			return Strings.repeat(toString(o1), n2.intValue());
+		}
+		if (n2 == null) {
+			return Strings.repeat(toString(o2), n1.intValue());
 		}
 		if (n1 instanceof Integer && n2 instanceof Integer) {
 			return n1.intValue() * n2.intValue();
@@ -163,7 +165,7 @@ public final class Values {
 			return (Iterable<?>) iterable;
 		}
 		if (iterable instanceof String) {
-			return stringIterable((String) iterable);
+			return new StringAsList((String) iterable);
 		}
 		throw new TemplateEvalException(
 				"%s (%s) is not iterable",
@@ -198,21 +200,6 @@ public final class Values {
 			}
 		}
 		return String.valueOf(obj);
-	}
-
-	public static List<String> stringIterable(final String str) {
-		return new AbstractList<String>() {
-
-			@Override
-			public String get(int index) {
-				return String.valueOf(str.charAt(index));
-			}
-
-			@Override
-			public int size() {
-				return str.length();
-			}
-		};
 	}
 
 	private static final CharMatcher UPPER = CharMatcher.inRange('A', 'Z');
@@ -318,29 +305,9 @@ public final class Values {
 		return range(start, stop, 1);
 	}
 
-	public static List<Integer> range(final int start, final int stop,
-			final int step) {
-		final int size = Math.max(ceilDivide(stop - start, step), 0);
-		return new AbstractList<Integer>() {
-
-			@Override
-			public Integer get(int index) {
-				if (index < 0 || index >= size) {
-					throw new IndexOutOfBoundsException();
-				}
-				return start + step * index;
-			}
-
-			@Override
-			public int size() {
-				return size;
-			}
-
-			@Override
-			public String toString() {
-				return String.format("range(%s, %s, %s)", start, stop, step);
-			}
-		};
+	public static List<Integer> range(int start, int stop, int step) {
+		return new Range(start, Math.max(ceilDivide(stop - start, step), 0),
+				step);
 	}
 
 	@VisibleForTesting

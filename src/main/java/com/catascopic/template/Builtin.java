@@ -1,7 +1,6 @@
 package com.catascopic.template;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
@@ -13,35 +12,35 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.isTrue(params.get());
+			return params.getBoolean(0);
 		}
 	},
 	FLOAT {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.toNumber(params.get()).doubleValue();
+			return params.getDouble(0);
 		}
 	},
 	INT {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.toNumber(params.get()).intValue();
+			return params.getInt(0);
 		}
 	},
 	STR {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.toString(params.get());
+			return params.getString(0);
 		}
 	},
 	LEN {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.len(params.get());
+			return Values.len(params.get(0));
 		}
 	},
 	MIN {
@@ -49,7 +48,7 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return Values.min(params.size() == 1
-					? Values.toIterable(params.get())
+					? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -58,7 +57,7 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return Values.max(params.size() == 1
-					? Values.toIterable(params.get())
+					? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -66,7 +65,7 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.abs((Number) params.get());
+			return Values.abs(params.getNumber(0));
 		}
 	},
 	RANGE {
@@ -78,10 +77,10 @@ enum Builtin implements TemplateFunction {
 				throw new TemplateEvalException(
 						"range must have at least 1 param");
 			case 1:
-				return Values.range(params.<Integer> get());
+				return Values.range(params.getInt(0));
 			default:
-				return Values.range(params.<Integer> get(0),
-						params.<Integer> get(1), params.getOrDefault(2, 1));
+				return Values.range(params.getInt(0),
+						params.getInt(1), params.getInt(2, 1));
 			}
 		}
 	},
@@ -89,7 +88,7 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return new Enumeration(Values.toIterable(params.get()));
+			return new Enumeration(params.getIterable(0));
 		}
 	},
 	ZIP {
@@ -97,7 +96,7 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return new Zip(params.size() == 1
-					? Values.toIterable(params.get())
+					? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -108,21 +107,21 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.entries(params.<Map<?, ?>> get());
+			return Values.entries(params.getMap(0));
 		}
 	},
 	KEYS {
 
 		@Override
 		public Object apply(Params params) {
-			return params.<Map<?, ?>> get().keySet();
+			return params.getMap(0).keySet();
 		}
 	},
 	VALUES {
 
 		@Override
 		public Object apply(Params params) {
-			return params.<Map<?, ?>> get().values();
+			return params.getMap(0).values();
 		}
 	},
 	CONTAINS {
@@ -131,10 +130,10 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			Object seq = params.get(0);
 			if (seq instanceof String) {
-				return ((String) seq).contains(params.<String> get(1));
+				return ((String) seq).contains(params.getString(1));
 			}
 			if (seq instanceof Collection) {
-				return ((Collection<?>) seq).contains(params.get());
+				return ((Collection<?>) seq).contains(params.get(1));
 			}
 			throw new TemplateEvalException(
 					"%s (%s) is not a container",
@@ -145,39 +144,37 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.capitalize(params.<String> get());
+			return Values.capitalize(params.getString(0));
 		}
 	},
 	REPLACE {
 
 		@Override
 		public Object apply(Params params) {
-			return params.<String> get(0).replace(params.<String> get(1),
-					params.<String> get(2));
+			return params.getString(0).replace(params.getString(1),
+					params.getString(2));
 		}
 	},
 	STARTS_WITH {
 
 		@Override
 		public Object apply(Params params) {
-			return params.<String> get(0).startsWith(params.<String> get(1));
+			return params.getString(0).startsWith(params.getString(1));
 		}
 	},
 	ENDS_WITH {
 
 		@Override
 		public Object apply(Params params) {
-			return params.<String> get(0).endsWith(params.<String> get(1));
+			return params.getString(0).endsWith(params.getString(1));
 		}
 	},
 	INDEX_OF {
 
 		@Override
 		public Object apply(Params params) {
-			if (params.size() <= 2) {
-				return Values.indexOf(params.get(0), params.get(1));
-			}
-			return Values.indexOf(params.get(0), params.get(1), params.<Integer> get(1));
+			return Values.indexOf(params.get(0), params.get(1),
+					params.getInt(2, 0));
 		}
 	},
 	LAST_INDEX_OF {
@@ -187,14 +184,15 @@ enum Builtin implements TemplateFunction {
 			if (params.size() <= 2) {
 				return Values.lastIndexOf(params.get(0), params.get(1));
 			}
-			return Values.lastIndexOf(params.get(0), params.get(1), params.<Integer> get(1));
+			return Values.lastIndexOf(params.get(0), params.get(1),
+					params.getInt(2));
 		}
 	},
 	JOIN {
 
 		@Override
 		public Object apply(Params params) {
-			return Joiner.on(params.<String> get(1)).join(
+			return Joiner.on(params.getString(1)).join(
 					Values.toIterable(params.get(0)));
 		}
 	},
@@ -202,8 +200,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Splitter.on(params.<String> get(1)).splitToList(
-					params.<String> get(0));
+			return Splitter.on(params.getString(1)).splitToList(
+					params.getString(0));
 		}
 	},
 	UPPER {
@@ -211,21 +209,21 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			// TODO: Ascii.toUpperCase?
-			return params.<String> get().toUpperCase();
+			return params.getString(0).toUpperCase();
 		}
 	},
 	LOWER {
 
 		@Override
 		public Object apply(Params params) {
-			return params.<String> get().toLowerCase();
+			return params.getString(0).toLowerCase();
 		}
 	},
 	TRIM {
 
 		@Override
 		public Object apply(Params params) {
-			return CharMatcher.whitespace().trimFrom(params.<String> get());
+			return CharMatcher.whitespace().trimFrom(params.getString(0));
 		}
 	},
 	COLLAPSE {
@@ -233,24 +231,24 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return CharMatcher.whitespace().trimAndCollapseFrom(
-					params.<String> get(0),
-					params.getOrDefault(1, " ").charAt(0));
+					params.getString(0),
+					params.getString(1, " ").charAt(0));
 		}
 	},
 	SEPARATOR_TO_CAMEL {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.separatorToCamel(params.<String> get(0),
-					params.getOrDefault(1, "_"));
+			return Values.separatorToCamel(params.getString(0),
+					params.getString(1, "_"));
 		}
 	},
 	CAMEL_TO_SEPARATOR {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.camelToSeparator(params.<String> get(0), params
-					.getOrDefault(1, "_"));
+			return Values.camelToSeparator(params.getString(0), params
+					.getString(1, "_"));
 		}
 	};
 

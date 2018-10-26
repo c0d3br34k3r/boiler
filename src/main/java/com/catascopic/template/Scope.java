@@ -75,4 +75,8 @@ public class Scope implements Locals, Function<Term, Object> {
 		}
 	};
 
+	public String newLine() {
+		return "\n";
+	}
+
 }

@@ -2,11 +2,12 @@ package com.catascopic.template.expr;
 
 import java.io.IOException;
 
+import com.catascopic.template.Locatable;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
-public class Tokenizer {
+public class Tokenizer implements Locatable {
 
 	private PositionReader reader;
 	private Token peeked;
@@ -40,7 +41,8 @@ public class Tokenizer {
 	public void consume(Symbol symbol) {
 		Token next = next();
 		if (next.type() != TokenType.SYMBOL || next.symbol() != symbol) {
-			throw reader.parseError("expected %s, got %s", symbol, next);
+			throw new TemplateParseException(reader,
+					"expected %s, got %s", symbol, next);
 		}
 	}
 
@@ -65,7 +67,8 @@ public class Tokenizer {
 	public void end() {
 		Token next = next();
 		if (next.type() != TokenType.END) {
-			throw reader.parseError("expected end of tokens, got %s", next);
+			throw new TemplateParseException(reader,
+					"expected end of tokens, got %s", next);
 		}
 	}
 
@@ -73,7 +76,8 @@ public class Tokenizer {
 		Token next = next();
 		if (next.type() != TokenType.IDENTIFIER
 				|| !next.identifier().equals(value)) {
-			throw reader.parseError("expected %s, got %s", value, next);
+			throw new TemplateParseException(reader,
+					"expected %s, got %s", value, next);
 		}
 	}
 
@@ -85,7 +89,7 @@ public class Tokenizer {
 			} while (CharMatcher.whitespace().matches((char) ch));
 			return parseToken(ch);
 		} catch (IOException e) {
-			throw reader.parseError(e);
+			throw new TemplateParseException(reader, e);
 		}
 	}
 
@@ -96,7 +100,8 @@ public class Tokenizer {
 	public String parseIdentifier() {
 		Token next = next();
 		if (next.type() != TokenType.IDENTIFIER) {
-			throw reader.parseError("expected identifier, got %s", next);
+			throw new TemplateParseException(reader,
+					"expected identifier, got %s", next);
 		}
 		return next.identifier();
 	}
@@ -154,8 +159,8 @@ public class Tokenizer {
 		if (IDENTIFIER_START.matches(c)) {
 			return parseIdentifier(c);
 		}
-		throw reader.parseError("unexpected char '%c' (%s)", ch,
-				Character.getName(ch));
+		throw new TemplateParseException(reader,
+				"unexpected char '%c' (%s)", ch, Character.getName(ch));
 	}
 
 	private Token parseString(char end) throws IOException {
@@ -164,7 +169,7 @@ public class Tokenizer {
 			int next = reader.read();
 			switch (next) {
 			case -1:
-				throw reader.parseError("unclosed string");
+				throw new TemplateParseException(reader, "unclosed string");
 			case '\\':
 				readEscapeChar(builder);
 				break;
@@ -268,7 +273,8 @@ public class Tokenizer {
 	private void require(char required) throws IOException {
 		int ch = reader.read();
 		if (ch != required) {
-			throw reader.parseError("expected '%c', got '%c'", required, ch);
+			throw new TemplateParseException(reader,
+					"expected '%c', got '%c'", required, ch);
 		}
 	}
 
@@ -300,8 +306,8 @@ public class Tokenizer {
 
 	private Token end(Mode check) {
 		if (mode != check) {
-			throw reader.parseError("expected end of %s but was end of %s",
-					mode, check);
+			throw new TemplateParseException(reader,
+					"expected end of %s but was end of %s", mode, check);
 		}
 		return Tokens.END;
 	}
@@ -327,9 +333,10 @@ public class Tokenizer {
 			builder.append(readCodePoint());
 			break;
 		case -1:
-			throw reader.parseError("unclosed string");
+			throw new TemplateParseException(reader, "unclosed string");
 		default:
-			throw reader.parseError("unexpected escaped '%c'", ch);
+			throw new TemplateParseException(reader,
+					"unexpected escaped '%c'", ch);
 		}
 	}
 
@@ -338,7 +345,8 @@ public class Tokenizer {
 		for (int i = 0; i < 4; i++) {
 			int ch = reader.read();
 			if (ch == -1) {
-				throw reader.parseError("unfinished unicode escape");
+				throw new TemplateParseException(reader,
+						"unfinished unicode escape");
 			}
 			buf[i] = (char) ch;
 		}
@@ -346,12 +354,19 @@ public class Tokenizer {
 		try {
 			return (char) Integer.parseInt(escape, 16);
 		} catch (NumberFormatException e) {
-			throw reader.parseError(e, "invalid unicode escape: %s", escape);
+			throw new TemplateParseException(reader,
+					e, "invalid unicode escape: %s", escape);
 		}
 	}
 
-	public TemplateParseException parseError(String format, Object... args) {
-		return reader.parseError(format, args);
+	@Override
+	public int lineNumber() {
+		return reader.lineNumber();
+	}
+
+	@Override
+	public int columnNumber() {
+		return reader.columnNumber();
 	}
 
 }

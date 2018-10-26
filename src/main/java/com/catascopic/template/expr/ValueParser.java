@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -33,7 +34,8 @@ class ValueParser implements TermParser {
 			term = parseSymbol(token.symbol(), tokenizer);
 			break;
 		default:
-			throw tokenizer.parseError("unexpected token %s", token);
+			throw new TemplateParseException(tokenizer,
+					"unexpected token %s", token);
 		}
 		for (;;) {
 			if (tokenizer.tryConsume(DOT)) {
@@ -62,7 +64,8 @@ class ValueParser implements TermParser {
 		case LEFT_CURLY_BRACKET:
 			return new MapTerm(parseMap(tokenizer));
 		default:
-			throw tokenizer.parseError("unexpected symbol %s", symbol);
+			throw new TemplateParseException(tokenizer,
+					"unexpected symbol %s", symbol);
 		}
 	}
 
@@ -149,7 +152,7 @@ class ValueParser implements TermParser {
 			}
 			// fallthrough
 		default:
-			throw tokenizer.parseError(
+			throw new TemplateParseException(tokenizer,
 					"expected string literal or identifier, got %s", token);
 		}
 	}

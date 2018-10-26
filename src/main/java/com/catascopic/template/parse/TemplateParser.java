@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.catascopic.template.PositionReader;
+import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
 import com.catascopic.template.parse.Variables.Assigner;
@@ -25,9 +26,19 @@ public class TemplateParser {
 		this.reader = new PositionReader(reader, 1);
 	}
 
-	NodeResult parseNext() throws IOException {
-		return mode.parse(this);
+	// @formatter:off
+	private NodeResult parseNext() throws IOException {
+		switch (mode) {
+		case TEXT:    return parseTextOrTag();
+		case BREAK:   return breakNode();
+		case TAG:     return parseTag();
+		case EVAL:    return parseEval();
+		case COMMENT: return skipCommentAndParseNext();
+		case END:     return endDocument();
+		default:      throw new IllegalArgumentException(mode.name());
+		}
 	}
+	// @formatter:on
 
 	Node getNode() {
 		if (node == null) {
@@ -105,7 +116,8 @@ public class TemplateParser {
 			tokenizer.end();
 			return result(NodeResult.END_TAG);
 		default:
-			throw reader.parseError("unknown tag: %s", tagName);
+			throw new TemplateParseException(reader,
+					"unknown tag: %s", tagName);
 		}
 	}
 
@@ -127,10 +139,10 @@ public class TemplateParser {
 	private Node parseFor(Tokenizer tokenizer) throws IOException {
 		Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
-		Term iterable = tokenizer.parseExpression();
+		Term sequence = tokenizer.parseExpression();
 		tokenizer.end();
 		Block block = parseBlock(false);
-		return new ForNode(names, iterable, block);
+		return new ForNode(names, sequence, block);
 	}
 
 	private static Node parseSet(Tokenizer tokenizer) {
@@ -175,13 +187,14 @@ public class TemplateParser {
 				break;
 			case ELSE:
 				if (!elseAllowed) {
-					throw reader.parseError("else not allowed");
+					throw new TemplateParseException(reader,
+							"else not allowed");
 				}
 				return new Block(nodes, getNode());
 			case END_TAG:
 				return new Block(nodes);
 			case END_DOCUMENT:
-				throw reader.parseError("unclosed tag");
+				throw new TemplateParseException(reader, "unclosed tag");
 			}
 		}
 	}
@@ -196,7 +209,8 @@ public class TemplateParser {
 				break;
 			case ELSE:
 			case END_TAG:
-				throw reader.parseError("unbalanced %s", result);
+				throw new TemplateParseException(reader,
+						"unbalanced %s", result);
 			case END_DOCUMENT:
 				return new BlockNode(new Block(nodes));
 			}
@@ -223,7 +237,7 @@ public class TemplateParser {
 			default:
 			}
 		}
-		throw reader.parseError("unclosed comment");
+		throw new TemplateParseException(reader, "unclosed comment");
 	}
 
 	private NodeResult endDocument() {
@@ -241,50 +255,13 @@ public class TemplateParser {
 	}
 
 	private enum Mode {
-		TEXT {
 
-			@Override
-			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.parseTextOrTag();
-			}
-		},
-		BREAK {
-
-			@Override
-			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.breakNode();
-			}
-		},
-		TAG {
-
-			@Override
-			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.parseTag();
-			}
-		},
-		EVAL {
-
-			@Override
-			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.parseEval();
-			}
-		},
-		COMMENT {
-
-			@Override
-			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.skipCommentAndParseNext();
-			}
-		},
-		END {
-
-			@Override
-			NodeResult parse(TemplateParser parser) throws IOException {
-				return parser.endDocument();
-			}
-		};
-
-		abstract NodeResult parse(TemplateParser parser) throws IOException;
+		TEXT,
+		BREAK,
+		TAG,
+		EVAL,
+		COMMENT,
+		END
 	}
 
 	private enum NodeResult {

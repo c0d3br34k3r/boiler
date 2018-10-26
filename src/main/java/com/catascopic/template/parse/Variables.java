@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
 import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
@@ -27,7 +28,8 @@ class Variables {
 		do {
 			String name = tokenizer.parseIdentifier();
 			if (!unique.add(name)) {
-				tokenizer.parseError("duplicate variable name: %s", name);
+				new TemplateParseException(tokenizer,
+						"duplicate variable name: %s", name);
 			}
 			builder.add(name);
 		} while (tokenizer.tryConsume(Symbol.COMMA));

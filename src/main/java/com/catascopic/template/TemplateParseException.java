@@ -6,38 +6,39 @@ public class TemplateParseException extends RuntimeException {
 	private final int lineNumber;
 	private final int columnNumber;
 
-	TemplateParseException(int lineNumber, int columnNumber, String message) {
-		super("[" + location(lineNumber, columnNumber) + "] " + message);
-		this.lineNumber = lineNumber;
-		this.columnNumber = columnNumber;
+	public TemplateParseException(Locatable reader, String message) {
+		super("[" + location(reader) + "] " + message);
+		this.lineNumber = reader.lineNumber();
+		this.columnNumber = reader.columnNumber();
 	}
 
-	TemplateParseException(int lineNumber, int columnNumber, Throwable e) {
-		super(location(lineNumber, columnNumber), e);
-		this.lineNumber = lineNumber;
-		this.columnNumber = columnNumber;
+	public TemplateParseException(Locatable reader, Throwable e) {
+		super(location(reader), e);
+		this.lineNumber = reader.lineNumber();
+		this.columnNumber = reader.columnNumber();
 	}
 
-	TemplateParseException(int lineNumber, int columnNumber, String message,
+	public TemplateParseException(Locatable reader, String message,
 			Throwable e) {
-		super("[" + location(lineNumber, columnNumber) + "] " + message, e);
-		this.lineNumber = lineNumber;
-		this.columnNumber = columnNumber;
+		super("[" + location(reader) + "] " + message, e);
+		this.lineNumber = reader.lineNumber();
+		this.columnNumber = reader.columnNumber();
 	}
 
-	TemplateParseException(int lineNumber, int columnNumber, String format,
+	public TemplateParseException(Locatable reader, String format,
 			Object... args) {
-		this(lineNumber, columnNumber, String.format(format, args));
+		this(reader, String.format(format, args));
 	}
 
-	TemplateParseException(int lineNumber, int columnNumber, Throwable e,
+	public TemplateParseException(Locatable reader, Throwable e,
 			String format, Object... args) {
-		this(lineNumber, columnNumber, String.format(format, args), e);
+		this(reader, String.format(format, args), e);
 	}
 
-	private static String location(int lineNumber, int columnNumber) {
-		return String.format("line %d, column %d", lineNumber + 1,
-				columnNumber);
+	private static String location(Locatable reader) {
+		return String.format("line %d, column %d",
+				reader.lineNumber() + 1,
+				reader.columnNumber() + 1);
 	}
 
 	public int lineNumber() {

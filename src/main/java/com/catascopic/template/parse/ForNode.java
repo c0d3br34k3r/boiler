@@ -10,18 +10,18 @@ import com.catascopic.template.parse.Variables.Names;
 class ForNode implements Node {
 
 	private final Names names;
-	private final Term iterable;
+	private final Term sequence;
 	private final Block block;
 
-	ForNode(Names names, Term iterable, Block block) {
+	ForNode(Names names, Term sequence, Block block) {
 		this.names = names;
-		this.iterable = iterable;
+		this.sequence = sequence;
 		this.block = block;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		for (Object item : Values.toIterable(iterable.evaluate(scope))) {
+		for (Object item : Values.toIterable(sequence.evaluate(scope))) {
 			names.assign(scope, item);
 			block.render(writer, scope);
 		}
@@ -29,7 +29,7 @@ class ForNode implements Node {
 
 	@Override
 	public String toString() {
-		return "for (" + names + " in " + iterable + ") " + block;
+		return "for (" + names + " in " + sequence + ") " + block;
 	}
 
 }
