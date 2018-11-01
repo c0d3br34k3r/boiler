@@ -9,8 +9,8 @@ import com.google.common.collect.Lists;
 
 class FunctionTerm implements Term {
 
-	private String name;
-	private List<Term> params;
+	private final String name;
+	private final List<Term> params;
 
 	FunctionTerm(String name, List<Term> params) {
 		this.name = name;
@@ -20,7 +20,7 @@ class FunctionTerm implements Term {
 	@Override
 	public Object evaluate(Scope scope) {
 		return scope.getFunction(name).apply(
-				new Params(Lists.transform(params, scope)));
+				new Params(Lists.transform(params, scope), scope));
 	}
 
 	@Override

@@ -60,7 +60,7 @@ class ValueParser implements TermParser {
 			tokenizer.consume(RIGHT_PARENTHESIS);
 			return term;
 		case LEFT_BRACKET:
-			return new ListTerm(parseExpressions(tokenizer, RIGHT_BRACKET));
+			return new ListTerm(parseTerms(tokenizer, RIGHT_BRACKET));
 		case LEFT_CURLY_BRACKET:
 			return new MapTerm(parseMap(tokenizer));
 		default:
@@ -73,7 +73,7 @@ class ValueParser implements TermParser {
 			String identifier) {
 		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
 			return new FunctionTerm(identifier,
-					parseExpressions(tokenizer, RIGHT_PARENTHESIS));
+					parseTerms(tokenizer, RIGHT_PARENTHESIS));
 		}
 		return new Variable(identifier);
 	}
@@ -83,7 +83,7 @@ class ValueParser implements TermParser {
 		if (tokenizer.tryConsume(COLON)) {
 			index = NullTerm.NULL;
 		} else {
-			index = tokenizer.parseExpression();
+			index = tokenizer.parseTerm();
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
 				// [i]
 				return new IndexTerm(seq, index);
@@ -99,7 +99,7 @@ class ValueParser implements TermParser {
 		if (tokenizer.tryConsume(COLON)) {
 			stop = NullTerm.NULL;
 		} else {
-			stop = tokenizer.parseExpression();
+			stop = tokenizer.parseTerm();
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
 				// [i:j], [:j]
 				return new SliceTerm(seq, index, stop, NullTerm.NULL);
@@ -107,20 +107,19 @@ class ValueParser implements TermParser {
 			tokenizer.consume(COLON);
 		}
 		// [i:j:], [i::], [::], [:j:] is not allowed because it's redundant
-		Term step = tokenizer.parseExpression();
+		Term step = tokenizer.parseTerm();
 		tokenizer.consume(RIGHT_BRACKET);
 		// [i:j:k], [i::k], [:j:k], [::k]
 		return new SliceTerm(seq, index, stop, step);
 	}
 
-	private static List<Term> parseExpressions(Tokenizer tokenizer,
-			Symbol end) {
+	private static List<Term> parseTerms(Tokenizer tokenizer, Symbol end) {
 		if (tokenizer.tryConsume(end)) {
 			return Collections.emptyList();
 		}
 		ImmutableList.Builder<Term> terms = ImmutableList.builder();
 		do {
-			terms.add(tokenizer.parseExpression());
+			terms.add(tokenizer.parseTerm());
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(end);
 		return terms.build();
@@ -134,7 +133,7 @@ class ValueParser implements TermParser {
 		do {
 			String key = parseKey(tokenizer);
 			tokenizer.consume(COLON);
-			Term value = tokenizer.parseExpression();
+			Term value = tokenizer.parseTerm();
 			terms.put(key, value);
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(RIGHT_CURLY_BRACKET);

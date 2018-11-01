@@ -3,50 +3,33 @@ package com.catascopic.template;
 @SuppressWarnings("serial")
 public class TemplateParseException extends RuntimeException {
 
-	private final int lineNumber;
-	private final int columnNumber;
-
-	public TemplateParseException(Locatable reader, String message) {
-		super("[" + location(reader) + "] " + message);
-		this.lineNumber = reader.lineNumber();
-		this.columnNumber = reader.columnNumber();
+	public TemplateParseException(Locatable location, String message) {
+		super(location(location) + ", " + message);
 	}
 
-	public TemplateParseException(Locatable reader, Throwable e) {
-		super(location(reader), e);
-		this.lineNumber = reader.lineNumber();
-		this.columnNumber = reader.columnNumber();
+	public TemplateParseException(Locatable location, Throwable e) {
+		super(location(location), e);
 	}
 
-	public TemplateParseException(Locatable reader, String message,
+	public TemplateParseException(Locatable location, String message,
 			Throwable e) {
-		super("[" + location(reader) + "] " + message, e);
-		this.lineNumber = reader.lineNumber();
-		this.columnNumber = reader.columnNumber();
+		super(location(location) + ", " + message, e);
 	}
 
-	public TemplateParseException(Locatable reader, String format,
+	public TemplateParseException(Locatable location, String format,
 			Object... args) {
-		this(reader, String.format(format, args));
+		this(location, String.format(format, args));
 	}
 
-	public TemplateParseException(Locatable reader, Throwable e,
+	public TemplateParseException(Locatable location, Throwable e,
 			String format, Object... args) {
-		this(reader, String.format(format, args), e);
+		this(location, String.format(format, args), e);
 	}
 
-	private static String location(Locatable reader) {
-		return String.format("line %d, column %d",
-				reader.lineNumber() + 1,
-				reader.columnNumber() + 1);
-	}
-
-	public int lineNumber() {
-		return lineNumber;
-	}
-
-	public int columnNumber() {
-		return columnNumber;
+	private static String location(Locatable location) {
+		return String.format("at line %d, column %d",
+				location.lineNumber() + 1,
+				location.columnNumber() + 1);
 	}
 
 }

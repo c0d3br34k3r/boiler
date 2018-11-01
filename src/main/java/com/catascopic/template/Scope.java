@@ -8,23 +8,25 @@ import java.util.Map;
 import com.catascopic.template.expr.Term;
 import com.google.common.base.Function;
 
-public class Scope implements Locals, Function<Term, Object> {
+public class Scope implements LocalAccess, Function<Term, Object> {
 
-	private final Locals parent;
-	private final Path dir;
+	private final LocalAccess parent;
+	private final Path workingDir;
 	private final TemplateResolver resolver;
 	private Map<String, Object> values = new HashMap<>();
 
-	Scope(TemplateResolver resolver, Path dir, Map<String, Object> params) {
+	Scope(TemplateResolver resolver, Path workingDir,
+			Map<String, Object> params) {
 		this.resolver = resolver;
-		this.dir = dir;
+		this.workingDir = workingDir;
 		this.parent = BASE;
 		values.putAll(params);
 	}
 
-	private Scope(TemplateResolver resolver, Path dir, Locals parent) {
+	private Scope(TemplateResolver resolver, Path workingDir,
+			LocalAccess parent) {
 		this.resolver = resolver;
-		this.dir = dir;
+		this.workingDir = workingDir;
 		this.parent = parent;
 	}
 
@@ -54,20 +56,22 @@ public class Scope implements Locals, Function<Term, Object> {
 		return input.evaluate(this);
 	}
 
-	public void renderTemplate(Appendable writer, String fileName)
+	public void renderTemplate(Appendable writer, String fileName,
+			Assigner assigner)
 			throws IOException {
 		// TODO: dir could be null
-		Path file = dir.resolve(fileName);
-		resolver.getTemplate(file).render(writer,
-				new Scope(resolver, file.getParent(), this));
+		Path file = workingDir.resolve(fileName);
+		Scope extended = new Scope(resolver, file.getParent(), this);
+		assigner.assign(extended);
+		resolver.getTemplate(file).render(writer, extended);
 	}
 
 	public void renderTextFile(Appendable writer, String fileName)
 			throws IOException {
-		writer.append(resolver.getTextFile(dir.resolve(fileName)));
+		writer.append(resolver.getTextFile(workingDir.resolve(fileName)));
 	}
 
-	private static final Locals BASE = new Locals() {
+	private static final LocalAccess BASE = new LocalAccess() {
 
 		@Override
 		public Object get(String name) {

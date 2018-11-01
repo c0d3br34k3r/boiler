@@ -13,4 +13,9 @@ public enum BreakNode implements Node {
 		writer.append(scope.newLine());
 	}
 
+	@Override
+	public String toString() {
+		return System.lineSeparator();
+	}
+
 }

@@ -1,6 +1,6 @@
 package com.catascopic.template;
 
-interface Locals {
+interface LocalAccess {
 
 	Object get(String name);
 

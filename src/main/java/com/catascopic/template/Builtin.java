@@ -1,6 +1,9 @@
 package com.catascopic.template;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
@@ -100,9 +103,6 @@ enum Builtin implements TemplateFunction {
 					: params.asList());
 		}
 	},
-
-	// TODO: GROUP?
-
 	ENTRIES {
 
 		@Override
@@ -250,9 +250,58 @@ enum Builtin implements TemplateFunction {
 			return Values.camelToSeparator(params.getString(0), params
 					.getString(1, "_"));
 		}
+	},
+	PAD {
+
+		@Override
+		public Object apply(Params params) {
+			return Values.pad(params.getString(0),
+					params.getInt(1),
+					params.getString(2, " ").charAt(0),
+					params.getBoolean(3, true));
+		}
+	},
+	TEMPLATE {
+
+		@Override
+		public Object apply(Params params) {
+			final Map<String, ?> map = params.getMap(1,
+					Collections.<String, Object> emptyMap());
+			Assigner assigner = new Assigner() {
+
+				@Override
+				public void assign(Scope scope) {
+					for (Map.Entry<String, ?> entry : map.entrySet()) {
+						scope.set(entry.getKey(), entry.getValue());
+					}
+				}
+			};
+			StringBuilder builder = new StringBuilder();
+			try {
+				params.scope().renderTemplate(builder,
+						params.getString(0), assigner);
+			} catch (IOException e) {
+				throw new AssertionError(e);
+			}
+			return builder.toString();
+		}
+	},
+	TEXT {
+
+		@Override
+		public Object apply(Params params) {
+			StringBuilder builder = new StringBuilder();
+			try {
+				params.scope().renderTextFile(builder, params.getString(0));
+			} catch (IOException e) {
+				throw new AssertionError(e);
+			}
+			return builder.toString();
+		}
 	};
 
 	// TODO: other possibilities:
+	// group
 	// sum
 	// exp
 	// sqrt
@@ -261,9 +310,5 @@ enum Builtin implements TemplateFunction {
 	// substringBefore/substringAfter
 	// date and time functions
 	// distinctValues
-
-	String functionName() {
-		return Values.separatorToCamel(name().toLowerCase());
-	}
 
 }

@@ -11,15 +11,17 @@ public class TemplateParserTest {
 
 	@Test
 	public void test() throws IOException {
-		String result = render("<% set a, b, c = '123' %>"
-				+ "<% if a == 2 %>"
-				+ "<<3 * a>>"
-				+ "<% else if b == 2 %>"
-				+ "<<'*' * b * 4>>"
-				+ "<% else if c == 2 %>"
-				+ "baz"
-				+ "<% end %>"
-				+ "what");
+		String template = "<% set a, b, c = '123' %>\n"
+				+ "<% if a == 2 %>\n"
+				+ "<<3 * a>>\n"
+				+ "<% else if b == 2 %>\n"
+				+ "<<'*' * q * 4>>\n"
+				+ "<% else if c == 2 %>\n"
+				+ "baz\n"
+				+ "<% end %>\n"
+				+ "what";
+		System.out.println(template);
+		String result = render(template);
 		System.out.println(result);
 	}
 

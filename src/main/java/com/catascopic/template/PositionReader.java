@@ -55,10 +55,12 @@ public class PositionReader implements Locatable {
 		buf[--pos] = (char) c;
 	}
 
+	@Override
 	public int lineNumber() {
 		return lineNumber;
 	}
 
+	@Override
 	public int columnNumber() {
 		return columnNumber;
 	}

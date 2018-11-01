@@ -5,17 +5,19 @@ import java.util.Map;
 
 public class Params {
 
-	private List<Object> list;
+	private final List<Object> list;
+	private final Scope scope;
 
-	public Params(List<Object> list) {
+	public Params(List<Object> list, Scope scope) {
 		this.list = list;
+		this.scope = scope;
 	}
 
 	public boolean getBoolean(int index) {
 		return Values.isTrue(get(index));
 	}
 
-	public boolean getInt(int index, boolean defaultValue) {
+	public boolean getBoolean(int index, boolean defaultValue) {
 		return index < list.size() ? getBoolean(index) : defaultValue;
 	}
 
@@ -59,11 +61,12 @@ public class Params {
 		return index < list.size() ? getIterable(index) : defaultValue;
 	}
 
-	public Map<?, ?> getMap(int index) {
-		return (Map<?, ?>) get(index);
+	@SuppressWarnings("unchecked")
+	public Map<String, ?> getMap(int index) {
+		return (Map<String, ?>) get(index);
 	}
 
-	public Map<?, ?> getMap(int index, Map<?, ?> defaultValue) {
+	public Map<String, ?> getMap(int index, Map<String, ?> defaultValue) {
 		return index < list.size() ? getMap(index) : defaultValue;
 	}
 
@@ -81,6 +84,10 @@ public class Params {
 
 	public int size() {
 		return list.size();
+	}
+
+	public Scope scope() {
+		return scope;
 	}
 
 }

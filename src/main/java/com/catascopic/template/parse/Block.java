@@ -35,13 +35,13 @@ class Block {
 		return "{ " + (elseNode == EMPTY
 				? Joiner.on(" ").join(nodes)
 				: Joiner.on(" ").join(nodes)
-				+ " } else { " + elseNode) + " }";
+						+ " } else { " + elseNode) + " }";
 	}
 
 	private static final Node EMPTY = new Node() {
 
 		@Override
-		public void render(Appendable writer, Scope scope) throws IOException {
+		public void render(Appendable writer, Scope scope) {
 			// do nothing
 		}
 	};

@@ -8,20 +8,20 @@ import com.catascopic.template.expr.Term;
 
 class EvalNode implements Node {
 
-	private final Term term;
+	private final Term expression;
 
-	EvalNode(Term term) {
-		this.term = term;
+	EvalNode(Term expression) {
+		this.expression = expression;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		writer.append(Values.toString(term.evaluate(scope)));
+		writer.append(Values.toString(expression.evaluate(scope)));
 	}
 
 	@Override
 	public String toString() {
-		return term.toString();
+		return expression.toString();
 	}
 
 }

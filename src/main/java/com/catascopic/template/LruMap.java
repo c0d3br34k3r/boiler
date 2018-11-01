@@ -13,11 +13,11 @@ public class LruMap<K, V> extends LinkedHashMap<K, V> {
 	}
 
 	public LruMap(int maxEntries, int initialCapacity) {
-		this(maxEntries, 16, 0.75f);
+		this(maxEntries, initialCapacity, 0.75f);
 	}
 
 	public LruMap(int maxEntries, int initialCapacity, float loadFactor) {
-		super(16, loadFactor, true);
+		super(initialCapacity, loadFactor, true);
 		this.maxEntries = maxEntries;
 	}
 

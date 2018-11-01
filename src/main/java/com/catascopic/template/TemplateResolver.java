@@ -47,12 +47,12 @@ abstract class TemplateResolver {
 			builtinOnly()) {
 
 		@Override
-		Node getTemplate(Path file) throws IOException {
+		Node getTemplate(Path file) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		String getTextFile(Path file) throws IOException {
+		String getTextFile(Path file) {
 			throw new UnsupportedOperationException();
 		}
 	};

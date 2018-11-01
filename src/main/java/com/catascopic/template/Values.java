@@ -172,7 +172,7 @@ public final class Values {
 				iterable, iterable.getClass().getName());
 	}
 
-	public static boolean isEqual(Object o1, Object o2) {
+	public static boolean equal(Object o1, Object o2) {
 		// allow for int and double with equal value
 		if (o1 instanceof Number || o2 instanceof Number) {
 			return compare(o1, o2) == 0;
@@ -196,7 +196,7 @@ public final class Values {
 			Number number = (Number) obj;
 			double d = number.doubleValue();
 			if (Math.rint(d) == d) {
-				return Integer.toString(number.intValue());
+				return Long.toString(number.longValue());
 			}
 		}
 		return String.valueOf(obj);
@@ -472,6 +472,23 @@ public final class Values {
 					"index %s is out of bounds", index);
 		}
 		return adjusted;
+	}
+
+	public static String pad(String str, int minLength, char padChar,
+			boolean left) {
+		int padCount = minLength - str.length();
+		if (padCount <= 0) {
+			return str;
+		}
+		char[] buf = new char[minLength];
+		if (left) {
+			Arrays.fill(buf, 0, padCount, padChar);
+			str.getChars(0, str.length(), buf, padCount);
+		} else {
+			str.getChars(0, str.length(), buf, 0);
+			Arrays.fill(buf, str.length(), minLength, padChar);
+		}
+		return new String(buf);
 	}
 
 	private static final Ordering<Object> ORDER = new Ordering<Object>() {

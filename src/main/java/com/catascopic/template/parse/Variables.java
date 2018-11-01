@@ -5,12 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Assigner;
 import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
-import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Tokenizer;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -28,7 +29,7 @@ class Variables {
 		do {
 			String name = tokenizer.parseIdentifier();
 			if (!unique.add(name)) {
-				new TemplateParseException(tokenizer,
+				throw new TemplateParseException(tokenizer,
 						"duplicate variable name: %s", name);
 			}
 			builder.add(name);
@@ -45,18 +46,20 @@ class Variables {
 		Iterator<String> iter = varNames.iterator();
 		for (Object unpacked : Values.toIterable(value)) {
 			if (!iter.hasNext()) {
-				throw new TemplateEvalException("too many values to unpack");
+				throw new TemplateEvalException(
+						"too many values to unpack into names: %s", varNames);
 			}
 			scope.set(iter.next(), unpacked);
 		}
 		if (iter.hasNext()) {
-			throw new TemplateEvalException("not enough values to unpack");
+			throw new TemplateEvalException(
+					"not enough values to unpack into names: %s", varNames);
 		}
 	}
 
 	static Assigner parseAssignment(Tokenizer tokenizer) {
 		ImmutableList.Builder<Assigner> builder = ImmutableList.builder();
-		HashSet<String> unique = new HashSet<String>();
+		Set<String> unique = new HashSet<>();
 		do {
 			builder.add(parseAssigner(tokenizer, unique));
 		} while (tokenizer.tryConsume(Symbol.COMMA));
@@ -84,7 +87,7 @@ class Variables {
 			Set<String> unique) {
 		final Names names = parseNames(tokenizer, unique);
 		tokenizer.consume(Symbol.ASSIGNMENT);
-		final Term term = tokenizer.parseExpression();
+		final Term term = tokenizer.parseEvaluable();
 		return new Assigner() {
 
 			@Override
@@ -112,11 +115,10 @@ class Variables {
 		}
 	};
 
-	interface Assigner {
-
-		void assign(Scope scope);
-	}
-
+	/**
+	 * Assigns a value to a particular name, or unpacks a sequence into several
+	 * names.
+	 */
 	interface Names {
 
 		void assign(Scope scope, Object value);

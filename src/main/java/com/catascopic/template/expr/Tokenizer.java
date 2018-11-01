@@ -93,7 +93,13 @@ public class Tokenizer implements Locatable {
 		}
 	}
 
-	public Term parseExpression() {
+	public TopLevelTerm parseEvaluable() {
+		int lineNumber = this.lineNumber();
+		int columnNumber = this.columnNumber();
+		return new TopLevelTerm(parseTerm(), lineNumber, columnNumber);
+	}
+
+	Term parseTerm() {
 		return ExpressionParser.parse(this);
 	}
 
@@ -223,7 +229,7 @@ public class Tokenizer implements Locatable {
 	private Token parseDouble(StringBuilder builder) throws IOException {
 		for (;;) {
 			int ch = reader.read();
-			if (ch != -1) {
+			if (ch == -1) {
 				break;
 			}
 			char c = (char) ch;

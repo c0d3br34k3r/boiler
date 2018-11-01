@@ -6,24 +6,24 @@ import com.google.common.collect.Sets;
 
 class BinaryTermParser implements TermParser {
 
-	private final TermParser termParser;
+	private final TermParser lowerOrder;
 	private final Set<Symbol> symbols;
 
-	BinaryTermParser(TermParser termParser, Symbol first, Symbol... rest) {
-		this.termParser = termParser;
+	BinaryTermParser(TermParser lowerOrder, Symbol first, Symbol... rest) {
+		this.lowerOrder = lowerOrder;
 		this.symbols = Sets.immutableEnumSet(first, rest);
 	}
 
 	@Override
 	public Term parse(Tokenizer tokenizer) {
-		Term left = termParser.parse(tokenizer);
+		Term left = lowerOrder.parse(tokenizer);
 		for (;;) {
 			Token token = tokenizer.peek();
-			if (token.type() == TokenType.SYMBOL && symbols.contains(token
-					.symbol())) {
+			if (token.type() == TokenType.SYMBOL
+					&& symbols.contains(token.symbol())) {
 				left = new BinaryTerm(left,
 						tokenizer.next().symbol().binaryOperator(),
-						termParser.parse(tokenizer));
+						lowerOrder.parse(tokenizer));
 			} else {
 				return left;
 			}

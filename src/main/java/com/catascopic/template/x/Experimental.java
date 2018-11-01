@@ -1,61 +1,47 @@
 package com.catascopic.template.x;
 
-import java.io.IOException;
-import java.io.PushbackReader;
-
 public class Experimental {
 
 	private static final int RADIX = 10;
 
-	public static Number readNumber(PushbackReader reader) throws IOException {
-		int integer = 0;
-		boolean hasDigit;
-		loop: for (;;) {
-			int ch = reader.read();
-			int digit = Character.digit(ch, RADIX);
-			if (digit == -1) {
-				switch (ch) {
-				case '.':
-					return readDecimal(reader, integer, hasDigit);
-				case 'e':
-				case 'E':
-					return hasDigit ? readScientific(reader, integer, 0.0) : null;
-				default:
-					reader.unread(ch);
-				case -1:
-					return hasDigit ? integer : null;
-				}
-			} else {
-				integer *= RADIX;
-				integer += digit;
-				hasDigit = true;
-			}
+	public static Integer parseIntOrNull(String str) {
+		
+		if (str.isEmpty()) {
+			return null;
 		}
-	}
-
-	private static Number readDecimal(PushbackReader reader, int integer,
-			boolean hasDigitSoFar) {
-		double decimal = 0;
-		boolean hasDigit = hasDigitSoFar;
-		loop: for (;;) {
-			int ch = reader.read();
-			int digit = Character.digit(ch, RADIX);
-			if (digit == -1) {
-				switch (ch) {
-				case 'e':
-				case 'E':
-					return readScientific(reader, integer, decimal);
-				default:
-					reader.unread(ch);
-				case -1:
-					return hasDigit ? integer : null;
-				}
-			} else {
-				integer /= RADIX;
-				integer += digit;
-				hasDigit = true;
+		boolean negative = false;
+		int i = 0;
+		int limit = -Integer.MAX_VALUE;
+		char firstChar = str.charAt(0);
+		if (firstChar < '0') {
+			if (firstChar == '-') {
+				negative = true;
+				limit = Integer.MIN_VALUE;
+			} else if (firstChar != '+') {
+				return null;
 			}
+			if (str.length() == 1) {
+				return null;
+			}
+			i++;
 		}
+		int result = 0;
+		int multmin = limit / RADIX;
+		while (i < str.length()) {
+			int digit = Character.digit(str.charAt(i++), RADIX);
+			if (digit < 0) {
+				return null;
+			}
+			if (result < multmin) {
+				return null;
+			}
+			result *= RADIX;
+			if (result < limit + digit) {
+				return null;
+			}
+			result -= digit;
+		}
+		return negative ? result : -result;
 	}
 
 }

@@ -75,14 +75,14 @@ enum BinaryOperator {
 
 		@Override
 		Object apply(Object left, Object right) {
-			return Values.isEqual(left, right);
+			return Values.equal(left, right);
 		}
 	},
 	NOT_EQUAL {
 
 		@Override
 		Object apply(Object left, Object right) {
-			return !Values.isEqual(left, right);
+			return !Values.equal(left, right);
 		}
 	},
 	AND {

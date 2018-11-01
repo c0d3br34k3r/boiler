@@ -1,9 +1,7 @@
 package com.catascopic.template.parse;
 
-import java.io.IOException;
-
+import com.catascopic.template.Assigner;
 import com.catascopic.template.Scope;
-import com.catascopic.template.parse.Variables.Assigner;
 
 class SetNode implements Node {
 
@@ -14,7 +12,7 @@ class SetNode implements Node {
 	}
 
 	@Override
-	public void render(Appendable writer, Scope scope) throws IOException {
+	public void render(Appendable writer, Scope scope) {
 		assigner.assign(scope);
 	}
 

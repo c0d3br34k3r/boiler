@@ -16,14 +16,10 @@ import com.catascopic.template.parse.TemplateParser;
  */
 abstract class ParseCache<T> {
 
-	private final Map<Path, CacheEntry> cache;
-
-	protected ParseCache() {
-		this(100);
-	}
+	private Map<Path, CacheEntry> cache;
 
 	protected ParseCache(int size) {
-		this.cache = new LruMap<Path, CacheEntry>(size);
+		this.cache = new LruMap<>(size);
 	}
 
 	T get(Path file) throws IOException {
@@ -63,10 +59,6 @@ abstract class ParseCache<T> {
 
 	static class TextCache extends ParseCache<String> {
 
-		TextCache() {
-			super();
-		}
-
 		TextCache(int size) {
 			super(size);
 		}
@@ -78,10 +70,6 @@ abstract class ParseCache<T> {
 	}
 
 	static class TemplateCache extends ParseCache<Node> {
-
-		TemplateCache() {
-			super();
-		}
 
 		TemplateCache(int size) {
 			super(size);

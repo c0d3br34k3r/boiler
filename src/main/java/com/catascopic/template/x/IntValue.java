@@ -3,9 +3,14 @@ package com.catascopic.template.x;
 public class IntValue implements Value {
 
 	private final int value;
-	
+
 	public IntValue(int value) {
 		this.value = value;
+	}
+
+	@Override
+	public int intValue() {
+		return value;
 	}
 
 	@Override

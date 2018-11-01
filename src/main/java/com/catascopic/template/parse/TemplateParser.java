@@ -5,11 +5,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.catascopic.template.Assigner;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
-import com.catascopic.template.parse.Variables.Assigner;
 import com.catascopic.template.parse.Variables.Names;
 
 public class TemplateParser {
@@ -122,7 +122,7 @@ public class TemplateParser {
 	}
 
 	private Node parseIf(Tokenizer tokenizer) throws IOException {
-		Term condition = tokenizer.parseExpression();
+		Term condition = tokenizer.parseEvaluable();
 		tokenizer.end();
 		Block block = parseBlock(true);
 		return new IfNode(condition, block);
@@ -139,7 +139,7 @@ public class TemplateParser {
 	private Node parseFor(Tokenizer tokenizer) throws IOException {
 		Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
-		Term sequence = tokenizer.parseExpression();
+		Term sequence = tokenizer.parseEvaluable();
 		tokenizer.end();
 		Block block = parseBlock(false);
 		return new ForNode(names, sequence, block);
@@ -152,7 +152,7 @@ public class TemplateParser {
 	}
 
 	private static Node parseTemplate(Tokenizer tokenizer) {
-		Term templateName = tokenizer.parseExpression();
+		Term templateName = tokenizer.parseEvaluable();
 		Assigner vars;
 		if (tokenizer.tryConsume("with")) {
 			vars = Variables.parseAssignment(tokenizer);
@@ -164,17 +164,17 @@ public class TemplateParser {
 	}
 
 	private static Node parseText(Tokenizer tokenizer) {
-		Term textFileName = tokenizer.parseExpression();
+		Term textFileName = tokenizer.parseEvaluable();
 		tokenizer.end();
 		return new TextNode(textFileName);
 	}
 
 	private NodeResult parseEval() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
-		Term term = tokenizer.parseExpression();
+		Term evaluable = tokenizer.parseEvaluable();
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return result(NodeResult.NODE, new EvalNode(term));
+		return result(NodeResult.NODE, new EvalNode(evaluable));
 	}
 
 	private Block parseBlock(boolean elseAllowed) throws IOException {
