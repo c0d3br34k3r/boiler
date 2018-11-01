@@ -25,7 +25,7 @@ class TemplateNode implements Node {
 
 	@Override
 	public String toString() {
-		return "template: " + templateName;
+		return "<% template " + templateName + " %>";
 	}
 
 }

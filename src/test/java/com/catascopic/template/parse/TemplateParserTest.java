@@ -15,12 +15,12 @@ public class TemplateParserTest {
 				+ "<% if a == 2 %>\n"
 				+ "<<3 * a>>\n"
 				+ "<% else if b == 2 %>\n"
-				+ "<<'*' * q * 4>>\n"
+				+ "<<'*' * a * 4>>\n"
 				+ "<% else if c == 2 %>\n"
 				+ "baz\n"
 				+ "<% end %>\n"
 				+ "what";
-		System.out.println(template);
+		//System.out.println(template);
 		String result = render(template);
 		System.out.println(result);
 	}

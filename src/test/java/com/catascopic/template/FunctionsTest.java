@@ -14,6 +14,7 @@ public class FunctionsTest {
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());
+		Assert.assertEquals(3, reader.columnNumber());
 		reader.unread('7');
 		Assert.assertEquals('7', reader.read());
 		Assert.assertEquals('8', reader.read());

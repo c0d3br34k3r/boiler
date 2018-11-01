@@ -34,7 +34,7 @@ public class TemplateParser {
 		case TAG:     return parseTag();
 		case EVAL:    return parseEval();
 		case COMMENT: return skipCommentAndParseNext();
-		case END:     return endDocument();
+		case END:     return result(NodeResult.END_DOCUMENT);
 		default:      throw new IllegalArgumentException(mode.name());
 		}
 	}
@@ -238,10 +238,6 @@ public class TemplateParser {
 			}
 		}
 		throw new TemplateParseException(reader, "unclosed comment");
-	}
-
-	private NodeResult endDocument() {
-		return result(NodeResult.END_DOCUMENT);
 	}
 
 	private NodeResult result(NodeResult type, Node node) {

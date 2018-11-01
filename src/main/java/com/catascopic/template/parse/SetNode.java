@@ -18,7 +18,7 @@ class SetNode implements Node {
 
 	@Override
 	public String toString() {
-		return "set " + assigner;
+		return "<% set " + assigner + " %>";
 	}
 
 }

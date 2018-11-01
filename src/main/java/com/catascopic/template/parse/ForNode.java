@@ -29,7 +29,7 @@ class ForNode implements Node {
 
 	@Override
 	public String toString() {
-		return "for (" + names + " in " + sequence + ") " + block;
+		return "<% for" + names + " in " + sequence + "%>" + block + "<% end %>";
 	}
 
 }

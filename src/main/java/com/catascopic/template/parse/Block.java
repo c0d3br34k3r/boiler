@@ -32,10 +32,10 @@ class Block {
 
 	@Override
 	public String toString() {
-		return "{ " + (elseNode == EMPTY
-				? Joiner.on(" ").join(nodes)
-				: Joiner.on(" ").join(nodes)
-						+ " } else { " + elseNode) + " }";
+		return (elseNode == EMPTY
+				? Joiner.on("").join(nodes)
+				: Joiner.on("").join(nodes)
+						+ "<% else %>" + elseNode);
 	}
 
 	private static final Node EMPTY = new Node() {

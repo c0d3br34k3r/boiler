@@ -21,7 +21,7 @@ class EvalNode implements Node {
 
 	@Override
 	public String toString() {
-		return expression.toString();
+		return "<< " + expression.toString() + " >>";
 	}
 
 }

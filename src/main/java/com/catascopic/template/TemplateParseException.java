@@ -4,7 +4,7 @@ package com.catascopic.template;
 public class TemplateParseException extends RuntimeException {
 
 	public TemplateParseException(Locatable location, String message) {
-		super(location(location) + ", " + message);
+		super(location(location) + ": " + message);
 	}
 
 	public TemplateParseException(Locatable location, Throwable e) {
@@ -13,7 +13,7 @@ public class TemplateParseException extends RuntimeException {
 
 	public TemplateParseException(Locatable location, String message,
 			Throwable e) {
-		super(location(location) + ", " + message, e);
+		super(location(location) + ": " + message, e);
 	}
 
 	public TemplateParseException(Locatable location, String format,

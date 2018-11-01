@@ -75,7 +75,7 @@ public class Scope implements LocalAccess, Function<Term, Object> {
 
 		@Override
 		public Object get(String name) {
-			throw new TemplateEvalException("%s could not be resolved", name);
+			throw new TemplateEvalException("%s is undefined", name);
 		}
 	};
 
