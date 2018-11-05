@@ -15,6 +15,8 @@ import org.junit.runners.Parameterized.Parameters;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TestUtil;
 import com.catascopic.template.Values;
+import com.catascopic.template.eval.Term;
+import com.catascopic.template.eval.Tokenizer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 

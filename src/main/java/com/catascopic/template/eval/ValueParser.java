@@ -1,13 +1,13 @@
-package com.catascopic.template.expr;
+package com.catascopic.template.eval;
 
-import static com.catascopic.template.expr.Symbol.COLON;
-import static com.catascopic.template.expr.Symbol.COMMA;
-import static com.catascopic.template.expr.Symbol.DOT;
-import static com.catascopic.template.expr.Symbol.LEFT_BRACKET;
-import static com.catascopic.template.expr.Symbol.LEFT_PARENTHESIS;
-import static com.catascopic.template.expr.Symbol.RIGHT_BRACKET;
-import static com.catascopic.template.expr.Symbol.RIGHT_CURLY_BRACKET;
-import static com.catascopic.template.expr.Symbol.RIGHT_PARENTHESIS;
+import static com.catascopic.template.eval.Symbol.COLON;
+import static com.catascopic.template.eval.Symbol.COMMA;
+import static com.catascopic.template.eval.Symbol.DOT;
+import static com.catascopic.template.eval.Symbol.LEFT_BRACKET;
+import static com.catascopic.template.eval.Symbol.LEFT_PARENTHESIS;
+import static com.catascopic.template.eval.Symbol.RIGHT_BRACKET;
+import static com.catascopic.template.eval.Symbol.RIGHT_CURLY_BRACKET;
+import static com.catascopic.template.eval.Symbol.RIGHT_PARENTHESIS;
 
 import java.util.Collections;
 import java.util.List;

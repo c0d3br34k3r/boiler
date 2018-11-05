@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.catascopic.template.expr.Term;
+import com.catascopic.template.eval.Term;
 import com.google.common.base.Function;
 
 public class Scope implements LocalAccess, Function<Term, Object> {

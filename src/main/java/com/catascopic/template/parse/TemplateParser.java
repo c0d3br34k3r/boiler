@@ -8,8 +8,8 @@ import java.util.List;
 import com.catascopic.template.Assigner;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
-import com.catascopic.template.expr.Term;
-import com.catascopic.template.expr.Tokenizer;
+import com.catascopic.template.eval.Term;
+import com.catascopic.template.eval.Tokenizer;
 import com.catascopic.template.parse.Variables.Names;
 
 public class TemplateParser {

@@ -1,4 +1,4 @@
-package com.catascopic.template.expr;
+package com.catascopic.template.eval;
 
 interface TermParser {
 

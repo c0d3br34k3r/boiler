@@ -10,9 +10,9 @@ import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
-import com.catascopic.template.expr.Term;
-import com.catascopic.template.expr.Symbol;
-import com.catascopic.template.expr.Tokenizer;
+import com.catascopic.template.eval.Symbol;
+import com.catascopic.template.eval.Term;
+import com.catascopic.template.eval.Tokenizer;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 

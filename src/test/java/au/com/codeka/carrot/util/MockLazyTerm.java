@@ -1,7 +1,7 @@
 package au.com.codeka.carrot.util;
 
 import com.catascopic.template.CarrotException;
-import com.catascopic.template.expr.Lazy;
+import com.catascopic.template.eval.Lazy;
 
 /**
  * @author Marten Gajda
