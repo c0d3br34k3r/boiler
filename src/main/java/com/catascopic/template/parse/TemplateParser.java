@@ -122,7 +122,7 @@ public class TemplateParser {
 	}
 
 	private Node parseIf(Tokenizer tokenizer) throws IOException {
-		Term condition = tokenizer.parseEvaluable();
+		Term condition = tokenizer.parseExpression();
 		tokenizer.end();
 		Block block = parseBlock(true);
 		return new IfNode(condition, block);
@@ -139,7 +139,7 @@ public class TemplateParser {
 	private Node parseFor(Tokenizer tokenizer) throws IOException {
 		Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
-		Term sequence = tokenizer.parseEvaluable();
+		Term sequence = tokenizer.parseExpression();
 		tokenizer.end();
 		Block block = parseBlock(false);
 		return new ForNode(names, sequence, block);
@@ -152,7 +152,7 @@ public class TemplateParser {
 	}
 
 	private static Node parseTemplate(Tokenizer tokenizer) {
-		Term templateName = tokenizer.parseEvaluable();
+		Term templateName = tokenizer.parseExpression();
 		Assigner vars;
 		if (tokenizer.tryConsume("with")) {
 			vars = Variables.parseAssignment(tokenizer);
@@ -164,14 +164,14 @@ public class TemplateParser {
 	}
 
 	private static Node parseText(Tokenizer tokenizer) {
-		Term textFileName = tokenizer.parseEvaluable();
+		Term textFileName = tokenizer.parseExpression();
 		tokenizer.end();
 		return new TextNode(textFileName);
 	}
 
 	private NodeResult parseEval() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
-		Term evaluable = tokenizer.parseEvaluable();
+		Term evaluable = tokenizer.parseExpression();
 		tokenizer.end();
 		mode = Mode.TEXT;
 		return result(NodeResult.NODE, new EvalNode(evaluable));

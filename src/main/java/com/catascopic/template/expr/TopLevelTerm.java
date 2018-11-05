@@ -20,16 +20,12 @@ class TopLevelTerm implements Term {
 		try {
 			return term.evaluate(scope);
 		} catch (TemplateEvalException e) {
-			throw new LocatedEvalException(e, this);
+			throw new TemplateEvalException(String.format(
+					"at line %d, column %d: %s",
+					lineNumber + 1,
+					columnNumber + 1,
+					this), e);
 		}
-	}
-
-	int lineNumber() {
-		return lineNumber;
-	}
-
-	int columnNumber() {
-		return columnNumber;
 	}
 
 	@Override

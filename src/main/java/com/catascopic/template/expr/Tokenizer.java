@@ -93,9 +93,9 @@ public class Tokenizer implements Locatable {
 		}
 	}
 
-	public TopLevelTerm parseEvaluable() {
-		int lineNumber = this.lineNumber();
-		int columnNumber = this.columnNumber();
+	public Term parseExpression() {
+		int lineNumber = lineNumber();
+		int columnNumber = columnNumber();
 		return new TopLevelTerm(parseTerm(), lineNumber, columnNumber);
 	}
 
