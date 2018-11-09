@@ -27,7 +27,7 @@ public class TemplateParser {
 	}
 
 	// @formatter:off
-	private NodeResult parseNext() throws IOException {
+	private NodeCreator parseNext() throws IOException {
 		switch (mode) {
 		case TEXT:    return parseTextOrTag();
 		case BREAK:   return breakNode();
@@ -47,16 +47,16 @@ public class TemplateParser {
 		return node;
 	}
 
-	private NodeResult parseTextOrTag() throws IOException {
+	private NodeCreator parseTextOrTag() throws IOException {
 		String content = parseContent();
 		return !content.isEmpty()
 				? result(NodeResult.NODE, new ContentNode(content))
 				: parseNext();
 	}
 
-	private NodeResult breakNode() {
+	private NodeCreator breakNode() {
 		mode = Mode.TEXT;
-		return result(NodeResult.NODE, BreakNode.INSTANCE);
+		return BreakNode.INSTANCE;
 	}
 
 	private String parseContent() throws IOException {
@@ -95,40 +95,33 @@ public class TemplateParser {
 		return builder.toString();
 	}
 
-	private NodeResult parseTag() throws IOException {
+	private NodeCreator parseTag() throws IOException {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.TAG);
 		String tagName = tokenizer.parseIdentifier();
 		mode = Mode.TEXT;
 		switch (tagName) {
 		case "if":
-			return result(NodeResult.NODE, parseIf(tokenizer));
+			return parseIf(tokenizer);
 		case "else":
-			return result(NodeResult.ELSE, parseElse(tokenizer));
+			return parseElse(tokenizer);
 		case "for":
-			return result(NodeResult.NODE, parseFor(tokenizer));
+			return parseFor(tokenizer);
 		case "set":
-			return result(NodeResult.NODE, parseSet(tokenizer));
+			return parseSet(tokenizer);
 		case "template":
-			return result(NodeResult.NODE, parseTemplate(tokenizer));
+			return parseTemplate(tokenizer);
 		case "text":
-			return result(NodeResult.NODE, parseText(tokenizer));
+			return parseText(tokenizer);
 		case "end":
 			tokenizer.end();
-			return result(NodeResult.END_TAG);
+			return SpecialNode.END;
 		default:
 			throw new TemplateParseException(reader,
 					"unknown tag: %s", tagName);
 		}
 	}
 
-	private Node parseIf(Tokenizer tokenizer) throws IOException {
-		Term condition = tokenizer.parseExpression();
-		tokenizer.end();
-		Block block = parseBlock(true);
-		return new IfNode(condition, block);
-	}
-
-	private Node parseElse(Tokenizer tokenizer) throws IOException {
+	private static NodeCreator parseElse(Tokenizer tokenizer) throws IOException {
 		if (tokenizer.tryConsume("if")) {
 			return parseIf(tokenizer);
 		}
@@ -136,7 +129,7 @@ public class TemplateParser {
 		return new BlockNode(parseBlock(false));
 	}
 
-	private Node parseFor(Tokenizer tokenizer) throws IOException {
+	private static NodeCreator parseFor(Tokenizer tokenizer) throws IOException {
 		Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		Term sequence = tokenizer.parseExpression();
@@ -145,13 +138,13 @@ public class TemplateParser {
 		return new ForNode(names, sequence, block);
 	}
 
-	private static Node parseSet(Tokenizer tokenizer) {
+	private static NodeCreator parseSet(Tokenizer tokenizer) {
 		Assigner vars = Variables.parseAssignment(tokenizer);
 		tokenizer.end();
 		return new SetNode(vars);
 	}
 
-	private static Node parseTemplate(Tokenizer tokenizer) {
+	private static NodeCreator parseTemplate(Tokenizer tokenizer) {
 		Term templateName = tokenizer.parseExpression();
 		Assigner vars;
 		if (tokenizer.tryConsume("with")) {
@@ -169,7 +162,7 @@ public class TemplateParser {
 		return new TextNode(textFileName);
 	}
 
-	private NodeResult parseEval() {
+	private NodeCreator parseEval() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
 		Term evaluable = tokenizer.parseExpression();
 		tokenizer.end();
@@ -177,47 +170,7 @@ public class TemplateParser {
 		return result(NodeResult.NODE, new EvalNode(evaluable));
 	}
 
-	private Block parseBlock(boolean elseAllowed) throws IOException {
-		List<Node> nodes = new ArrayList<>();
-		for (;;) {
-			NodeResult result = parseNext();
-			switch (result) {
-			case NODE:
-				nodes.add(getNode());
-				break;
-			case ELSE:
-				if (!elseAllowed) {
-					throw new TemplateParseException(reader,
-							"else not allowed");
-				}
-				return new Block(nodes, getNode());
-			case END_TAG:
-				return new Block(nodes);
-			case END_DOCUMENT:
-				throw new TemplateParseException(reader, "unclosed tag");
-			}
-		}
-	}
-
-	public Node parseRoot() throws IOException {
-		List<Node> nodes = new ArrayList<>();
-		for (;;) {
-			NodeResult result = parseNext();
-			switch (result) {
-			case NODE:
-				nodes.add(getNode());
-				break;
-			case ELSE:
-			case END_TAG:
-				throw new TemplateParseException(reader,
-						"unbalanced %s", result);
-			case END_DOCUMENT:
-				return new BlockNode(new Block(nodes));
-			}
-		}
-	}
-
-	private NodeResult skipCommentAndParseNext() throws IOException {
+	private NodeCreator skipCommentAndParseNext() throws IOException {
 		loop: for (;;) {
 			int c = reader.read();
 			switch (c) {
@@ -240,16 +193,6 @@ public class TemplateParser {
 		throw new TemplateParseException(reader, "unclosed comment");
 	}
 
-	private NodeResult result(NodeResult type, Node node) {
-		this.node = node;
-		return type;
-	}
-
-	private NodeResult result(NodeResult type) {
-		this.node = null;
-		return type;
-	}
-
 	private enum Mode {
 
 		TEXT,
@@ -260,11 +203,11 @@ public class TemplateParser {
 		END
 	}
 
-	private enum NodeResult {
+	private enum NodeType {
 
+		TEXT,
+		WHITESPACE,
 		NODE,
-		ELSE,
-		END_TAG,
 		END_DOCUMENT;
 	}
 

@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import com.catascopic.template.Scope;
 
-public enum BreakNode implements Node {
+public enum SpecialNode implements NodeCreator, Node {
 
-	INSTANCE;
+	END,
+	BREAK;
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {

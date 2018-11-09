@@ -41,22 +41,6 @@ class Variables {
 		return new UnpackNames(varNames);
 	}
 
-	private static void unpack(List<String> varNames, Scope scope,
-			Object value) {
-		Iterator<String> iter = varNames.iterator();
-		for (Object unpacked : Values.toIterable(value)) {
-			if (!iter.hasNext()) {
-				throw new TemplateEvalException(
-						"too many values to unpack into names: %s", varNames);
-			}
-			scope.set(iter.next(), unpacked);
-		}
-		if (iter.hasNext()) {
-			throw new TemplateEvalException(
-					"not enough values to unpack into names: %s", varNames);
-		}
-	}
-
 	static Assigner parseAssignment(Tokenizer tokenizer) {
 		ImmutableList.Builder<Assigner> builder = ImmutableList.builder();
 		Set<String> unique = new HashSet<>();
@@ -153,7 +137,18 @@ class Variables {
 
 		@Override
 		public void assign(Scope scope, Object value) {
-			unpack(varNames, scope, value);
+			Iterator<String> iter = varNames.iterator();
+			for (Object unpacked : Values.toIterable(value)) {
+				if (!iter.hasNext()) {
+					throw new TemplateEvalException(
+							"too many values to unpack into names: %s", varNames);
+				}
+				scope.set(iter.next(), unpacked);
+			}
+			if (iter.hasNext()) {
+				throw new TemplateEvalException(
+						"not enough values to unpack into names: %s", varNames);
+			}
 		}
 
 		@Override

@@ -43,14 +43,6 @@ public final class Values {
 		return value != null;
 	}
 
-	public static Number negate(Object value) {
-		Number num = toNumber(value);
-		if (num instanceof Integer) {
-			return -num.intValue();
-		}
-		return -num.doubleValue();
-	}
-
 	public static Number toNumber(Object value) {
 		if (value instanceof Number) {
 			return (Number) value;
@@ -100,6 +92,14 @@ public final class Values {
 		}
 	}
 
+	public static Number negate(Object value) {
+		Number num = toNumber(value);
+		if (num instanceof Integer) {
+			return -num.intValue();
+		}
+		return -num.doubleValue();
+	}
+
 	public static Object add(Object o1, Object o2) {
 		if (o1 instanceof Number) {
 			Number n1 = (Number) o1;
@@ -127,15 +127,6 @@ public final class Values {
 		return n1.doubleValue() + n2.doubleValue();
 	}
 
-	public static Number divide(Object o1, Object o2) {
-		Number n1 = toNumber(o1);
-		Number n2 = toNumber(o2);
-		if (n1 instanceof Integer && n2 instanceof Integer) {
-			return n1.intValue() / n2.intValue();
-		}
-		return n1.doubleValue() / n2.doubleValue();
-	}
-
 	public static Object multiply(Object o1, Object o2) {
 		Number n1 = tryConvertNumber(o1);
 		Number n2 = tryConvertNumber(o2);
@@ -149,6 +140,15 @@ public final class Values {
 			return n1.intValue() * n2.intValue();
 		}
 		return n1.doubleValue() * n2.doubleValue();
+	}
+
+	public static Number divide(Object o1, Object o2) {
+		Number n1 = toNumber(o1);
+		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return n1.intValue() / n2.intValue();
+		}
+		return n1.doubleValue() / n2.doubleValue();
 	}
 
 	public static Number modulo(Object o1, Object o2) {

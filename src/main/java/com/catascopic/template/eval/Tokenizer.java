@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import com.catascopic.template.Locatable;
 import com.catascopic.template.PositionReader;
+import com.catascopic.template.Scope;
+import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
@@ -94,9 +96,29 @@ public class Tokenizer implements Locatable {
 	}
 
 	public Term parseExpression() {
-		int lineNumber = lineNumber();
-		int columnNumber = columnNumber();
-		return new TopLevelTerm(parseTerm(), lineNumber, columnNumber);
+		final int lineNumber = lineNumber();
+		final int columnNumber = columnNumber();
+		final Term term = parseTerm();
+		return new Term() {
+
+			@Override
+			public Object evaluate(Scope scope) {
+				try {
+					return term.evaluate(scope);
+				} catch (TemplateEvalException e) {
+					throw new TemplateEvalException(String.format(
+							"at line %d, column %d: %s",
+							lineNumber + 1,
+							columnNumber + 1,
+							this), e);
+				}
+			}
+
+			@Override
+			public String toString() {
+				return term.toString();
+			}
+		};
 	}
 
 	Term parseTerm() {
@@ -346,7 +368,7 @@ public class Tokenizer implements Locatable {
 		}
 	}
 
-	public char readCodePoint() throws IOException {
+	private char readCodePoint() throws IOException {
 		char[] buf = new char[4];
 		for (int i = 0; i < 4; i++) {
 			int ch = reader.read();

@@ -11,7 +11,7 @@ public class TemplateParserTest {
 
 	@Test
 	public void test() throws IOException {
-		String template = "<% set a, b, c = '123' %>\n"
+		String template = "<% set a, c = '123' %>\n"
 				+ "<% if a == 2 %>\n"
 				+ "<<3 * a>>\n"
 				+ "<% else if b == 2 %>\n"
