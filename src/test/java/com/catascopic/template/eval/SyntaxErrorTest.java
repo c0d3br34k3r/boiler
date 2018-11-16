@@ -1,10 +1,15 @@
-package com.catascopic.template.expr;
+package com.catascopic.template.eval;
+
+import java.io.StringReader;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.TestUtil;
+import com.google.common.collect.ImmutableMap;
 
 public class SyntaxErrorTest {
 
@@ -38,11 +43,33 @@ public class SyntaxErrorTest {
 
 	private static void syntaxError(String expr) {
 		try {
-			evaluate(expr, false);
+			evaluate(expr);
 			Assert.fail(expr + " was valid");
 		} catch (TemplateParseException | TemplateEvalException e) {
-			System.out.printf("%-24s %s%n", expr, e.getMessage());
+			System.out.printf("%-24s %s%n", expr, toString(e));
 		}
 	}
-	
+
+	private static Object toString(Throwable throwable) {
+		StringBuilder builder = new StringBuilder();
+		Throwable t = throwable;
+		for (;;) {
+			builder.append(t.getMessage());
+			t = t.getCause();
+			if (t == null) {
+				return builder.toString();
+			}
+			builder.append("; ");
+		}
+	}
+
+	private static void evaluate(String expr) {
+		Tokenizer tokenizer = new Tokenizer(new PositionReader(
+				new StringReader(expr)), Tokenizer.Mode.STREAM);
+		Term term;
+		term = tokenizer.parseExpression();
+		tokenizer.end();
+		term.evaluate(TestUtil.testScope(ImmutableMap.of("word", "automobile")));
+	}
+
 }

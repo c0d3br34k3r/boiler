@@ -316,7 +316,7 @@ enum Builtin implements TemplateFunction {
 			return builder.toString();
 		}
 	},
-	TEXT {
+	TEXT_FILE {
 
 		@Override
 		public Object apply(Params params) {

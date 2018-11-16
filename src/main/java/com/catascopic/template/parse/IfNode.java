@@ -11,10 +11,12 @@ class IfNode implements Node {
 
 	private final Term condition;
 	private final Block block;
+	private final Node elseNode;
 
-	private IfNode(Term condition, Block block) {
+	IfNode(Term condition, Block block, Node elseNode) {
 		this.condition = condition;
 		this.block = block;
+		this.elseNode = elseNode;
 	}
 
 	@Override
@@ -22,57 +24,77 @@ class IfNode implements Node {
 		if (Values.isTrue(condition.evaluate(scope))) {
 			block.render(writer, scope);
 		} else {
-			block.renderElse(writer, scope);
+			elseNode.render(writer, scope);
 		}
 	}
 
 	@Override
 	public String toString() {
-		// TODO
-		return super.toString();
+		return elseNode == EmptyNode.EMPTY
+				? "<% if " + condition + " %>" + block + "<% end %>"
+				: "<% if " + condition + " %>" + block + "<% else %>" + elseNode + "<% end %>";
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
 		final Term condition = tokenizer.parseExpression();
-		return new Tag() {
+		return new ElseBuilder() {
 
 			@Override
-			public void build(BlockBuilder builder) {
-				builder.add(new IfNode(condition, builder.parseBlock()));
+			public void build(TemplateParser parser) {
+				parser.beginBlock(this);
+			}
+
+			@Override
+			Node build() {
+				return new IfNode(condition, getBlock(), getElseNode());
 			}
 
 			@Override
 			public String toString() {
-				return "IF " + condition;
+				return "if " + condition + " {" + super.toString() + "}";
 			}
 		};
 	}
 
 	public static Tag parseElseTag(Tokenizer tokenizer) {
 		if (tokenizer.tryConsume("if")) {
-			return parseTag(tokenizer);
+			final Term condition = tokenizer.parseExpression();
+			return new ElseBuilder() {
+
+				@Override
+				public void build(TemplateParser parser) {
+					parser.beginElse(this);
+				}
+
+				@Override
+				Node build() {
+					return new IfNode(condition, getBlock(), getElseNode());
+				}
+
+				@Override
+				public String toString() {
+					return "else if " + condition + " {" + super.toString()
+							+ "}";
+				}
+			};
 		}
-		return new Tag() {
-			
+		return new NodeBuilderTag() {
+
 			@Override
-			public void build(BlockBuilder builder) {
-				builder.beginElse();
+			public void build(TemplateParser parser) {
+				parser.beginElse(this);
+			}
+
+			@Override
+			Node build() {
+				return getBlock();
 			}
 
 			@Override
 			public String toString() {
-				return "ELSE";
+				return "else {" + super.toString() + "}";
 			}
 		};
-	}
-	
-	private static class IfBuilder extends BlockBuilder implements Tag {
-
-		@Override
-		public void build(BlockBuilder builder) {
-			builder.addIf(ifBuilder);
-		}
-		
 	}
 
 }

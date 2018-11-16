@@ -44,19 +44,19 @@ public class Template {
 		renderInternal(TemplateResolver.DEFAULT, null, writer, params);
 	}
 
-	public String render(Map<String, Object> params) throws IOException {
+	public String render(Map<String, ? extends Object> params) throws IOException {
 		return renderInternal(TemplateResolver.DEFAULT, null, params);
 	}
 
 	private void renderInternal(TemplateResolver resolver,
 			Path workingDirectory,
-			Appendable writer, Map<String, Object> params) throws IOException {
+			Appendable writer, Map<String, ? extends Object> params) throws IOException {
 		node.render(writer, new Scope(resolver, workingDirectory, params));
 	}
 
 	private String renderInternal(TemplateResolver engine,
 			Path workingDirectory,
-			Map<String, Object> params) throws IOException {
+			Map<String, ? extends Object> params) throws IOException {
 		StringBuilder output = new StringBuilder();
 		renderInternal(engine, workingDirectory, output, params);
 		return output.toString();

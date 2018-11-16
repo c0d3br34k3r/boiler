@@ -16,7 +16,7 @@ public class Scope implements LocalAccess, Function<Term, Object> {
 	private Map<String, Object> values = new HashMap<>();
 
 	Scope(TemplateResolver resolver, Path workingDir,
-			Map<String, Object> params) {
+			Map<String, ? extends Object> params) {
 		this.resolver = resolver;
 		this.workingDir = workingDir;
 		this.parent = BASE;

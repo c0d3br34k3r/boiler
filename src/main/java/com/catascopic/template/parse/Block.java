@@ -1,13 +1,29 @@
 package com.catascopic.template.parse;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.catascopic.template.Scope;
+import com.google.common.base.Joiner;
 
-interface Block {
+class Block implements Node {
 
-	void render(Appendable writer, Scope scope) throws IOException;
+	private final List<Node> nodes;
 
-	void renderElse(Appendable writer, Scope scope) throws IOException;
+	Block(List<Node> nodes) {
+		this.nodes = nodes;
+	}
+
+	@Override
+	public void render(Appendable writer, Scope scope) throws IOException {
+		for (Node node : nodes) {
+			node.render(writer, scope);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return Joiner.on("").join(nodes);
+	}
 
 }

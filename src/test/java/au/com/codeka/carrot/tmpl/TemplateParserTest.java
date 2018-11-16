@@ -11,9 +11,9 @@ import org.junit.runners.JUnit4;
 import com.catascopic.template.CarrotException;
 import com.catascopic.template.Configuration;
 import com.catascopic.template.parse.Node;
-import com.catascopic.template.parse.TemplateParser;
+import com.catascopic.template.parse.TagParser;
 import com.catascopic.template.parse.TagNode;
-import com.catascopic.template.parse.TemplateParser;
+import com.catascopic.template.parse.TagParser;
 import com.catascopic.template.parse.TextNode;
 import com.catascopic.template.resource.ResourcePointer;
 import com.catascopic.template.tag.EchoTag;
@@ -21,7 +21,7 @@ import com.catascopic.template.tag.IfTag;
 import com.google.common.io.LineReader;
 
 /**
- * Tests for {@link TemplateParser}.
+ * Tests for {@link TagParser}.
  */
 @RunWith(JUnit4.class)
 public class TemplateParserTest {
@@ -82,10 +82,10 @@ public class TemplateParserTest {
 	}
 
 	private Node parseTemplate(String input) {
-		TemplateParser templateParser = new TemplateParser(new Configuration.Builder().build());
+		TagParser templateParser = new TagParser(new Configuration.Builder().build());
 		try {
 			Node node =
-					templateParser.parse(new TemplateParser(
+					templateParser.parse(new TagParser(
 							new LineReader(new ResourcePointer(null), new StringReader(input))));
 			assertThat(node).isNotNull();
 			return node;

@@ -14,8 +14,13 @@ public enum NewlineNode implements Tag, Node {
 	}
 
 	@Override
-	public void build(BlockBuilder builder) {
-		builder.add(NEWLINE);
+	public void build(TemplateParser parser) {
+		parser.add(NEWLINE);
+	}
+
+	@Override
+	public String toString() {
+		return "\n";
 	}
 
 }

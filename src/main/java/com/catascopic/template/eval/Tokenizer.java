@@ -3,6 +3,7 @@ package com.catascopic.template.eval;
 import java.io.IOException;
 
 import com.catascopic.template.Locatable;
+import com.catascopic.template.Location;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateEvalException;
@@ -96,8 +97,7 @@ public class Tokenizer implements Locatable {
 	}
 
 	public Term parseExpression() {
-		final int lineNumber = lineNumber();
-		final int columnNumber = columnNumber();
+		final Location location = getLocation();
 		final Term term = parseTerm();
 		return new Term() {
 
@@ -106,11 +106,8 @@ public class Tokenizer implements Locatable {
 				try {
 					return term.evaluate(scope);
 				} catch (TemplateEvalException e) {
-					throw new TemplateEvalException(String.format(
-							"at line %d, column %d: %s",
-							lineNumber + 1,
-							columnNumber + 1,
-							this), e);
+					throw new TemplateEvalException(location, e,
+							this.toString());
 				}
 			}
 
@@ -388,13 +385,8 @@ public class Tokenizer implements Locatable {
 	}
 
 	@Override
-	public int lineNumber() {
-		return reader.lineNumber();
-	}
-
-	@Override
-	public int columnNumber() {
-		return reader.columnNumber();
+	public Location getLocation() {
+		return reader.getLocation();
 	}
 
 }

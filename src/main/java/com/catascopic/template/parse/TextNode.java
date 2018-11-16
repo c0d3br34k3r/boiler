@@ -19,12 +19,12 @@ public class TextNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return '"' + text + '"';
+		return text;
 	}
 
 	@Override
-	public void build(BlockBuilder builder) {
-		builder.add(this);
+	public void build(TemplateParser parser) {
+		parser.add(this);
 	}
 
 }

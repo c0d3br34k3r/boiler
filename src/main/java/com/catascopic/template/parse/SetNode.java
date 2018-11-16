@@ -19,7 +19,7 @@ class SetNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "SET " + assigner;
+		return "<% set " + assigner + " %>";
 	}
 
 	public static Tag parseTag(Tokenizer tokenizer) {
@@ -27,8 +27,8 @@ class SetNode implements Node, Tag {
 	}
 
 	@Override
-	public void build(BlockBuilder builder) {
-		builder.add(this);
+	public void build(TemplateParser parser) {
+		parser.add(this);
 	}
 
 }

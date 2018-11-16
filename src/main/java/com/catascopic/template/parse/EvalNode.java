@@ -21,12 +21,12 @@ class EvalNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "EVAL " + expression;
+		return "<<" + expression + ">>";
 	}
 
 	@Override
-	public void build(BlockBuilder builder) {
-		builder.add(this);
+	public void build(TemplateParser parser) {
+		parser.add(this);
 	}
 
 }

@@ -3,33 +3,56 @@ package com.catascopic.template;
 @SuppressWarnings("serial")
 public class TemplateParseException extends RuntimeException {
 
-	public TemplateParseException(Locatable location, String message) {
+	public TemplateParseException(Location location, String message) {
 		super(location(location) + ": " + message);
 	}
 
-	public TemplateParseException(Locatable location, Throwable e) {
+	public TemplateParseException(Location location, Throwable e) {
 		super(location(location), e);
 	}
 
-	public TemplateParseException(Locatable location, String message,
+	public TemplateParseException(Location location, String message,
 			Throwable e) {
 		super(location(location) + ": " + message, e);
 	}
 
-	public TemplateParseException(Locatable location, String format,
+	public TemplateParseException(Location location, String format,
 			Object... args) {
 		this(location, String.format(format, args));
 	}
 
-	public TemplateParseException(Locatable location, Throwable e,
+	public TemplateParseException(Location location, Throwable e,
 			String format, Object... args) {
 		this(location, String.format(format, args), e);
 	}
 
-	private static String location(Locatable location) {
+	public TemplateParseException(Locatable locatable, String message) {
+		this(locatable.getLocation(), message);
+	}
+
+	public TemplateParseException(Locatable locatable, Throwable e) {
+		this(locatable.getLocation(), e);
+	}
+
+	public TemplateParseException(Locatable locatable, String message,
+			Throwable e) {
+		this(locatable.getLocation(), message, e);
+	}
+
+	public TemplateParseException(Locatable locatable, String format,
+			Object... args) {
+		this(locatable.getLocation(), format, args);
+	}
+
+	public TemplateParseException(Locatable locatable, Throwable e,
+			String format, Object... args) {
+		this(locatable.getLocation(), e, format, args);
+	}
+
+	private static String location(Location location) {
 		return String.format("at line %d, column %d",
-				location.lineNumber() + 1,
-				location.columnNumber() + 1);
+				location.line() + 1,
+				location.column() + 1);
 	}
 
 }

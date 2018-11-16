@@ -1,4 +1,4 @@
-package com.catascopic.template.expr;
+package com.catascopic.template.eval;
 
 import static com.catascopic.template.Values.camelToSeparator;
 import static com.catascopic.template.Values.range;

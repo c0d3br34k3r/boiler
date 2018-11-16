@@ -11,8 +11,8 @@ import com.catascopic.template.CarrotException;
 import com.catascopic.template.Configuration;
 import com.catascopic.template.Scope;
 import com.catascopic.template.bindings.MapBindings;
-import com.catascopic.template.parse.TemplateParser;
-import com.catascopic.template.parse.TemplateParser;
+import com.catascopic.template.parse.TagParser;
+import com.catascopic.template.parse.TagParser;
 
 /**
  * Helpers for rendering templates in tests.
@@ -29,7 +29,7 @@ public class RenderHelper {
 
 		Configuration config = new Configuration.Builder().build();
 		StringWriter writer = new StringWriter();
-		TemplateParser.parse(new TemplateParser(new StringReader(content)), config)
+		TagParser.parse(new TagParser(new StringReader(content)), config)
 				.render(new CarrotEngine(config), writer, new Scope(new MapBindings(bindingsMap)));
 		return writer.toString();
 	}

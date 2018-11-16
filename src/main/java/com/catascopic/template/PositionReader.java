@@ -6,8 +6,8 @@ import java.io.Reader;
 public class PositionReader implements Locatable {
 
 	private Reader reader;
-	private int lineNumber; // = 0
-	private int columnNumber; // = 0
+	private int line; // = 0
+	private int column; // = 0
 	private boolean skipLf;
 	private char[] buf;
 	private int pos;
@@ -28,7 +28,7 @@ public class PositionReader implements Locatable {
 		}
 		int c = reader.read();
 		if (c != -1) {
-			columnNumber++;
+			column++;
 		}
 		if (skipLf) {
 			if (c == '\n') {
@@ -41,8 +41,8 @@ public class PositionReader implements Locatable {
 			skipLf = true;
 			// fallthrough
 		case '\n':
-			lineNumber++;
-			columnNumber = 0;
+			line++;
+			column = 0;
 			return '\n';
 		}
 		return c;
@@ -56,13 +56,8 @@ public class PositionReader implements Locatable {
 	}
 
 	@Override
-	public int lineNumber() {
-		return lineNumber;
-	}
-
-	@Override
-	public int columnNumber() {
-		return columnNumber;
+	public Location getLocation() {
+		return new Location(line, column);
 	}
 
 }

@@ -14,7 +14,7 @@ public class FunctionsTest {
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());
-		Assert.assertEquals(3, reader.columnNumber());
+		Assert.assertEquals(3, reader.getLocation().column());
 		reader.unread('7');
 		Assert.assertEquals('7', reader.read());
 		Assert.assertEquals('8', reader.read());
@@ -22,7 +22,7 @@ public class FunctionsTest {
 		reader.unread('6');
 		Assert.assertEquals('6', reader.read());
 		Assert.assertEquals(-1, reader.read());
-		Assert.assertEquals(4, reader.columnNumber());
+		Assert.assertEquals(4, reader.getLocation().column());
 	}
 
 }

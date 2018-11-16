@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.catascopic.template.Assigner;
-import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
+import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Symbol;
@@ -25,6 +26,7 @@ class Variables {
 	}
 
 	private static Names parseNames(Tokenizer tokenizer, Set<String> unique) {
+		Location location = tokenizer.getLocation();
 		ImmutableList.Builder<String> builder = ImmutableList.builder();
 		do {
 			String name = tokenizer.parseIdentifier();
@@ -38,7 +40,7 @@ class Variables {
 		if (varNames.size() == 1) {
 			return new Name(varNames.get(0));
 		}
-		return new UnpackNames(varNames);
+		return new UnpackNames(varNames, location);
 	}
 
 	static Assigner parseAssignment(Tokenizer tokenizer) {
@@ -130,9 +132,11 @@ class Variables {
 	private static class UnpackNames implements Names {
 
 		private final List<String> varNames;
+		private final Location location;
 
-		UnpackNames(List<String> varNames) {
+		UnpackNames(List<String> varNames, Location location) {
 			this.varNames = varNames;
+			this.location = location;
 		}
 
 		@Override

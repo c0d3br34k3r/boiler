@@ -22,7 +22,7 @@ public class LruMap<K, V> extends LinkedHashMap<K, V> {
 	}
 
 	@Override
-	protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+	protected final boolean removeEldestEntry(Map.Entry<K, V> eldest) {
 		return size() > maxEntries;
 	}
 

@@ -467,7 +467,7 @@ public final class Values {
 
 	public static int getIndex(int index, int len) {
 		int adjusted = index < 0 ? len + index : index;
-		if (adjusted < 0 || adjusted >= len) {
+		if (adjusted < 0 || adjusted > len) {
 			throw new TemplateEvalException(
 					"index %s is out of bounds", index);
 		}

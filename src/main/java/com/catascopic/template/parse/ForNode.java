@@ -39,11 +39,16 @@ class ForNode implements Node {
 		final Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		final Term sequence = tokenizer.parseExpression();
-		return new Tag() {
+		return new NodeBuilderTag() {
 
 			@Override
-			public Node createNode(BlockBuilder stream) {
-				return new ForNode(names, sequence, null);
+			public void build(TemplateParser parser) {
+				parser.beginBlock(this);
+			}
+
+			@Override
+			Node build() {
+				return new ForNode(names, sequence, getBlock());
 			}
 		};
 	}
