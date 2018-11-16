@@ -21,7 +21,7 @@ class EvalNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "<< " + expression.toString() + " >>";
+		return "EVAL " + expression.toString() + "";
 	}
 
 	@Override

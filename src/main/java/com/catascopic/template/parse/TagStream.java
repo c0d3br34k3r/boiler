@@ -12,9 +12,9 @@ public class TagStream {
 		ImmutableList.Builder<Node> builder = ImmutableList.builder();
 		for (;;) {
 			Tag tag = iterator.next();
-			if (tag == Tag.END) {
+			if (tag.type() == Tag.Type.END) {
 				return new Block(builder.build());
-			}
+			} else if (tag == Tag.)
 			builder.add(tag.createNode(this));
 		}
 	}

@@ -2,71 +2,71 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
-import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
 import com.google.common.base.CharMatcher;
 
 public class TemplateParser {
 
-	public static Node parse(Reader reader) throws IOException {
-		TemplateParser parser = new TemplateParser(reader);
-		parser.parse();
-		return null;
+	public static List<Tag> parse(Reader reader) throws IOException {
+		return new TemplateParser(reader).parse();
 	}
 
-	private void parse() throws IOException {
-		Tag tag;
+	private List<Tag> parse() throws IOException {
 		do {
-			tag = parseNext();
-		} while (tags.add(tag));
+			parseNext();
+		} while (mode != Mode.END);
+		tags.endDocument();
+		return tags.result();
 	}
 
 	private final PositionReader reader;
-	private List<Tag> tags = new ArrayList<>();
-	private List<Tag> lineBuffer = new ArrayList<>();
-	private Tag onlyInstruction;
-	private int instructionTagCount;
+	private TagCleaner tags = new TagCleaner();
 	private Mode mode = Mode.TEXT;
 
 	TemplateParser(Reader reader) {
 		this.reader = new PositionReader(reader, 1);
 	}
 
-	private boolean parseNext() throws IOException {
+	private void parseNext() throws IOException {
 		switch (mode) {
 		case TEXT:
-			return parseTextOrTag();
+			parseTextOrTag();
+			break;
 		case NEWLINE:
-			return newline();
+			newline();
+			break;
 		case TAG:
-			return parseTag();
+			parseTag();
+			break;
 		case EVAL:
-			return parseEval();
+			parseEval();
+			break;
 		case COMMENT:
-			return skipCommentAndParseNext();
+			skipCommentAndParseNext();
+			break;
 		case END:
-			return SpecialNode.END_DOCUMENT;
+			break;
 		default:
 			throw new IllegalArgumentException(mode.name());
 		}
 	}
 
-	private boolean parseTextOrTag() throws IOException {
+	private void parseTextOrTag() throws IOException {
 		String text = parseContent();
 		if (text.isEmpty()) {
-			return parseNext();
+			parseNext();
+		} else {
+			Tag textNode = new TextNode(text);
+			if (CharMatcher.whitespace().matchesAllOf(text)) {
+				tags.whitespace(textNode);
+			} else {
+				tags.text(textNode);
+			}
 		}
-		Tag textNode = new TextNode(text);
-		if (!CharMatcher.whitespace().matchesAllOf(text)) {
-			instructionTagCount = 2;
-		}
-		lineBuffer.add(textNode);
-		return true;
 	}
 
 	private String parseContent() throws IOException {
@@ -105,22 +105,16 @@ public class TemplateParser {
 		return builder.toString();
 	}
 
-	private Tag parseTag() {
+	private void parseTag() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.TAG);
-		Tag tag = getTag(tokenizer);
+		tags.instruction(getTag(tokenizer));
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return tag;
 	}
 
-	private boolean newline() {
+	private void newline() {
 		mode = Mode.TEXT;
-		if (instructionTagCount == 1) {
-			tags.add(onlyInstruction);
-		}
-		lineBuffer = new ArrayList<>();
-		instructionTagCount = 0;
-		return true;
+		tags.endLine();
 	}
 
 	private static Tag getTag(Tokenizer tokenizer) {
@@ -129,7 +123,7 @@ public class TemplateParser {
 		case "if":
 			return IfNode.parseTag(tokenizer);
 		case "else":
-			return parseElse(tokenizer);
+			return IfNode.parseElseTag(tokenizer);
 		case "for":
 			return ForNode.parseTag(tokenizer);
 		case "set":
@@ -146,15 +140,14 @@ public class TemplateParser {
 		}
 	}
 
-	private Tag parseEval() {
+	private void parseEval() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
-		Term evaluable = tokenizer.parseExpression();
+		tags.text(new EvalNode(tokenizer.parseExpression()));
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return new EvalNode(evaluable);
 	}
 
-	private boolean skipCommentAndParseNext() throws IOException {
+	private void skipCommentAndParseNext() throws IOException {
 		loop: for (;;) {
 			int c = reader.read();
 			switch (c) {
@@ -164,7 +157,8 @@ public class TemplateParser {
 				int c2 = reader.read();
 				switch (c2) {
 				case '>':
-					return parseTextOrTag();
+					parseTextOrTag();
+					return;
 				case -1:
 					break loop;
 				default:

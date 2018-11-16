@@ -36,7 +36,7 @@ class ForNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		final Names names = tokenizer.parseNames();
+		final Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		final Term sequence = tokenizer.parseExpression();
 		return new Tag() {

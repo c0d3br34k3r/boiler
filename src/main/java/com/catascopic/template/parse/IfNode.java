@@ -42,6 +42,30 @@ class IfNode implements Node {
 			public Node createNode(TagStream stream) {
 				return new IfNode(condition, null, null);
 			}
+
+			@Override
+			public String toString() {
+				return "IF " + condition;
+			}
+		};
+	}
+
+	public static Tag parseElseTag(Tokenizer tokenizer) {
+		if (tokenizer.tryConsume("if")) {
+			return parseTag(tokenizer);
+		}
+		return new Tag() {
+			
+			@Override
+			public Node createNode(TagStream stream) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public String toString() {
+				return "ELSE";
+			}
 		};
 	}
 

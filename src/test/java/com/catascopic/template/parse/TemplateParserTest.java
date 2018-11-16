@@ -1,35 +1,31 @@
 package com.catascopic.template.parse;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.io.StringReader;
+import java.util.List;
 
 import org.junit.Test;
-
-import com.catascopic.template.Template;
 
 public class TemplateParserTest {
 
 	@Test
 	public void test() throws IOException {
-		String template = "<% set a, c = '123' %>\n"
-				+ "<% if a == 2 %>\n"
+		String template = "<% set a, b,  c = '123' %>\n"
+				+ "  <% if a == 2 %>  \n"
 				+ "<<3 * a>>\n"
-				+ "<% else if b == 2 %>\n"
-				+ "<<'*' * a * 4>>\n"
-				+ "<% else if c == 2 %>\n"
-				+ "baz\n"
-				+ "<% end %>\n"
+				+ "  <% else if b == 2 %>  \n"
+				+ "  <<'*' * a * 4>>\n"
+				+ "  <% else if c == 2 %>\n"
+				+ " baz\n"
+				+ "<% end %>  \n"
 				+ "what";
-		//System.out.println(template);
-		String result = render(template);
-		System.out.println(result);
+		System.out.println(template);
+		render(template);
 	}
 
-	private static String render(String string) throws IOException {
-		Template document = Template.parse(string);
+	private static void render(String string) throws IOException {
+		List<Tag> document = TemplateParser.parse(new StringReader(string));
 		System.out.println(document);
-		String render = document.render(Collections.<String, Object> emptyMap());
-		return render;
 	}
 
 }

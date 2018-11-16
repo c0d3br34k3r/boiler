@@ -19,7 +19,7 @@ public class TextNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return text;
+		return '"' + text + '"';
 	}
 
 	@Override

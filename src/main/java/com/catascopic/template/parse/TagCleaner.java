@@ -8,30 +8,55 @@ class TagCleaner {
 	private List<Tag> tags = new ArrayList<>();
 	private List<Tag> buffer = new ArrayList<>();
 	private Tag onlyInstruction;
-	private int instructionTagCount;
+	private State state = State.START;
 
-	void notClean() {
-		instructionTagCount = 2;
-	}
-	
-	void addTag(Tag tag) {
-		b
+	void whitespace(Tag tag) {
+		buffer.add(tag);
 	}
 
-	void instructionTag(Tag tag) {
-		onlyInstruction = tag;
-		instructionTagCount++;
+	void text(Tag tag) {
+		buffer.add(tag);
+		state = State.NOT_CLEAN;
+	}
+
+	void instruction(Tag tag) {
+		buffer.add(tag);
+		if (state == State.START) {
+			state = State.CLEAN;
+			onlyInstruction = tag;
+		} else {
+			state = State.NOT_CLEAN;
+		}
 	}
 
 	void endLine() {
-		if (instructionTagCount == 1) {
+		if (state == State.CLEAN) {
 			tags.add(onlyInstruction);
 		} else {
 			tags.addAll(buffer);
 			tags.add(SpecialNode.NEWLINE);
 		}
-		instructionTagCount = 0;
+		state = State.START;
 		buffer = new ArrayList<>();
+	}
+
+	void endDocument() {
+		if (state == State.CLEAN) {
+			tags.add(onlyInstruction);
+		} else {
+			tags.addAll(buffer);
+		}
+	}
+
+	List<Tag> result() {
+		return tags;
+	}
+
+	private enum State {
+
+		START,
+		CLEAN,
+		NOT_CLEAN;
 	}
 
 }
