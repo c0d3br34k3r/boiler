@@ -30,8 +30,8 @@ class TextFileNode implements Node, Tag {
 	}
 
 	@Override
-	public Node createNode(TagStream stream) {
-		return this;
+	public void build(BlockBuilder builder) {
+		builder.add(this);
 	}
 
 }

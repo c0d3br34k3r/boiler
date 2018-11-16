@@ -133,7 +133,7 @@ public class TemplateParser {
 		case "textfile":
 			return TextFileNode.parseTag(tokenizer);
 		case "end":
-			return SpecialNode.END;
+			return EndTag.END;
 		default:
 			throw new TemplateParseException(tokenizer,
 					"unknown tag: %s", tagName);

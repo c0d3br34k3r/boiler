@@ -4,10 +4,9 @@ import java.io.IOException;
 
 import com.catascopic.template.Scope;
 
-public enum SpecialNode implements Tag, Node {
+public enum NewlineNode implements Tag, Node {
 
-	NEWLINE,
-	END;
+	NEWLINE;
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
@@ -15,8 +14,8 @@ public enum SpecialNode implements Tag, Node {
 	}
 
 	@Override
-	public Node createNode(TagStream stream) {
-		return this;
+	public void build(BlockBuilder builder) {
+		builder.add(NEWLINE);
 	}
 
 }

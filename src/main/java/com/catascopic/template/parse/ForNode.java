@@ -42,7 +42,7 @@ class ForNode implements Node {
 		return new Tag() {
 
 			@Override
-			public Node createNode(TagStream stream) {
+			public Node createNode(BlockBuilder stream) {
 				return new ForNode(names, sequence, null);
 			}
 		};

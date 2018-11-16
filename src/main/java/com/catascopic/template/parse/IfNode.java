@@ -10,13 +10,11 @@ import com.catascopic.template.eval.Tokenizer;
 class IfNode implements Node {
 
 	private final Term condition;
-	private final Node block;
-	private final Node elseBlock;
+	private final Block block;
 
-	private IfNode(Term condition, Node block, Node elseBlock) {
+	private IfNode(Term condition, Block block) {
 		this.condition = condition;
 		this.block = block;
-		this.elseBlock = elseBlock;
 	}
 
 	@Override
@@ -24,7 +22,7 @@ class IfNode implements Node {
 		if (Values.isTrue(condition.evaluate(scope))) {
 			block.render(writer, scope);
 		} else {
-			elseBlock.render(writer, scope);
+			block.renderElse(writer, scope);
 		}
 	}
 
@@ -39,8 +37,8 @@ class IfNode implements Node {
 		return new Tag() {
 
 			@Override
-			public Node createNode(TagStream stream) {
-				return new IfNode(condition, null, null);
+			public void build(BlockBuilder builder) {
+				builder.add(new IfNode(condition, builder.parseBlock()));
 			}
 
 			@Override
@@ -57,9 +55,8 @@ class IfNode implements Node {
 		return new Tag() {
 			
 			@Override
-			public Node createNode(TagStream stream) {
-				// TODO Auto-generated method stub
-				return null;
+			public void build(BlockBuilder builder) {
+				builder.beginElse();
 			}
 
 			@Override
@@ -67,6 +64,15 @@ class IfNode implements Node {
 				return "ELSE";
 			}
 		};
+	}
+	
+	private static class IfBuilder extends BlockBuilder implements Tag {
+
+		@Override
+		public void build(BlockBuilder builder) {
+			builder.addIf(ifBuilder);
+		}
+		
 	}
 
 }

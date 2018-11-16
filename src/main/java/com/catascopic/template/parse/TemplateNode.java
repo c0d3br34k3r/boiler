@@ -41,7 +41,7 @@ class TemplateNode implements Node, Tag {
 	}
 
 	@Override
-	public Node createNode(TagStream stream) {
+	public Node createNode(BlockBuilder stream) {
 		return this;
 	}
 
