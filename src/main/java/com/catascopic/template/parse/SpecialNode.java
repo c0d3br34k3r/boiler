@@ -4,10 +4,11 @@ import java.io.IOException;
 
 import com.catascopic.template.Scope;
 
-public enum SpecialNode implements NodeCreator, Node {
+public enum SpecialNode implements Tag, Node {
 
+	NEWLINE,
 	END,
-	BREAK;
+	END_DOCUMENT;
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
@@ -17,6 +18,11 @@ public enum SpecialNode implements NodeCreator, Node {
 	@Override
 	public String toString() {
 		return System.lineSeparator();
+	}
+
+	@Override
+	public Node createNode(TagStream stream) {
+		return this;
 	}
 
 }

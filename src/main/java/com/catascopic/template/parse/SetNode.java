@@ -2,8 +2,9 @@ package com.catascopic.template.parse;
 
 import com.catascopic.template.Assigner;
 import com.catascopic.template.Scope;
+import com.catascopic.template.eval.Tokenizer;
 
-class SetNode implements Node {
+class SetNode implements Node, Tag {
 
 	private final Assigner assigner;
 
@@ -19,6 +20,15 @@ class SetNode implements Node {
 	@Override
 	public String toString() {
 		return "<% set " + assigner + " %>";
+	}
+
+	public static Tag parseTag(Tokenizer tokenizer) {
+		return new SetNode(Variables.parseAssignment(tokenizer));
+	}
+
+	@Override
+	public Node createNode(TagStream stream) {
+		return this;
 	}
 
 }

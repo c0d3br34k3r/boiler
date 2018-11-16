@@ -5,58 +5,68 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.catascopic.template.Assigner;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
-import com.catascopic.template.parse.Variables.Names;
+import com.google.common.base.CharMatcher;
 
 public class TemplateParser {
 
 	public static Node parse(Reader reader) throws IOException {
-		return new TemplateParser(reader).parseRoot();
+		TemplateParser parser = new TemplateParser(reader);
+		parser.parse();
+		return null;
+	}
+
+	private void parse() throws IOException {
+		Tag tag;
+		do {
+			tag = parseNext();
+		} while (tags.add(tag));
 	}
 
 	private final PositionReader reader;
+	private List<Tag> tags = new ArrayList<>();
+	private List<Tag> lineBuffer = new ArrayList<>();
+	private Tag onlyInstruction;
+	private int instructionTagCount;
 	private Mode mode = Mode.TEXT;
-	private Node node;
 
 	TemplateParser(Reader reader) {
 		this.reader = new PositionReader(reader, 1);
 	}
 
-	// @formatter:off
-	private NodeCreator parseNext() throws IOException {
+	private boolean parseNext() throws IOException {
 		switch (mode) {
-		case TEXT:    return parseTextOrTag();
-		case BREAK:   return breakNode();
-		case TAG:     return parseTag();
-		case EVAL:    return parseEval();
-		case COMMENT: return skipCommentAndParseNext();
-		case END:     return result(NodeResult.END_DOCUMENT);
-		default:      throw new IllegalArgumentException(mode.name());
+		case TEXT:
+			return parseTextOrTag();
+		case NEWLINE:
+			return newline();
+		case TAG:
+			return parseTag();
+		case EVAL:
+			return parseEval();
+		case COMMENT:
+			return skipCommentAndParseNext();
+		case END:
+			return SpecialNode.END_DOCUMENT;
+		default:
+			throw new IllegalArgumentException(mode.name());
 		}
 	}
-	// @formatter:on
 
-	Node getNode() {
-		if (node == null) {
-			throw new IllegalStateException();
+	private boolean parseTextOrTag() throws IOException {
+		String text = parseContent();
+		if (text.isEmpty()) {
+			return parseNext();
 		}
-		return node;
-	}
-
-	private NodeCreator parseTextOrTag() throws IOException {
-		String content = parseContent();
-		return !content.isEmpty()
-				? result(NodeResult.NODE, new ContentNode(content))
-				: parseNext();
-	}
-
-	private NodeCreator breakNode() {
-		mode = Mode.TEXT;
-		return BreakNode.INSTANCE;
+		Tag textNode = new TextNode(text);
+		if (!CharMatcher.whitespace().matchesAllOf(text)) {
+			instructionTagCount = 2;
+		}
+		lineBuffer.add(textNode);
+		return true;
 	}
 
 	private String parseContent() throws IOException {
@@ -86,7 +96,7 @@ public class TemplateParser {
 				}
 				break;
 			case '\n':
-				mode = Mode.BREAK;
+				mode = Mode.NEWLINE;
 				break loop;
 			default:
 				builder.append((char) ch);
@@ -95,82 +105,56 @@ public class TemplateParser {
 		return builder.toString();
 	}
 
-	private NodeCreator parseTag() throws IOException {
+	private Tag parseTag() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.TAG);
-		String tagName = tokenizer.parseIdentifier();
+		Tag tag = getTag(tokenizer);
+		tokenizer.end();
 		mode = Mode.TEXT;
+		return tag;
+	}
+
+	private boolean newline() {
+		mode = Mode.TEXT;
+		if (instructionTagCount == 1) {
+			tags.add(onlyInstruction);
+		}
+		lineBuffer = new ArrayList<>();
+		instructionTagCount = 0;
+		return true;
+	}
+
+	private static Tag getTag(Tokenizer tokenizer) {
+		String tagName = tokenizer.parseIdentifier();
 		switch (tagName) {
 		case "if":
-			return parseIf(tokenizer);
+			return IfNode.parseTag(tokenizer);
 		case "else":
 			return parseElse(tokenizer);
 		case "for":
-			return parseFor(tokenizer);
+			return ForNode.parseTag(tokenizer);
 		case "set":
-			return parseSet(tokenizer);
+			return SetNode.parseTag(tokenizer);
 		case "template":
-			return parseTemplate(tokenizer);
-		case "text":
-			return parseText(tokenizer);
+			return TemplateNode.parseTag(tokenizer);
+		case "textfile":
+			return TextFileNode.parseTag(tokenizer);
 		case "end":
-			tokenizer.end();
 			return SpecialNode.END;
 		default:
-			throw new TemplateParseException(reader,
+			throw new TemplateParseException(tokenizer,
 					"unknown tag: %s", tagName);
 		}
 	}
 
-	private static NodeCreator parseElse(Tokenizer tokenizer) throws IOException {
-		if (tokenizer.tryConsume("if")) {
-			return parseIf(tokenizer);
-		}
-		tokenizer.end();
-		return new BlockNode(parseBlock(false));
-	}
-
-	private static NodeCreator parseFor(Tokenizer tokenizer) throws IOException {
-		Names names = Variables.parseNames(tokenizer);
-		tokenizer.consumeIdentifier("in");
-		Term sequence = tokenizer.parseExpression();
-		tokenizer.end();
-		Block block = parseBlock(false);
-		return new ForNode(names, sequence, block);
-	}
-
-	private static NodeCreator parseSet(Tokenizer tokenizer) {
-		Assigner vars = Variables.parseAssignment(tokenizer);
-		tokenizer.end();
-		return new SetNode(vars);
-	}
-
-	private static NodeCreator parseTemplate(Tokenizer tokenizer) {
-		Term templateName = tokenizer.parseExpression();
-		Assigner vars;
-		if (tokenizer.tryConsume("with")) {
-			vars = Variables.parseAssignment(tokenizer);
-		} else {
-			vars = Variables.EMPTY;
-		}
-		tokenizer.end();
-		return new TemplateNode(templateName, vars);
-	}
-
-	private static Node parseText(Tokenizer tokenizer) {
-		Term textFileName = tokenizer.parseExpression();
-		tokenizer.end();
-		return new TextNode(textFileName);
-	}
-
-	private NodeCreator parseEval() {
+	private Tag parseEval() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
 		Term evaluable = tokenizer.parseExpression();
 		tokenizer.end();
 		mode = Mode.TEXT;
-		return result(NodeResult.NODE, new EvalNode(evaluable));
+		return new EvalNode(evaluable);
 	}
 
-	private NodeCreator skipCommentAndParseNext() throws IOException {
+	private boolean skipCommentAndParseNext() throws IOException {
 		loop: for (;;) {
 			int c = reader.read();
 			switch (c) {
@@ -190,25 +174,18 @@ public class TemplateParser {
 			default:
 			}
 		}
+		// TODO: locate beginning of comment
 		throw new TemplateParseException(reader, "unclosed comment");
 	}
 
 	private enum Mode {
 
 		TEXT,
-		BREAK,
+		NEWLINE,
 		TAG,
 		EVAL,
 		COMMENT,
 		END
-	}
-
-	private enum NodeType {
-
-		TEXT,
-		WHITESPACE,
-		NODE,
-		END_DOCUMENT;
 	}
 
 }

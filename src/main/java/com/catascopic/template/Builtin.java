@@ -1,9 +1,13 @@
 package com.catascopic.template;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
@@ -261,6 +265,32 @@ enum Builtin implements TemplateFunction {
 					params.getBoolean(3, true));
 		}
 	},
+	MATCHES {
+
+		@Override
+		public Object apply(Params params) {
+			return Pattern.compile(params.getString(1))
+					.matcher(params.getString(0)).matches();
+		}
+	},
+	SEARCH {
+
+		@Override
+		public Object apply(Params params) {
+			List<Object> result = new ArrayList<>();
+			Matcher matcher = Pattern.compile(params.getString(1))
+					.matcher(params.getString(0));
+			int groups = matcher.groupCount() + 1;
+			while (matcher.find()) {
+				List<String> group = new ArrayList<>(groups);
+				for (int i = 1; i < groups + 1; i++) {
+					group.add(i, matcher.group(i));
+				}
+				result.add(group);
+			}
+			return result;
+		}
+	},
 	TEMPLATE {
 
 		@Override
@@ -301,6 +331,9 @@ enum Builtin implements TemplateFunction {
 	};
 
 	// TODO: other possibilities:
+	// isUpper
+	// isLower
+	// regexReplace
 	// group
 	// sum
 	// exp

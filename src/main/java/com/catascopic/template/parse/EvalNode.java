@@ -6,7 +6,7 @@ import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
 
-class EvalNode implements Node {
+class EvalNode implements Node, Tag {
 
 	private final Term expression;
 
@@ -22,6 +22,11 @@ class EvalNode implements Node {
 	@Override
 	public String toString() {
 		return "<< " + expression.toString() + " >>";
+	}
+
+	@Override
+	public Node createNode(TagStream stream) {
+		return this;
 	}
 
 }

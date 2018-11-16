@@ -3,25 +3,28 @@ package com.catascopic.template.parse;
 import java.io.IOException;
 
 import com.catascopic.template.Scope;
-import com.catascopic.template.Values;
-import com.catascopic.template.eval.Term;
 
-class TextNode implements Node {
+public class TextNode implements Node, Tag {
 
-	private final Term fileName;
+	private final String text;
 
-	TextNode(Term text) {
-		this.fileName = text;
+	public TextNode(String content) {
+		this.text = content;
 	}
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		scope.renderTextFile(writer, Values.toString(fileName.evaluate(scope)));
+		writer.append(text);
 	}
 
 	@Override
 	public String toString() {
-		return "<% text " + fileName + " %>";
+		return text;
+	}
+
+	@Override
+	public Node createNode(TagStream stream) {
+		return this;
 	}
 
 }

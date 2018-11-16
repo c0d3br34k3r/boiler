@@ -7,27 +7,40 @@ import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
 
-class IfNode implements NodeCreator {
+class IfNode implements Node {
 
 	private final Term condition;
+	private final Node block;
+	private final Node elseBlock;
 
-	IfNode(Tokenizer tokenizer) {
-		this.condition = tokenizer.parseExpression();
+	private IfNode(Term condition, Node block, Node elseBlock) {
+		this.condition = condition;
+		this.block = block;
+		this.elseBlock = elseBlock;
 	}
 
 	@Override
-	public Node create(NodeStream stream) {
-		final Block block = stream.getBlock();
-		return new Node() {
+	public void render(Appendable writer, Scope scope) throws IOException {
+		if (Values.isTrue(condition.evaluate(scope))) {
+			block.render(writer, scope);
+		} else {
+			elseBlock.render(writer, scope);
+		}
+	}
+
+	@Override
+	public String toString() {
+		// TODO
+		return super.toString();
+	}
+
+	static Tag parseTag(Tokenizer tokenizer) {
+		final Term condition = tokenizer.parseExpression();
+		return new Tag() {
 
 			@Override
-			public void render(Appendable writer, Scope scope)
-					throws IOException {
-				if (Values.isTrue(condition.evaluate(scope))) {
-					block.render(writer, scope);
-				} else {
-					block.renderElse(writer, scope);
-				}
+			public Node createNode(TagStream stream) {
+				return new IfNode(condition, null, null);
 			}
 		};
 	}
