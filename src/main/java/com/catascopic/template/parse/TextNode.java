@@ -23,7 +23,7 @@ public class TextNode implements Node, Tag {
 	}
 
 	@Override
-	public void build(TemplateParser parser) {
+	public void handle(TemplateParser parser) {
 		parser.add(this);
 	}
 

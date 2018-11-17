@@ -2,6 +2,6 @@ package com.catascopic.template.parse;
 
 interface Tag {
 
-	void build(TemplateParser parser);
+	void handle(TemplateParser parser);
 
 }

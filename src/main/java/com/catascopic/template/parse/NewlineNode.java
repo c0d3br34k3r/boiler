@@ -14,7 +14,7 @@ public enum NewlineNode implements Tag, Node {
 	}
 
 	@Override
-	public void build(TemplateParser parser) {
+	public void handle(TemplateParser parser) {
 		parser.add(NEWLINE);
 	}
 

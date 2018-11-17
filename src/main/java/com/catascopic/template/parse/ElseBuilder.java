@@ -1,11 +1,23 @@
 package com.catascopic.template.parse;
 
-abstract class ElseBuilder extends NodeBuilderTag {
+import com.google.common.collect.ImmutableList;
 
+abstract class ElseBuilder implements BlockBuilder, Tag {
+
+	private ImmutableList.Builder<Node> nodes = ImmutableList.builder();
 	private BlockBuilder elseBuilder;
 
 	@Override
-	void setElse(NodeBuilderTag linked) {
+	public void add(Node node) {
+		if (elseBuilder == null) {
+			nodes.add(node);
+		} else {
+			elseBuilder.add(node);
+		}
+	}
+
+	@Override
+	public void setElse(BlockBuilder linked) {
 		if (elseBuilder != null) {
 			elseBuilder.setElse(linked);
 		} else {
@@ -13,20 +25,13 @@ abstract class ElseBuilder extends NodeBuilderTag {
 		}
 	}
 
-	@Override
-	void add(Node node) {
-		if (elseBuilder == null) {
-			super.add(node);
-		} else {
-			elseBuilder.add(node);
-		}
-	}
+	abstract Node build(Block block, Node elseNode);
 
-	Node getElseNode() {
-		if (elseBuilder == null) {
-			return EmptyNode.EMPTY;
-		}
-		return elseBuilder.build();
+	@Override
+	public final Node build() {
+		return build(new Block(nodes.build()), elseBuilder == null
+				? EmptyNode.EMPTY
+				: elseBuilder.build());
 	}
 
 	@Override

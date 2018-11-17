@@ -22,6 +22,7 @@ public class TemplateParserTest {
 				+ "  <% else if c == 2 %>\n"
 				+ "k(<<k>>): baz\n"
 				+ "<% else if c == 3 %>\n"
+				+ "stop\n"
 				+ "<% end %>"
 				+ "what";
 		System.out.println(text);
@@ -32,7 +33,7 @@ public class TemplateParserTest {
 		System.out.println();
 		System.out.println(template);
 		System.out.println();
-		System.out.println(template.render(ImmutableMap.of("a", 1, "b", 2, "c", 1)));
+		System.out.println(template.render(ImmutableMap.of("a", 1, "b", 1, "c", 3)));
 	}
 
 }

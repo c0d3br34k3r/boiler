@@ -9,6 +9,8 @@ import java.util.Queue;
 
 import com.catascopic.template.Location;
 import com.catascopic.template.TemplateParseException;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 public class TemplateParser {
 
@@ -25,24 +27,35 @@ public class TemplateParser {
 	}
 
 	private Node parse() {
+		final Builder<Node> builder = ImmutableList.builder();
 		BlockBuilder nodeBuilder = new BlockBuilder() {
 
 			@Override
-			Node build() {
-				return getBlock();
+			public void setElse(BlockBuilder builder) {
+				throw new IllegalStateException();
+			}
+
+			@Override
+			public Node build() {
+				throw new IllegalStateException();
+			}
+
+			@Override
+			public void add(Node node) {
+				builder.add(node);
 			}
 		};
 		stack.add(nodeBuilder);
 		for (Tag tag : tags) {
-			tag.build(this);
+			tag.handle(this);
 		}
-		Node template = stack.remove().build();
+		stack.remove();
 		if (!stack.isEmpty()) {
 			// TODO: tag location
-			throw new TemplateParseException((Location) null, 
+			throw new TemplateParseException((Location) null,
 					"unclosed tag %s", stack.remove());
 		}
-		return template;
+		return new Block(builder.build());
 	}
 
 	void endBlock() {
@@ -57,7 +70,7 @@ public class TemplateParser {
 		stack.add(nodeBuilder);
 	}
 
-	void beginElse(NodeBuilderTag elseNode) {
+	void beginElse(BlockBuilder elseNode) {
 		stack.element().setElse(elseNode);
 	}
 

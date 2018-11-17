@@ -32,7 +32,8 @@ class IfNode implements Node {
 	public String toString() {
 		return elseNode == EmptyNode.EMPTY
 				? "<% if " + condition + " %>" + block + "<% end %>"
-				: "<% if " + condition + " %>" + block + "<% else %>" + elseNode + "<% end %>";
+				: "<% if " + condition + " %>" + block + "<% else %>" + elseNode
+						+ "<% end %>";
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
@@ -40,13 +41,13 @@ class IfNode implements Node {
 		return new ElseBuilder() {
 
 			@Override
-			public void build(TemplateParser parser) {
+			public void handle(TemplateParser parser) {
 				parser.beginBlock(this);
 			}
 
 			@Override
-			Node build() {
-				return new IfNode(condition, getBlock(), getElseNode());
+			Node build(Block block, Node elseNode) {
+				return new IfNode(condition, block, elseNode);
 			}
 
 			@Override
@@ -62,32 +63,32 @@ class IfNode implements Node {
 			return new ElseBuilder() {
 
 				@Override
-				public void build(TemplateParser parser) {
+				public void handle(TemplateParser parser) {
 					parser.beginElse(this);
 				}
 
 				@Override
-				Node build() {
-					return new IfNode(condition, getBlock(), getElseNode());
+				Node build(Block block, Node elseNode) {
+					return new IfNode(condition, block, elseNode);
 				}
 
 				@Override
 				public String toString() {
-					return "else if " + condition + " {" + super.toString()
-							+ "}";
+					return "else if " + condition
+							+ " {" + super.toString() + "}";
 				}
 			};
 		}
-		return new NodeBuilderTag() {
+		return new NodeBuilder() {
 
 			@Override
-			public void build(TemplateParser parser) {
+			public void handle(TemplateParser parser) {
 				parser.beginElse(this);
 			}
 
 			@Override
-			Node build() {
-				return getBlock();
+			Node build(Block block) {
+				return block;
 			}
 
 			@Override
