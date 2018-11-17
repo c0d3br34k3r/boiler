@@ -1,10 +1,13 @@
 package com.catascopic.template.parse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 
 abstract class ElseBuilder implements BlockBuilder, Tag {
 
-	private ImmutableList.Builder<Node> nodes = ImmutableList.builder();
+	private List<Node> nodes = new ArrayList<>();
 	private BlockBuilder elseBuilder;
 
 	@Override
@@ -29,7 +32,7 @@ abstract class ElseBuilder implements BlockBuilder, Tag {
 
 	@Override
 	public final Node build() {
-		return build(new Block(nodes.build()), elseBuilder == null
+		return build(new Block(ImmutableList.copyOf(nodes)), elseBuilder == null
 				? EmptyNode.EMPTY
 				: elseBuilder.build());
 	}

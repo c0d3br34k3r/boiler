@@ -1,10 +1,13 @@
 package com.catascopic.template.parse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 
 abstract class NodeBuilder implements BlockBuilder, Tag {
 
-	private ImmutableList.Builder<Node> nodes = ImmutableList.builder();
+	private List<Node> nodes = new ArrayList<>();
 
 	@Override
 	public void add(Node node) {
@@ -18,9 +21,14 @@ abstract class NodeBuilder implements BlockBuilder, Tag {
 
 	@Override
 	public Node build() {
-		return build(new Block(nodes.build()));
+		return build(new Block(ImmutableList.copyOf(nodes)));
 	}
 
 	abstract Node build(Block block);
+
+	@Override
+	public String toString() {
+		return nodes.toString();
+	}
 
 }

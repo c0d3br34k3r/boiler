@@ -13,7 +13,7 @@ class IfNode implements Node {
 	private final Block block;
 	private final Node elseNode;
 
-	IfNode(Term condition, Block block, Node elseNode) {
+	private IfNode(Term condition, Block block, Node elseNode) {
 		this.condition = condition;
 		this.block = block;
 		this.elseNode = elseNode;
@@ -32,8 +32,8 @@ class IfNode implements Node {
 	public String toString() {
 		return elseNode == EmptyNode.EMPTY
 				? "<% if " + condition + " %>" + block + "<% end %>"
-				: "<% if " + condition + " %>" + block + "<% else %>" + elseNode
-						+ "<% end %>";
+				: "<% if " + condition + " %>" + block + "<% else %>"
+						+ elseNode + "<% end %>";
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
@@ -48,11 +48,6 @@ class IfNode implements Node {
 			@Override
 			Node build(Block block, Node elseNode) {
 				return new IfNode(condition, block, elseNode);
-			}
-
-			@Override
-			public String toString() {
-				return "if " + condition + " {" + super.toString() + "}";
 			}
 		};
 	}
@@ -71,12 +66,6 @@ class IfNode implements Node {
 				Node build(Block block, Node elseNode) {
 					return new IfNode(condition, block, elseNode);
 				}
-
-				@Override
-				public String toString() {
-					return "else if " + condition
-							+ " {" + super.toString() + "}";
-				}
 			};
 		}
 		return new NodeBuilder() {
@@ -89,11 +78,6 @@ class IfNode implements Node {
 			@Override
 			Node build(Block block) {
 				return block;
-			}
-
-			@Override
-			public String toString() {
-				return "else {" + super.toString() + "}";
 			}
 		};
 	}
