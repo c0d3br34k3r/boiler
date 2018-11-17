@@ -1,11 +1,14 @@
 package com.catascopic.template.parse;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
+import com.google.common.collect.ImmutableList;
 
 class IfNode implements Node {
 
@@ -38,7 +41,8 @@ class IfNode implements Node {
 
 	static Tag parseTag(Tokenizer tokenizer) {
 		final Term condition = tokenizer.parseExpression();
-		return new ElseBuilder() {
+		final List<Node> nodes = new ArrayList<>();
+		return new BlockBuilderTag() {
 
 			@Override
 			public void handle(TemplateParser parser) {
@@ -46,8 +50,24 @@ class IfNode implements Node {
 			}
 
 			@Override
-			Node build(Block block, Node elseNode) {
-				return new IfNode(condition, block, elseNode);
+			public Node build() {
+				return buildElse(EmptyNode.EMPTY);
+			}
+
+			@Override
+			public void add(Node node) {
+				nodes.add(node);
+			}
+
+			@Override
+			public Node buildElse(Node elseNode) {
+				return new IfNode(condition, new Block(ImmutableList.copyOf(
+						nodes)), elseNode);
+			}
+
+			@Override
+			public String toString() {
+				return "if " + condition;
 			}
 		};
 	}
@@ -55,7 +75,8 @@ class IfNode implements Node {
 	public static Tag parseElseTag(Tokenizer tokenizer) {
 		if (tokenizer.tryConsume("if")) {
 			final Term condition = tokenizer.parseExpression();
-			return new ElseBuilder() {
+			final List<Node> nodes = new ArrayList<>();
+			return new BlockBuilderTag() {
 
 				@Override
 				public void handle(TemplateParser parser) {
@@ -63,12 +84,29 @@ class IfNode implements Node {
 				}
 
 				@Override
-				Node build(Block block, Node elseNode) {
-					return new IfNode(condition, block, elseNode);
+				public Node build() {
+					return buildElse(EmptyNode.EMPTY);
+				}
+
+				@Override
+				public void add(Node node) {
+					nodes.add(node);
+				}
+
+				@Override
+				public Node buildElse(Node elseNode) {
+					return new IfNode(condition, new Block(ImmutableList.copyOf(
+							nodes)), elseNode);
+				}
+
+				@Override
+				public String toString() {
+					return "else if " + condition;
 				}
 			};
 		}
-		return new NodeBuilder() {
+		final List<Node> nodes = new ArrayList<>();
+		return new BlockBuilderTag() {
 
 			@Override
 			public void handle(TemplateParser parser) {
@@ -76,8 +114,23 @@ class IfNode implements Node {
 			}
 
 			@Override
-			Node build(Block block) {
-				return block;
+			public Node build() {
+				return new Block(ImmutableList.copyOf(nodes));
+			}
+
+			@Override
+			public void add(Node node) {
+				nodes.add(node);
+			}
+
+			@Override
+			public Node buildElse(Node elseNode) {
+				throw new IllegalStateException();
+			}
+
+			@Override
+			public String toString() {
+				return "else";
 			}
 		};
 	}

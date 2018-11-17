@@ -4,7 +4,7 @@ interface BlockBuilder {
 
 	void add(Node node);
 
-	void setElse(BlockBuilder builder);
+	Node buildElse(Node elseNode);
 
 	Node build();
 

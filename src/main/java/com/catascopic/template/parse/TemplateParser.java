@@ -26,7 +26,7 @@ public class TemplateParser {
 		BlockBuilder nodeBuilder = new BlockBuilder() {
 
 			@Override
-			public void setElse(BlockBuilder builder) {
+			public Node buildElse(Node elseNode) {
 				throw new IllegalStateException();
 			}
 
@@ -65,8 +65,30 @@ public class TemplateParser {
 		stack.add(nodeBuilder);
 	}
 
-	void beginElse(BlockBuilder elseNode) {
-		stack.element().setElse(elseNode);
+	void beginElse(final BlockBuilder elseBlock) {
+		final BlockBuilder ifBlock = stack.remove();
+		stack.add(new BlockBuilder() {
+
+			@Override
+			public Node build() {
+				return ifBlock.buildElse(elseBlock.build());
+			}
+
+			@Override
+			public void add(Node node) {
+				elseBlock.add(node);
+			}
+ 
+			@Override
+			public Node buildElse(Node elseNode) {
+				return ifBlock.buildElse(elseBlock.buildElse(elseNode));
+			}
+
+			@Override
+			public String toString() {
+				return "combiner of {" + ifBlock + " and " + elseBlock + "}";
+			}
+		});
 	}
 
 }

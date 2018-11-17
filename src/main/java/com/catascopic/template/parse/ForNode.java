@@ -1,12 +1,15 @@
 package com.catascopic.template.parse;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
 import com.catascopic.template.parse.Variables.Names;
+import com.google.common.collect.ImmutableList;
 
 class ForNode implements Node {
 
@@ -39,7 +42,8 @@ class ForNode implements Node {
 		final Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		final Term sequence = tokenizer.parseExpression();
-		return new NodeBuilder() {
+		final List<Node> nodes = new ArrayList<>();
+		return new BlockBuilderTag() {
 
 			@Override
 			public void handle(TemplateParser parser) {
@@ -47,8 +51,19 @@ class ForNode implements Node {
 			}
 
 			@Override
-			Node build(Block block) {
-				return new ForNode(names, sequence, block);
+			public Node build() {
+				return new ForNode(names, sequence, 
+						new Block(ImmutableList.copyOf(nodes)));
+			}
+
+			@Override
+			public void add(Node node) {
+				nodes.add(node);
+			}
+
+			@Override
+			public Node buildElse(Node elseNode) {
+				throw new IllegalStateException();
 			}
 		};
 	}
