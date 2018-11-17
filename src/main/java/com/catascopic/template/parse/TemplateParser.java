@@ -15,18 +15,13 @@ import com.google.common.collect.ImmutableList.Builder;
 public class TemplateParser {
 
 	public static Node parse(Reader reader) throws IOException {
-		return new TemplateParser(TagParser.parse(reader)).parse();
+		return new TemplateParser().parse(TagParser.parse(reader));
 	}
 
-	private Collection<Tag> tags;
 	private Queue<BlockBuilder> stack =
 			Collections.asLifoQueue(new ArrayDeque<BlockBuilder>());
 
-	private TemplateParser(Collection<Tag> tags) {
-		this.tags = tags;
-	}
-
-	private Node parse() {
+	private Node parse(Collection<Tag> tags) {
 		final Builder<Node> builder = ImmutableList.builder();
 		BlockBuilder nodeBuilder = new BlockBuilder() {
 

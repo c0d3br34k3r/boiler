@@ -33,7 +33,7 @@ public class TemplateParserTest {
 		System.out.println();
 		System.out.println(template);
 		System.out.println();
-		System.out.println(template.render(ImmutableMap.of("a", 1, "b", 1, "c", 3)));
+		System.out.println(template.render(ImmutableMap.of("a", 1, "b", 1, "c", 2)));
 	}
 
 }
