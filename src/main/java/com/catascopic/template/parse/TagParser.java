@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
+import com.catascopic.template.Location;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.eval.Tokenizer;
@@ -29,6 +30,11 @@ class TagParser {
 
 	TagParser(Reader reader) {
 		this.reader = new PositionReader(reader, 1);
+	}
+	
+	void setMode(Mode mode) {
+		this.mode = mode;
+		TagCleaner.setLocation(reader.getLocation());
 	}
 
 	private void parseNext() throws IOException {
@@ -56,15 +62,16 @@ class TagParser {
 	}
 
 	private void parseTextOrTag() throws IOException {
+		Location location = reader.getLocation();
 		String text = parseContent();
 		if (text.isEmpty()) {
 			parseNext();
 		} else {
-			Tag textNode = new TextNode(text);
+			Tag tag = TextNode.getTag(location, text);
 			if (CharMatcher.whitespace().matchesAllOf(text)) {
-				tags.whitespace(textNode);
+				tags.whitespace(tag);
 			} else {
-				tags.text(textNode);
+				tags.text(tag);
 			}
 		}
 	}
@@ -107,14 +114,15 @@ class TagParser {
 
 	private void parseTag() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.TAG);
-		tags.instruction(getTag(tokenizer));
+		Tag tag = getTag(tokenizer);
+		tags.instruction(tag);
 		tokenizer.end();
 		mode = Mode.TEXT;
 	}
 
 	private void newline() {
 		mode = Mode.TEXT;
-		tags.endLine();
+		tags.endLine(NewlineNode.getTag(reader.getLocation()));
 	}
 
 	private static Tag getTag(Tokenizer tokenizer) {
@@ -134,7 +142,7 @@ class TagParser {
 		// case "textfile":
 		// return TextFileNode.parseTag(tokenizer);
 		case "end":
-			return EndTag.END;
+			return new EndTag(tokenizer.getLocation());
 		default:
 			throw new TemplateParseException(tokenizer,
 					"unknown tag: %s", tagName);
@@ -143,7 +151,7 @@ class TagParser {
 
 	private void parseEval() {
 		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
-		tags.text(new EvalNode(tokenizer.parseExpression()));
+		tags.text(EvalNode.getTag(tokenizer));
 		tokenizer.end();
 		mode = Mode.TEXT;
 	}

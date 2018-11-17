@@ -32,23 +32,27 @@ public class TemplateParser {
 
 			@Override
 			public Node build() {
-				throw new IllegalStateException();
+				throw new TemplateParseException(this, "unbalanced end tag");
 			}
 
 			@Override
 			public void add(Node node) {
 				builder.add(node);
 			}
+
+			@Override
+			public Location getLocation() {
+				return new Location(0, 0);
+			}
 		};
 		stack.add(nodeBuilder);
 		for (Tag tag : tags) {
 			tag.handle(this);
 		}
-		stack.remove();
-		if (!stack.isEmpty()) {
-			// TODO: tag location
-			throw new TemplateParseException((Location) null,
-					"unclosed tag %s", stack.remove());
+		BlockBuilder last = stack.remove();
+		if (last != nodeBuilder) {
+			throw new TemplateParseException(last,
+					"unclosed tag %s", last);
 		}
 		return new Block(builder.build());
 	}
@@ -78,15 +82,20 @@ public class TemplateParser {
 			public void add(Node node) {
 				elseBlock.add(node);
 			}
- 
+
 			@Override
 			public Node buildElse(Node elseNode) {
 				return ifBlock.buildElse(elseBlock.buildElse(elseNode));
 			}
 
 			@Override
+			public Location getLocation() {
+				return elseBlock.getLocation();
+			}
+
+			@Override
 			public String toString() {
-				return "combiner of {" + ifBlock + " and " + elseBlock + "}";
+				return elseBlock.toString();
 			}
 		});
 	}

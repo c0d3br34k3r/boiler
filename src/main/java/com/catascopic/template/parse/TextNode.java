@@ -2,13 +2,14 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 
+import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 
-public class TextNode implements Node, Tag {
+class TextNode implements Node {
 
 	private final String text;
 
-	public TextNode(String content) {
+	private TextNode(String content) {
 		this.text = content;
 	}
 
@@ -22,9 +23,14 @@ public class TextNode implements Node, Tag {
 		return text;
 	}
 
-	@Override
-	public void handle(TemplateParser parser) {
-		parser.add(this);
+	static Tag getTag(Location location, final String text) {
+		return new Tag(location) {
+			
+			@Override
+			public void handle(TemplateParser parser) {
+				parser.add(new TextNode(text));
+			}
+		};
 	}
 
 }

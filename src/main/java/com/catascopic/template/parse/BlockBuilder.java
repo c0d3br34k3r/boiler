@@ -1,6 +1,8 @@
 package com.catascopic.template.parse;
 
-interface BlockBuilder {
+import com.catascopic.template.Locatable;
+
+interface BlockBuilder extends Locatable {
 
 	void add(Node node);
 
