@@ -2,37 +2,37 @@ package com.catascopic.template.parse;
 
 abstract class ElseBuilder extends NodeBuilderTag {
 
-	private NodeBuilder target;
+	private BlockBuilder elseBuilder;
 
 	@Override
-	void setElse(NodeBuilder elseBuilder) {
-		if (target != null) {
-			target.setElse(elseBuilder);
+	void setElse(NodeBuilderTag linked) {
+		if (elseBuilder != null) {
+			elseBuilder.setElse(linked);
 		} else {
-			target = elseBuilder;
+			elseBuilder = linked;
 		}
 	}
 
 	@Override
 	void add(Node node) {
-		if (target == null) {
+		if (elseBuilder == null) {
 			super.add(node);
 		} else {
-			target.add(node);
+			elseBuilder.add(node);
 		}
 	}
 
 	Node getElseNode() {
-		if (target == null) {
+		if (elseBuilder == null) {
 			return EmptyNode.EMPTY;
 		}
-		return target.build();
+		return elseBuilder.build();
 	}
 
 	@Override
 	public String toString() {
-		return target == null ? super.toString()
-				: super.toString() + " ELSE: " + target;
+		return elseBuilder == null ? super.toString()
+				: super.toString() + ", elseBuilder=" + elseBuilder;
 	}
 
 }
