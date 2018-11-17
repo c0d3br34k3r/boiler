@@ -2,7 +2,6 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 
-import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
@@ -38,9 +37,8 @@ class IfNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		Location location = tokenizer.getLocation();
 		final Term condition = tokenizer.parseExpression();
-		return new NodeBuilder(location) {
+		return new NodeBuilder() {
 
 			@Override
 			public void handle(TemplateParser parser) {
@@ -56,20 +54,13 @@ class IfNode implements Node {
 			protected Node build(Block block, Node elseNode) {
 				return new IfNode(condition, block, elseNode);
 			}
-
-			@Override
-			public String toString() {
-				return "if " + condition;
-			}
 		};
 	}
 
 	public static Tag parseElseTag(Tokenizer tokenizer) {
-		boolean hasIf = tokenizer.tryConsume("if");
-		Location location = tokenizer.getLocation();
-		if (hasIf) {
+		if (tokenizer.tryConsume("if")) {
 			final Term condition = tokenizer.parseExpression();
-			return new NodeBuilder(location) {
+			return new NodeBuilder() {
 
 				@Override
 				public void handle(TemplateParser parser) {
@@ -85,14 +76,9 @@ class IfNode implements Node {
 				protected Node build(Block block, Node elseNode) {
 					return new IfNode(condition, block, elseNode);
 				}
-
-				@Override
-				public String toString() {
-					return "else if " + condition;
-				}
 			};
 		}
-		return new NodeBuilder(location) {
+		return new NodeBuilder() {
 
 			@Override
 			public void handle(TemplateParser parser) {
@@ -102,11 +88,6 @@ class IfNode implements Node {
 			@Override
 			protected Node build(Block block) {
 				return block;
-			}
-
-			@Override
-			public String toString() {
-				return "else";
 			}
 		};
 	}

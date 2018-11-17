@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Queue;
 
-import com.catascopic.template.Location;
-import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -32,17 +30,12 @@ public class TemplateParser {
 
 			@Override
 			public Node build() {
-				throw new TemplateParseException(this, "unbalanced end tag");
+				throw new IllegalStateException();
 			}
 
 			@Override
 			public void add(Node node) {
 				builder.add(node);
-			}
-
-			@Override
-			public Location getLocation() {
-				return new Location(0, 0);
 			}
 		};
 		stack.add(nodeBuilder);
@@ -51,8 +44,7 @@ public class TemplateParser {
 		}
 		BlockBuilder last = stack.remove();
 		if (last != nodeBuilder) {
-			throw new TemplateParseException(last,
-					"unclosed tag %s", last);
+			throw new IllegalStateException();
 		}
 		return new Block(builder.build());
 	}
@@ -86,16 +78,6 @@ public class TemplateParser {
 			@Override
 			public Node buildElse(Node elseNode) {
 				return ifBlock.buildElse(elseBlock.buildElse(elseNode));
-			}
-
-			@Override
-			public Location getLocation() {
-				return elseBlock.getLocation();
-			}
-
-			@Override
-			public String toString() {
-				return elseBlock.toString();
 			}
 		});
 	}

@@ -3,14 +3,9 @@ package com.catascopic.template.parse;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.catascopic.template.Location;
 import com.google.common.collect.ImmutableList;
 
-abstract class NodeBuilder extends Tag implements BlockBuilder {
-
-	NodeBuilder(Location location) {
-		super(location);
-	}
+abstract class NodeBuilder implements Tag, BlockBuilder {
 
 	private List<Node> nodes = new ArrayList<>();
 

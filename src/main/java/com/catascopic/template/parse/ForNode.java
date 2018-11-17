@@ -37,11 +37,10 @@ class ForNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		Location location = tokenizer.getLocation();
 		final Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		final Term sequence = tokenizer.parseExpression();
-		return new NodeBuilder(location) {
+		return new NodeBuilder() {
 
 			@Override
 			public void handle(TemplateParser parser) {

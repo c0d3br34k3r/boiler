@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-import com.catascopic.template.Location;
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.eval.Tokenizer;
@@ -31,10 +30,9 @@ class TagParser {
 	TagParser(Reader reader) {
 		this.reader = new PositionReader(reader, 1);
 	}
-	
+
 	void setMode(Mode mode) {
 		this.mode = mode;
-		TagCleaner.setLocation(reader.getLocation());
 	}
 
 	private void parseNext() throws IOException {
@@ -62,12 +60,11 @@ class TagParser {
 	}
 
 	private void parseTextOrTag() throws IOException {
-		Location location = reader.getLocation();
 		String text = parseContent();
 		if (text.isEmpty()) {
 			parseNext();
 		} else {
-			Tag tag = TextNode.getTag(location, text);
+			Tag tag = TextNode.getTag(text);
 			if (CharMatcher.whitespace().matchesAllOf(text)) {
 				tags.whitespace(tag);
 			} else {
@@ -121,8 +118,8 @@ class TagParser {
 	}
 
 	private void newline() {
+		tags.endLine(NewlineNode.NEWLINE);
 		mode = Mode.TEXT;
-		tags.endLine(NewlineNode.getTag(reader.getLocation()));
 	}
 
 	private static Tag getTag(Tokenizer tokenizer) {
@@ -142,7 +139,7 @@ class TagParser {
 		// case "textfile":
 		// return TextFileNode.parseTag(tokenizer);
 		case "end":
-			return new EndTag(tokenizer.getLocation());
+			return EndTag.END;
 		default:
 			throw new TemplateParseException(tokenizer,
 					"unknown tag: %s", tagName);

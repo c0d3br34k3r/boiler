@@ -1,11 +1,10 @@
 package com.catascopic.template.parse;
 
 import com.catascopic.template.Assigner;
-import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 import com.catascopic.template.eval.Tokenizer;
 
-class SetNode implements Node {
+class SetNode implements Node, Tag {
 
 	private final Assigner assigner;
 
@@ -24,15 +23,12 @@ class SetNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		Location location = tokenizer.getLocation();
-		final Assigner assigner = Variables.parseAssignment(tokenizer);
-		return new Tag(location) {
+		return new SetNode(Variables.parseAssignment(tokenizer));
+	}
 
-			@Override
-			void handle(TemplateParser parser) {
-				parser.add(new SetNode(assigner));
-			}
-		};
+	@Override
+	public void handle(TemplateParser parser) {
+		parser.add(new SetNode(assigner));
 	}
 
 }
