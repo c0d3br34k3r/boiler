@@ -2,7 +2,6 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 
-import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
@@ -31,7 +30,7 @@ class ForNode implements Node {
 
 	@Override
 	public String toString() {
-		return "<% for" + names + " in " + sequence + "%>"
+		return "<% for " + names + " in " + sequence + "%>"
 				+ block
 				+ "<% end %>";
 	}

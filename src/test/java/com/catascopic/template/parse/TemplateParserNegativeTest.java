@@ -9,6 +9,6 @@ public class TemplateParserNegativeTest {
 
 	@Test
 	public void test() throws IOException {
-		TemplateParser.parse(new StringReader("<%end%>haha"));
+		TemplateParser.parse(new StringReader("<%else%>haha"));
 	}
 }

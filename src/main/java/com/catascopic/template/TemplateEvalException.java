@@ -21,16 +21,16 @@ public class TemplateEvalException extends RuntimeException {
 
 	public TemplateEvalException(Location location, Throwable cause,
 			String message) {
-		super("at " + location + " " + message, cause);
+		super("at " + location + ": " + message, cause);
 	}
 
 	public TemplateEvalException(Location location, String message) {
-		super("at " + location + " " + message);
+		super("at " + location + ": " + message);
 	}
 
 	public TemplateEvalException(Location location, String format,
 			Object... args) {
-		super("at " + location + " " + String.format(format, args));
+		super("at " + location + ": " + String.format(format, args));
 	}
 
 	public TemplateEvalException(Location location, Throwable cause) {

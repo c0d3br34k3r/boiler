@@ -25,12 +25,12 @@ public class TemplateParser {
 
 			@Override
 			public Node buildElse(Node elseNode) {
-				throw new IllegalStateException();
+				throw new IllegalStateException("else not allowed");
 			}
 
 			@Override
 			public Node build() {
-				throw new IllegalStateException();
+				throw new IllegalStateException("unbalanced end");
 			}
 
 			@Override
@@ -44,7 +44,7 @@ public class TemplateParser {
 		}
 		BlockBuilder last = stack.remove();
 		if (last != nodeBuilder) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("unclosed block");
 		}
 		return new Block(builder.build());
 	}

@@ -3,8 +3,6 @@ package com.catascopic.template.parse;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.catascopic.template.Location;
-
 class TagCleaner {
 
 	private List<Tag> tags = new ArrayList<>();
@@ -61,11 +59,6 @@ class TagCleaner {
 		START,
 		CLEAN,
 		NOT_CLEAN;
-	}
-
-	void setLocation(Location location) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

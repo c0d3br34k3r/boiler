@@ -43,4 +43,9 @@ class Zip implements Iterable<List<?>> {
 		};
 	}
 
+	@Override
+	public String toString() {
+		return "zip of " + iterables;
+	}
+
 }

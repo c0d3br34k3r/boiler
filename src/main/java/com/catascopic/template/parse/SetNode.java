@@ -28,7 +28,7 @@ class SetNode implements Node, Tag {
 
 	@Override
 	public void handle(TemplateParser parser) {
-		parser.add(new SetNode(assigner));
+		parser.add(this);
 	}
 
 }

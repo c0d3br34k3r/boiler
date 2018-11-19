@@ -3,6 +3,8 @@ package com.catascopic.template;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Joiner;
+
 public class Params {
 
 	private final List<Object> list;
@@ -71,6 +73,10 @@ public class Params {
 	}
 
 	public Object get(int index) {
+		if (list.size() <= index) {
+			throw new TemplateEvalException("missing parameter %s in %s ",
+					index, this);
+		}
 		return list.get(index);
 	}
 
@@ -88,6 +94,20 @@ public class Params {
 
 	public Scope scope() {
 		return scope;
+	}
+
+	@Override
+	public String toString() {
+		return Joiner.on(", ").join(list);
+	}
+
+	public char getChar(int index, String defaultValue) {
+		String str = getString(index, defaultValue);
+		if (str.length() != 1) {
+			throw new TemplateEvalException(
+					"param %d must be a 1-char string, but was %s", index, str);
+		}
+		return str.charAt(0);
 	}
 
 }

@@ -33,4 +33,9 @@ class Enumeration implements Iterable<List<Object>> {
 		};
 	}
 
+	@Override
+	public String toString() {
+		return "enumeration of " + items;
+	}
+
 }

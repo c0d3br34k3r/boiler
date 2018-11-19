@@ -145,14 +145,15 @@ class Variables {
 			for (Object unpacked : Values.toIterable(value)) {
 				if (!iter.hasNext()) {
 					throw new TemplateEvalException(location,
-							"too many values to unpack into names: %s",
-							varNames);
+							"too many values %s to unpack into names: %s",
+							value, varNames);
 				}
 				scope.set(iter.next(), unpacked);
 			}
 			if (iter.hasNext()) {
 				throw new TemplateEvalException(location,
-						"not enough values to unpack into names: %s", varNames);
+						"not enough values %s to unpack into names: %s",
+						value, varNames);
 			}
 		}
 

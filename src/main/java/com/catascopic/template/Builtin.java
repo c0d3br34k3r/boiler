@@ -236,7 +236,7 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			return CharMatcher.whitespace().trimAndCollapseFrom(
 					params.getString(0),
-					params.getString(1, " ").charAt(0));
+					params.getChar(1, " "));
 		}
 	},
 	SEPARATOR_TO_CAMEL {
@@ -261,7 +261,7 @@ enum Builtin implements TemplateFunction {
 		public Object apply(Params params) {
 			return Values.pad(params.getString(0),
 					params.getInt(1),
-					params.getString(2, " ").charAt(0),
+					params.getChar(2, " "),
 					params.getBoolean(3, true));
 		}
 	},
@@ -283,7 +283,7 @@ enum Builtin implements TemplateFunction {
 			int groups = matcher.groupCount() + 1;
 			while (matcher.find()) {
 				List<String> group = new ArrayList<>(groups);
-				for (int i = 1; i < groups + 1; i++) {
+				for (int i = 0; i < groups; i++) {
 					group.add(i, matcher.group(i));
 				}
 				result.add(group);
