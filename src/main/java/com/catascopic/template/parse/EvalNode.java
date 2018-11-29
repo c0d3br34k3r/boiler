@@ -20,18 +20,18 @@ class EvalNode implements Node, Tag {
 		writer.append(Values.toString(expression.evaluate(scope)));
 	}
 
-	@Override
-	public String toString() {
-		return "<<" + expression + ">>";
-	}
-
 	static Tag getTag(Tokenizer tokenizer) {
 		return new EvalNode(tokenizer.parseExpression());
 	}
-	
+
 	@Override
 	public void handle(TemplateParser parser) {
 		parser.add(this);
+	}
+
+	@Override
+	public String toString() {
+		return "EVAL(" + expression + ")";
 	}
 
 }

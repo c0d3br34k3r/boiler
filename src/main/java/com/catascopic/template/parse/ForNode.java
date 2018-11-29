@@ -28,13 +28,6 @@ class ForNode implements Node {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "<% for " + names + " in " + sequence + "%>"
-				+ block
-				+ "<% end %>";
-	}
-
 	static Tag parseTag(Tokenizer tokenizer) {
 		final Names names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
@@ -50,7 +43,17 @@ class ForNode implements Node {
 			protected Node build(Block block) {
 				return new ForNode(names, sequence, block);
 			}
+
+			@Override
+			public String toString() {
+				return "for " + names + " in " + sequence;
+			}
 		};
+	}
+
+	@Override
+	public String toString() {
+		return "FOR " + names + " IN " + sequence + ": " + block;
 	}
 
 }

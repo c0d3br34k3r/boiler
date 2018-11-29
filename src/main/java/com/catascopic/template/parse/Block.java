@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.catascopic.template.Scope;
-import com.google.common.base.Joiner;
 
 class Block implements Node {
 
@@ -23,7 +22,7 @@ class Block implements Node {
 
 	@Override
 	public String toString() {
-		return Joiner.on("").join(nodes);
+		return nodes.toString();
 	}
 
 }

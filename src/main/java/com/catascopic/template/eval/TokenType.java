@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-public enum TokenType {
+enum TokenType {
 
 	END,
 	VALUE,

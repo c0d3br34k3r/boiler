@@ -43,7 +43,7 @@ public class Tokenizer implements Locatable {
 
 	public void consume(Symbol symbol) {
 		Token next = next();
-		if (next.type() != TokenType.SYMBOL || next.symbol() != symbol) {
+		if (next != symbol) {
 			throw new TemplateParseException(reader,
 					"expected %s, got %s", symbol, next);
 		}

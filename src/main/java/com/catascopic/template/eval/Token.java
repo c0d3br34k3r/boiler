@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-public interface Token {
+interface Token {
 
 	TokenType type();
 

@@ -5,8 +5,11 @@ import com.catascopic.template.Values;
 
 class Tokens {
 
+	private Tokens() {}
+
 	static final Token TRUE = new ValueToken(true);
 	static final Token FALSE = new ValueToken(false);
+	// TODO: figure out nulls
 	static final Token NULL = new ValueToken(Null.NULL);
 	static final Token END = new AbstractToken(TokenType.END) {
 
