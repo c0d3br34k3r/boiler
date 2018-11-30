@@ -1,21 +1,54 @@
 package com.catascopic.template;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Map;
 
-public abstract class Template {
+import com.catascopic.template.parse.Node;
+import com.catascopic.template.parse.TemplateParser;
 
-	public abstract void render(Appendable writer, Map<String, Object> params)
-			throws IOException;
+public class Template {
 
-	public String render(Map<String, Object> params) {
-		StringBuilder appendable = new StringBuilder();
+	public static Template parse(String text) {
 		try {
-			render(appendable, params);
+			return parse(new StringReader(text));
 		} catch (IOException e) {
 			throw new AssertionError(e);
 		}
-		return appendable.toString();
+	}
+
+	public static Template parse(Reader reader) throws IOException {
+		return new Template(TemplateParser.parse(reader));
+	}
+
+	private final Node node;
+	private final FunctionResolver functions;
+
+	private Template(Node node) {
+		this.node = node;
+		functions = FunctionResolver.builtinOnly();
+	}
+
+	public String render(Map<String, ? extends Object> params) {
+		StringBuilder builder = new StringBuilder();
+		try {
+			render(builder, params);
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
+		return builder.toString();
+	}
+
+	public void render(Appendable writer, Map<String, ? extends Object> params)
+			throws IOException {
+		Scope scope = new BasicScope(params, functions);
+		node.render(writer, scope);
+	}
+
+	@Override
+	public String toString() {
+		return node.toString();
 	}
 
 }

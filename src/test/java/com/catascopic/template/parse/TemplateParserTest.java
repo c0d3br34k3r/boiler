@@ -24,7 +24,7 @@ public class TemplateParserTest {
 				+ "<% else if c == 3 %>\n"
 				+ "stop\n"
 				+ "<% end %>"
-				+ "what";
+				+ "<<locals()>>";
 		System.out.println(text);
 		List<Tag> document = TagParser.parse(new StringReader(text));
 		System.out.println();

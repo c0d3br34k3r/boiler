@@ -54,8 +54,7 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.min(params.size() == 1
-					? params.getIterable(0)
+			return Values.min(params.size() == 1 ? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -63,8 +62,7 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.max(params.size() == 1
-					? params.getIterable(0)
+			return Values.max(params.size() == 1 ? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -86,8 +84,8 @@ enum Builtin implements TemplateFunction {
 			case 1:
 				return Values.range(params.getInt(0));
 			default:
-				return Values.range(params.getInt(0),
-						params.getInt(1), params.getInt(2, 1));
+				return Values.range(params.getInt(0), params.getInt(1), params
+						.getInt(2, 1));
 			}
 		}
 	},
@@ -102,8 +100,7 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return new Zip(params.size() == 1
-					? params.getIterable(0)
+			return new Zip(params.size() == 1 ? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -139,9 +136,8 @@ enum Builtin implements TemplateFunction {
 			if (seq instanceof Collection) {
 				return ((Collection<?>) seq).contains(params.get(1));
 			}
-			throw new TemplateEvalException(
-					"%s (%s) is not a container",
-					seq, seq.getClass().getName());
+			throw new TemplateEvalException("%s (%s) is not a container", seq,
+					seq.getClass().getName());
 		}
 	},
 	CAPITALIZE {
@@ -155,8 +151,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return params.getString(0).replace(params.getString(1),
-					params.getString(2));
+			return params.getString(0).replace(params.getString(1), params
+					.getString(2));
 		}
 	},
 	STARTS_WITH {
@@ -177,8 +173,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.indexOf(params.get(0), params.get(1),
-					params.getInt(2, 0));
+			return Values.indexOf(params.get(0), params.get(1), params.getInt(2,
+					0));
 		}
 	},
 	LAST_INDEX_OF {
@@ -188,24 +184,24 @@ enum Builtin implements TemplateFunction {
 			if (params.size() <= 2) {
 				return Values.lastIndexOf(params.get(0), params.get(1));
 			}
-			return Values.lastIndexOf(params.get(0), params.get(1),
-					params.getInt(2));
+			return Values.lastIndexOf(params.get(0), params.get(1), params
+					.getInt(2));
 		}
 	},
 	JOIN {
 
 		@Override
 		public Object apply(Params params) {
-			return Joiner.on(params.getString(1)).join(
-					Values.toIterable(params.get(0)));
+			return Joiner.on(params.getString(1)).join(Values.toIterable(params
+					.get(0)));
 		}
 	},
 	SPLIT {
 
 		@Override
 		public Object apply(Params params) {
-			return Splitter.on(params.getString(1)).splitToList(
-					params.getString(0));
+			return Splitter.on(params.getString(1)).splitToList(params
+					.getString(0));
 		}
 	},
 	UPPER {
@@ -234,17 +230,16 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return CharMatcher.whitespace().trimAndCollapseFrom(
-					params.getString(0),
-					params.getChar(1, " "));
+			return CharMatcher.whitespace().trimAndCollapseFrom(params
+					.getString(0), params.getChar(1, " "));
 		}
 	},
 	SEPARATOR_TO_CAMEL {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.separatorToCamel(params.getString(0),
-					params.getString(1, "_"));
+			return Values.separatorToCamel(params.getString(0), params
+					.getString(1, "_"));
 		}
 	},
 	CAMEL_TO_SEPARATOR {
@@ -259,18 +254,16 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.pad(params.getString(0),
-					params.getInt(1),
-					params.getChar(2, " "),
-					params.getBoolean(3, true));
+			return Values.pad(params.getString(0), params.getInt(1), params
+					.getChar(2, " "), params.getBoolean(3, true));
 		}
 	},
 	MATCHES {
 
 		@Override
 		public Object apply(Params params) {
-			return Pattern.compile(params.getString(1))
-					.matcher(params.getString(0)).matches();
+			return Pattern.compile(params.getString(1)).matcher(params
+					.getString(0)).matches();
 		}
 	},
 	SEARCH {
@@ -278,8 +271,8 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			List<Object> result = new ArrayList<>();
-			Matcher matcher = Pattern.compile(params.getString(1))
-					.matcher(params.getString(0));
+			Matcher matcher = Pattern.compile(params.getString(1)).matcher(
+					params.getString(0));
 			int groups = matcher.groupCount() + 1;
 			while (matcher.find()) {
 				List<String> group = new ArrayList<>(groups);
@@ -295,8 +288,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			final Map<String, ?> map = params.getMap(1,
-					Collections.<String, Object> emptyMap());
+			final Map<String, ?> map = params.getMap(1, Collections
+					.<String, Object> emptyMap());
 			Assigner assigner = new Assigner() {
 
 				@Override
@@ -308,8 +301,8 @@ enum Builtin implements TemplateFunction {
 			};
 			StringBuilder builder = new StringBuilder();
 			try {
-				params.scope().renderTemplate(builder,
-						params.getString(0), assigner);
+				params.scope().renderTemplate(builder, params.getString(0),
+						assigner);
 			} catch (IOException e) {
 				throw new AssertionError(e);
 			}

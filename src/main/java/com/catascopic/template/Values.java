@@ -116,6 +116,9 @@ public final class Values {
 				return add(n1, (Number) o2);
 			}
 		}
+		if (o1 instanceof Iterable && o2 instanceof Iterable) {
+			return Iterables.concat((Iterable<?>) o1, (Iterable<?>) o2);
+		}
 		// TODO: should we be able to add things that aren't strings?
 		return toString(o1) + toString(o2);
 	}
