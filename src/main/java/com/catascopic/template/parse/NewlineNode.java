@@ -10,7 +10,7 @@ enum NewlineNode implements Node, Tag {
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		writer.append(scope.newLine());
+		writer.append('\n');
 	}
 
 	@Override

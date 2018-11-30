@@ -4,6 +4,6 @@ interface Tag {
 
 	void handle(TemplateParser parser);
 	
-//	void handle(TagCleaner cleaner);
+	void handle(TagCleaner cleaner);
 
 }

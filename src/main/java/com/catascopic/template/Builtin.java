@@ -328,6 +328,13 @@ enum Builtin implements TemplateFunction {
 			}
 			return builder.toString();
 		}
+	},
+	LOCALS {
+
+		@Override
+		public Object apply(Params params) {
+			return params.scope().locals();
+		}
 	};
 
 	// TODO: other possibilities:

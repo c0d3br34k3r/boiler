@@ -8,26 +8,26 @@ import java.util.Map;
 import com.catascopic.template.eval.Term;
 import com.google.common.base.Function;
 
-public class Scope implements LocalAccess, Function<Term, Object> {
+public abstract class Scope extends LocalAccess implements
+		Function<Term, Object> {
 
-	private final LocalAccess parent;
-	private final Path workingDir;
-	private final TemplateResolver resolver;
-	private Map<String, Object> values = new HashMap<>();
-
-	Scope(TemplateResolver resolver, Path workingDir,
-			Map<String, ? extends Object> params) {
-		this.resolver = resolver;
-		this.workingDir = workingDir;
-		this.parent = BASE;
-		values.putAll(params);
+	static Scope create(Path file, TemplateEngine engine) {
+		return new FileScope(file, engine);
+	}
+	
+	static Scope create(Path file, TemplateEngine engine) {
+		return new FileScope(file, engine);
 	}
 
-	private Scope(TemplateResolver resolver, Path workingDir,
-			LocalAccess parent) {
-		this.resolver = resolver;
-		this.workingDir = workingDir;
+	private final LocalAccess parent;
+	private Map<String, Object> values = new HashMap<>();
+
+	Scope(LocalAccess parent) {
 		this.parent = parent;
+	}
+
+	Scope() {
+		this(BASE);
 	}
 
 	@Override
@@ -43,12 +43,20 @@ public class Scope implements LocalAccess, Function<Term, Object> {
 		return value;
 	}
 
+	@Override
+	protected void collect(Map<String, Object> locals) {
+		parent.collect(locals);
+		locals.putAll(values);
+	}
+
 	public void set(String name, Object value) {
 		values.put(name, value);
 	}
 
-	public TemplateFunction getFunction(String name) {
-		return resolver.getFunction(name);
+	public Map<String, Object> locals() {
+		Map<String, Object> locals = new HashMap<>();
+		collect(locals);
+		return locals;
 	}
 
 	@Override
@@ -56,20 +64,13 @@ public class Scope implements LocalAccess, Function<Term, Object> {
 		return input.evaluate(this);
 	}
 
-	public void renderTemplate(Appendable writer, String fileName,
-			Assigner assigner)
-			throws IOException {
-		// TODO: dir could be null
-		Path file = workingDir.resolve(fileName);
-		Scope extended = new Scope(resolver, file.getParent(), this);
-		assigner.assign(extended);
-		resolver.getTemplate(file).render(writer, extended);
-	}
+	public abstract TemplateFunction getFunction(String name);
 
-	public void renderTextFile(Appendable writer, String fileName)
-			throws IOException {
-		writer.append(resolver.getTextFile(workingDir.resolve(fileName)));
-	}
+	public abstract void renderTemplate(Appendable writer, String path,
+			Assigner assigner) throws IOException;
+
+	public abstract void renderTextFile(Appendable writer, String path)
+			throws IOException;
 
 	private static final LocalAccess BASE = new LocalAccess() {
 
@@ -77,10 +78,73 @@ public class Scope implements LocalAccess, Function<Term, Object> {
 		public Object get(String name) {
 			throw new TemplateEvalException("%s is undefined", name);
 		}
+
+		@Override
+		protected void collect(Map<String, Object> locals) {
+			// nothing to collect
+		}
 	};
 
-	public String newLine() {
-		return "\n";
+	private static class FileScope extends Scope {
+
+		final Path file;
+		final TemplateEngine engine;
+
+		FileScope(Path file, TemplateEngine engine) {
+			this.file = file;
+			this.engine = engine;
+		}
+
+		FileScope(Path file, FileScope parent) {
+			super(parent);
+			this.file = file;
+			this.engine = parent.engine;
+		}
+
+		@Override
+		public TemplateFunction getFunction(String name) {
+			return engine.getFunction(name);
+		}
+
+		@Override
+		public void renderTemplate(Appendable writer, String path,
+				Assigner assigner) throws IOException {
+			Path resolvedFile = file.resolveSibling(path);
+			Scope extended = new FileScope(resolvedFile, this);
+			assigner.assign(extended);
+			engine.getTemplate(resolvedFile).render(writer, extended);
+		}
+
+		@Override
+		public void renderTextFile(Appendable writer, String path)
+				throws IOException {
+			writer.append(engine.getTextFile(file.resolveSibling(path)));
+		}
+	}
+
+	private static class BasicScope extends Scope {
+
+		BasicScope() {}
+
+		BasicScope(LocalAccess parent) {
+			super(parent);
+		}
+
+		@Override
+		public TemplateFunction getFunction(String name) {
+			return engine.getFunction(name);
+		}
+
+		@Override
+		public void renderTemplate(Appendable writer, String path,
+				Assigner assigner) {
+			throw new TemplateEvalException("file resolution not allowed");
+		}
+
+		@Override
+		public void renderTextFile(Appendable writer, String path) {
+			throw new TemplateEvalException("file resolution not allowed");
+		}
 	}
 
 }

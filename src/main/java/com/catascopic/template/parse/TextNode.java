@@ -3,6 +3,7 @@ package com.catascopic.template.parse;
 import java.io.IOException;
 
 import com.catascopic.template.Scope;
+import com.google.common.base.CharMatcher;
 
 class TextNode implements Node, Tag {
 
@@ -17,8 +18,15 @@ class TextNode implements Node, Tag {
 		writer.append(text);
 	}
 
-	static Tag getTag(final String text) {
+	static Tag getTag(String text) {
 		return new TextNode(text);
+	}
+
+	@Override
+	public void handle(TagCleaner cleaner) {
+		if (!CharMatcher.whitespace().matchesAllOf(text)) {
+			cleaner.whitespace();
+		}
 	}
 
 	@Override

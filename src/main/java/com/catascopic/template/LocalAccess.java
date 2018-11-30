@@ -1,7 +1,11 @@
 package com.catascopic.template;
 
-interface LocalAccess {
+import java.util.Map;
 
-	Object get(String name);
+abstract class LocalAccess {
+
+	public abstract Object get(String name);
+
+	protected abstract void collect(Map<String, Object> locals);
 
 }
