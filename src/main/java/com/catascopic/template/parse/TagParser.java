@@ -174,7 +174,6 @@ class TagParser {
 			default:
 			}
 		}
-		// TODO: locate beginning of comment
 		throw new TemplateParseException(reader, "unclosed comment");
 	}
 

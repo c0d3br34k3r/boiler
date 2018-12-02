@@ -60,5 +60,4 @@ class TagCleaner {
 		CLEAN,
 		NOT_CLEAN;
 	}
-
 }

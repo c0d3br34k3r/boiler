@@ -22,7 +22,11 @@ class Block implements Node {
 
 	@Override
 	public String toString() {
-		return nodes.toString();
+		StringBuilder builder = new StringBuilder();
+		for (Node node : nodes) {
+			builder.append(node);
+		}
+		return builder.toString();
 	}
 
 }
