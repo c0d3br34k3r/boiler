@@ -1,5 +1,6 @@
 package com.catascopic.template;
 
+import java.util.Collections;
 import java.util.Map;
 
 class BasicScope extends Scope {
@@ -14,6 +15,16 @@ class BasicScope extends Scope {
 			FunctionResolver functions) {
 		super(values);
 		this.functions = functions;
+	}
+
+	@Override
+	Object getAlt(String name) {
+		throw new TemplateEvalException("%s is undefined", name);
+	}
+
+	@Override
+	public Map<String, Object> locals() {
+		return Collections.unmodifiableMap(values);
 	}
 
 	@Override

@@ -10,24 +10,33 @@ import com.catascopic.template.parse.TemplateParser;
 
 public class Template {
 
-	public static Template parse(String text) {
+	public static Template parse(String text, FunctionResolver functions) {
 		try {
-			return parse(new StringReader(text));
+			return parse(new StringReader(text), functions);
 		} catch (IOException e) {
 			throw new AssertionError(e);
 		}
 	}
 
+	public static Template parse(String text) {
+		return parse(text, FunctionResolver.builtinOnly());
+	}
+
+	public static Template parse(Reader reader, FunctionResolver functions)
+			throws IOException {
+		return new Template(TemplateParser.parse(reader), functions);
+	}
+
 	public static Template parse(Reader reader) throws IOException {
-		return new Template(TemplateParser.parse(reader));
+		return parse(reader, FunctionResolver.builtinOnly());
 	}
 
 	private final Node node;
 	private final FunctionResolver functions;
 
-	private Template(Node node) {
+	private Template(Node node, FunctionResolver functions) {
 		this.node = node;
-		functions = FunctionResolver.builtinOnly();
+		this.functions = functions;
 	}
 
 	public String render(Map<String, ? extends Object> params) {
@@ -42,8 +51,7 @@ public class Template {
 
 	public void render(Appendable writer, Map<String, ? extends Object> params)
 			throws IOException {
-		Scope scope = new BasicScope(params, functions);
-		node.render(writer, scope);
+		node.render(writer, new BasicScope(params, functions));
 	}
 
 	@Override

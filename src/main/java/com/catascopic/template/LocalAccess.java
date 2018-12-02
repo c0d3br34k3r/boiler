@@ -2,10 +2,10 @@ package com.catascopic.template;
 
 import java.util.Map;
 
-abstract class LocalAccess {
+interface LocalAccess {
 
-	public abstract Object get(String name);
+	Object get(String name);
 
-	protected abstract void collect(Map<String, Object> locals);
+	void collect(Map<String, Object> locals);
 
 }

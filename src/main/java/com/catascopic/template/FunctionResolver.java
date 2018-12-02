@@ -6,7 +6,21 @@ import com.google.common.collect.ImmutableMap;
 
 public class FunctionResolver {
 
-	private final ImmutableMap<String, TemplateFunction> functions;
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	public static FunctionResolver builtinOnly() {
+		return BUILTIN_ONLY;
+	}
+
+	private static final FunctionResolver BUILTIN_ONLY = builder().build();
+
+	private final Map<String, TemplateFunction> functions;
+
+	FunctionResolver(Map<String, TemplateFunction> functions) {
+		this.functions = functions;
+	}
 
 	TemplateFunction get(String name) {
 		TemplateFunction function = functions.get(name);
@@ -16,23 +30,14 @@ public class FunctionResolver {
 		return function;
 	}
 
-	FunctionResolver(ImmutableMap<String, TemplateFunction> functions) {
-		this.functions = functions;
-	}
-
-	private static final FunctionResolver BUILTIN_ONLY = builder().build();
-
-	public static FunctionResolver builtinOnly() {
-		return BUILTIN_ONLY;
-	}
-
-	static Builder builder() {
-		return new Builder();
+	@Override
+	public String toString() {
+		return functions.keySet().toString();
 	}
 
 	public static class Builder {
 
-		Builder() {
+		private Builder() {
 			addFunctions(Builtin.class);
 		}
 
@@ -48,7 +53,8 @@ public class FunctionResolver {
 			return this;
 		}
 
-		public Builder addFunctions(Map<String, TemplateFunction> functionMap) {
+		public Builder addFunctions(Map<String,
+				? extends TemplateFunction> functionMap) {
 			functions.putAll(functionMap);
 			return this;
 		}

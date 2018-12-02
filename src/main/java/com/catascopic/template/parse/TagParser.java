@@ -9,6 +9,7 @@ import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.eval.Tokenizer;
 import com.google.common.base.CharMatcher;
 
+// TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 class TagParser {
 
 	static List<Tag> parse(Reader reader) throws IOException {

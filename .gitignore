@@ -3,3 +3,4 @@ bin/
 .classpath
 .project
 doc/
+src/main/java/com/catascopic/template/zero

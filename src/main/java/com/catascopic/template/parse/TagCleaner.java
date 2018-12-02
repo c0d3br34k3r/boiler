@@ -3,6 +3,7 @@ package com.catascopic.template.parse;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 class TagCleaner {
 
 	private List<Tag> tags = new ArrayList<>();

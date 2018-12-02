@@ -1,4 +1,4 @@
-package com.catascopic.template.x;
+package com.catascopic.template.zero;
 
 import java.util.Map;
 

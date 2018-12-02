@@ -2,24 +2,45 @@ package com.catascopic.template;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
-class FileScope extends Scope {
+class FileScope extends Scope implements LocalAccess {
 
 	private final Path file;
 	private final TemplateEngine engine;
+	private final LocalAccess parent;
 
 	FileScope(Path file, TemplateEngine engine,
 			Map<String, ? extends Object> initial) {
 		super(initial);
 		this.file = file;
 		this.engine = engine;
+		this.parent = BASE;
 	}
 
-	FileScope(Path file, FileScope parent) {
-		super(parent);
+	private FileScope(Path file, FileScope parent) {
 		this.file = file;
 		this.engine = parent.engine;
+		this.parent = parent;
+	}
+
+	@Override
+	Object getAlt(String name) {
+		return parent.get(name);
+	}
+
+	@Override
+	public void collect(Map<String, Object> locals) {
+		parent.collect(locals);
+		locals.putAll(values);
+	}
+
+	@Override
+	public Map<String, Object> locals() {
+		Map<String, Object> locals = new HashMap<>();
+		collect(locals);
+		return locals;
 	}
 
 	@Override
@@ -41,5 +62,18 @@ class FileScope extends Scope {
 			throws IOException {
 		writer.append(engine.getTextFile(file.resolveSibling(path)));
 	}
+
+	private static final LocalAccess BASE = new LocalAccess() {
+
+		@Override
+		public Object get(String name) {
+			throw new TemplateEvalException("%s is undefined", name);
+		}
+
+		@Override
+		public void collect(Map<String, Object> locals) {
+			// nothing to collect
+		}
+	};
 
 }

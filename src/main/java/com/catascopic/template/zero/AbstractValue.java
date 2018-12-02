@@ -1,36 +1,25 @@
-package com.catascopic.template.x;
+package com.catascopic.template.zero;
 
-public class IntValue implements Value {
+public abstract class AbstractValue implements Value {
 
-	private final int value;
-
-	public IntValue(int value) {
-		this.value = value;
+	@Override
+	public Value add(Value value) {
+		throw new IllegalStateException();
 	}
 
 	@Override
-	public int intValue() {
-		return value;
+	public Value multiply(Value value) {
+		throw new IllegalStateException();
 	}
 
 	@Override
-	public Value add(Value other) {
-		return new IntValue(value + other.intValue());
+	public Value divide(Value value) {
+		throw new IllegalStateException();
 	}
 
 	@Override
-	public Value multiply(Value other) {
-		return new IntValue(value * other.intValue());
-	}
-
-	@Override
-	public Value divide(Value other) {
-		return new IntValue(value / other.intValue());
-	}
-
-	@Override
-	public Value modulo(Value other) {
-		return new IntValue(value % other.intValue());
+	public Value modulo(Value value) {
+		throw new IllegalStateException();
 	}
 
 	@Override
