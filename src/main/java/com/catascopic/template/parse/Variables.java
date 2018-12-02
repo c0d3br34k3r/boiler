@@ -17,6 +17,7 @@ import com.catascopic.template.eval.Tokenizer;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
+// TODO: rework this, move to eval?
 class Variables {
 
 	private Variables() {}

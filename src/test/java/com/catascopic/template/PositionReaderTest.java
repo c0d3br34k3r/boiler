@@ -6,7 +6,7 @@ import java.io.StringReader;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class FunctionsTest {
+public class PositionReaderTest {
 
 	@Test
 	public void testReader() throws IOException {
