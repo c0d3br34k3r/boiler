@@ -18,17 +18,17 @@ class TextNode implements Node, Tag {
 	}
 
 	@Override
-	public String toString() {
-		return text;
+	public void handle(TemplateParser parser) {
+		parser.add(this);
 	}
 
 	static Tag getTag(final String text) {
 		return new TextNode(text);
 	}
-	
+
 	@Override
-	public void handle(TemplateParser parser) {
-		parser.add(new TextNode(text));
+	public String toString() {
+		return text;
 	}
 
 }

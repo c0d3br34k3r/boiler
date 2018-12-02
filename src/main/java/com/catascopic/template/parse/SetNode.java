@@ -17,11 +17,6 @@ class SetNode implements Node, Tag {
 		assigner.assign(scope);
 	}
 
-	@Override
-	public String toString() {
-		return "<% set " + assigner + " %>";
-	}
-
 	static Tag parseTag(Tokenizer tokenizer) {
 		return new SetNode(Variables.parseAssignment(tokenizer));
 	}
@@ -29,6 +24,11 @@ class SetNode implements Node, Tag {
 	@Override
 	public void handle(TemplateParser parser) {
 		parser.add(this);
+	}
+
+	@Override
+	public String toString() {
+		return "<% set " + assigner + " %>";
 	}
 
 }
