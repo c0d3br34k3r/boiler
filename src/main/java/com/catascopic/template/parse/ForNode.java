@@ -46,14 +46,14 @@ class ForNode implements Node {
 
 			@Override
 			public String toString() {
-				return "for " + names + " in " + sequence;
+				return "<for " + names + " in " + sequence + ">";
 			}
 		};
 	}
 
 	@Override
 	public String toString() {
-		return "FOR " + names + " IN " + sequence + ": " + block;
+		return "<for" + names + " in " + sequence + ">" + block;
 	}
 
 }

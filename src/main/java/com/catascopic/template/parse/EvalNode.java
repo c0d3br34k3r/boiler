@@ -31,7 +31,7 @@ class EvalNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "EVAL(" + expression + ")";
+		return "<eval " + expression + ">";
 	}
 
 }

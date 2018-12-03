@@ -1,6 +1,5 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Null;
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 
@@ -28,7 +27,7 @@ class SliceTerm implements Term {
 
 	private static Integer get(Term term, Scope scope) {
 		Object value = term.evaluate(scope);
-		return value == Null.NULL
+		return value == null
 				? null
 				: Values.toNumber(value).intValue();
 	}

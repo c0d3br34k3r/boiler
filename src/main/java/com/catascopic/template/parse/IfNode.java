@@ -102,7 +102,7 @@ class IfNode implements Node {
 	@Override
 	public String toString() {
 		return elseNode == EmptyNode.EMPTY
-				? "IF " + condition + " " + block
+				? "if " + condition + " " + block
 				: "IF " + condition + " " + block + " ELSE " + elseNode;
 	}
 

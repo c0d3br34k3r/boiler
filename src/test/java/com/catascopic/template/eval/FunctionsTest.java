@@ -47,6 +47,7 @@ public class FunctionsTest {
 	public void testSlice() {
 		Assert.assertEquals(slice("abcde", 0, 2, 1), "ab");
 		Assert.assertEquals(slice("abcde", null, 2), "ab");
+		Assert.assertEquals(slice("abcde", 0, 5), "abcde");
 		Assert.assertEquals(slice("abcde", 5, 5), "");
 		Assert.assertEquals(slice("abcde", 5, 0), "");
 		Assert.assertEquals(slice("abcde", -1, 0, -1), "edcb");
@@ -57,12 +58,6 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", null, null, -2), "eca");
 		Assert.assertEquals(slice("abcde", -2, null, -2), "db");
 		Assert.assertEquals(slice("abcde", -2), "de");
-		Assert.assertEquals(slice("abcde", -100, 100), "abcde");
-		Assert.assertEquals(slice("abcde", 100, -100, -1), "edcba");
-		Assert.assertEquals(slice("abcde", 100, 100), "");
-		Assert.assertEquals(slice("abcde", -100, -100), "");
-		Assert.assertEquals(slice("abcde", 100, 100, -1), "");
-		Assert.assertEquals(slice("abcde", -100, -100, -1), "");
 		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2), Arrays.asList(3, 4));
 	}
 

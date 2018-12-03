@@ -356,7 +356,7 @@ public final class Values {
 			if (stop == null) {
 				istop = len;
 			} else {
-				istop = Math.min(getIndex(stop, len), len);
+				istop = Math.min(getSliceEndIndex(stop, len), len);
 			}
 		} else {
 			if (start == null) {
@@ -469,6 +469,15 @@ public final class Values {
 	}
 
 	public static int getIndex(int index, int len) {
+		int adjusted = index < 0 ? len + index : index;
+		if (adjusted < 0 || adjusted >= len) {
+			throw new TemplateEvalException(
+					"index %s is out of bounds", index);
+		}
+		return adjusted;
+	}
+
+	public static int getSliceEndIndex(int index, int len) {
 		int adjusted = index < 0 ? len + index : index;
 		if (adjusted < 0 || adjusted > len) {
 			throw new TemplateEvalException(

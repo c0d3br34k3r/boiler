@@ -1,6 +1,5 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Null;
 import com.catascopic.template.Scope;
 
 enum NullTerm implements Term {
@@ -9,7 +8,7 @@ enum NullTerm implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		return Null.NULL;
+		return null;
 	}
 
 	@Override

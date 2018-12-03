@@ -20,7 +20,6 @@ public abstract class Scope implements Function<Term, Object> {
 
 	public final Object get(String name) {
 		Object value = values.get(name);
-		// TODO: null masking
 		if (value == null) {
 			if (!values.containsKey(name)) {
 				return null;
