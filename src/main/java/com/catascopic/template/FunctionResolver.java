@@ -1,20 +1,23 @@
 package com.catascopic.template;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
+
+// TODO: make this a more general settings class
 public class FunctionResolver {
 
 	public static Builder builder() {
 		return new Builder();
 	}
 
-	public static FunctionResolver builtinOnly() {
-		return BUILTIN_ONLY;
+	public static FunctionResolver builtInOnly() {
+		return BUILT_IN_ONLY;
 	}
 
-	private static final FunctionResolver BUILTIN_ONLY = builder().build();
+	private static final FunctionResolver BUILT_IN_ONLY = builder().build();
 
 	private final Map<String, TemplateFunction> functions;
 
@@ -38,11 +41,10 @@ public class FunctionResolver {
 	public static class Builder {
 
 		private Builder() {
-			addFunctions(Builtin.class);
+			addFunctions(BuiltIn.class);
 		}
 
-		private ImmutableMap.Builder<String, TemplateFunction> functions =
-				ImmutableMap.builder();
+		private Map<String, TemplateFunction> functions = new HashMap<>();
 
 		public <F extends Enum<F> & TemplateFunction> Builder addFunctions(
 				Class<F> functionEnum) {
@@ -53,8 +55,8 @@ public class FunctionResolver {
 			return this;
 		}
 
-		public Builder addFunctions(Map<String,
-				? extends TemplateFunction> functionMap) {
+		public Builder addFunctions(
+				Map<String, ? extends TemplateFunction> functionMap) {
 			functions.putAll(functionMap);
 			return this;
 		}
@@ -65,7 +67,7 @@ public class FunctionResolver {
 		}
 
 		public FunctionResolver build() {
-			return new FunctionResolver(functions.build());
+			return new FunctionResolver(ImmutableMap.copyOf(functions));
 		}
 	}
 

@@ -19,7 +19,7 @@ public class Template {
 	}
 
 	public static Template parse(String text) {
-		return parse(text, FunctionResolver.builtinOnly());
+		return parse(text, FunctionResolver.builtInOnly());
 	}
 
 	public static Template parse(Reader reader, FunctionResolver functions)
@@ -28,7 +28,7 @@ public class Template {
 	}
 
 	public static Template parse(Reader reader) throws IOException {
-		return parse(reader, FunctionResolver.builtinOnly());
+		return parse(reader, FunctionResolver.builtInOnly());
 	}
 
 	private final Node node;

@@ -19,7 +19,7 @@ public class TemplateEngine {
 	private static final int DEFAULT_CACHE_SIZE = 64;
 
 	public static TemplateEngine create() {
-		return create(FunctionResolver.builtinOnly(), DEFAULT_CACHE_SIZE);
+		return create(FunctionResolver.builtInOnly(), DEFAULT_CACHE_SIZE);
 	}
 
 	public static TemplateEngine create(FunctionResolver functions) {

@@ -1,6 +1,7 @@
 package com.catascopic.template;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,11 +10,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.catascopic.template.eval.Term;
+import com.catascopic.template.eval.Tokenizer;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
-enum Builtin implements TemplateFunction {
+enum BuiltIn implements TemplateFunction {
 
 	BOOL {
 
@@ -54,7 +57,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.min(params.size() == 1 ? params.getIterable(0)
+			return Values.min(params.size() == 1
+					? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -62,7 +66,8 @@ enum Builtin implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.max(params.size() == 1 ? params.getIterable(0)
+			return Values.max(params.size() == 1
+					? params.getIterable(0)
 					: params.asList());
 		}
 	},
@@ -327,6 +332,18 @@ enum Builtin implements TemplateFunction {
 		@Override
 		public Object apply(Params params) {
 			return params.scope().locals();
+		}
+	},
+	EVAL {
+
+		@Override
+		public Object apply(Params params) {
+			Tokenizer tokenizer = new Tokenizer(new PositionReader(
+					new StringReader(params.getString(0))),
+					Tokenizer.Mode.STREAM);
+			Term expression = tokenizer.parseExpression();
+			tokenizer.end();
+			return expression.evaluate(params.scope());
 		}
 	};
 
