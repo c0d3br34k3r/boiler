@@ -303,10 +303,10 @@ enum BuiltIn implements TemplateFunction {
 			};
 			StringBuilder builder = new StringBuilder();
 			try {
-				params.scope().renderTemplate(builder, params.getString(0),
-						assigner);
+				params.scope().renderTemplate(builder,
+						params.getString(0), assigner);
 			} catch (IOException e) {
-				throw new AssertionError(e);
+				throw new TemplateEvalException(e);
 			}
 			return builder.toString();
 		}

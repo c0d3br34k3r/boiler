@@ -6,15 +6,15 @@ import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
-import com.catascopic.template.parse.Variables.Names;
+import com.catascopic.template.parse.Variables.NameAssigner;
 
 class ForNode implements Node {
 
-	private final Names names;
+	private final NameAssigner names;
 	private final Term sequence;
 	private final Block block;
 
-	private ForNode(Names names, Term sequence, Block block) {
+	private ForNode(NameAssigner names, Term sequence, Block block) {
 		this.names = names;
 		this.sequence = sequence;
 		this.block = block;
@@ -29,7 +29,7 @@ class ForNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		final Names names = Variables.parseNames(tokenizer);
+		final NameAssigner names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		final Term sequence = tokenizer.parseExpression();
 		return new NodeBuilder() {

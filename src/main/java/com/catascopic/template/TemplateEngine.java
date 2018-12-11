@@ -43,13 +43,10 @@ public class TemplateEngine {
 				new FileScope(path, this, params));
 	}
 
-	public String render(Path path, Map<String, Object> params) {
+	public String render(Path path, Map<String, Object> params)
+			throws IOException {
 		StringBuilder builder = new StringBuilder();
-		try {
-			render(path, builder, params);
-		} catch (IOException e) {
-			throw new AssertionError(e);
-		}
+		render(path, builder, params);
 		return builder.toString();
 	}
 

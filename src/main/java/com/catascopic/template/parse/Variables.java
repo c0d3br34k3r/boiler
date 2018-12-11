@@ -1,5 +1,6 @@
 package com.catascopic.template.parse;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,26 +23,38 @@ class Variables {
 
 	private Variables() {}
 
-	static Names parseNames(Tokenizer tokenizer) {
+	static NameAssigner parseNames(Tokenizer tokenizer) {
 		return parseNames(tokenizer, new HashSet<String>());
 	}
 
-	private static Names parseNames(Tokenizer tokenizer, Set<String> unique) {
+	private static NameAssigner parseNames(Tokenizer tokenizer,
+			Set<String> unique) {
+		return parseNames(tokenizer, unique, false);
+	}
+	
+	private static NameAssigner parseNames(Tokenizer tokenizer,
+			Set<String> unique, boolean forceUnpack) {
 		Location location = tokenizer.getLocation();
-		ImmutableList.Builder<String> builder = ImmutableList.builder();
+		List<NameAssigner> assigners = new ArrayList<>();
 		do {
-			String name = tokenizer.parseIdentifier();
-			if (!unique.add(name)) {
-				throw new TemplateParseException(tokenizer,
-						"duplicate variable name: %s", name);
+			NameAssigner assigner;
+			if (tokenizer.tryConsume(Symbol.LEFT_PARENTHESIS)) {
+				assigner = parseNames(tokenizer, unique, true);
+				tokenizer.consume(Symbol.RIGHT_PARENTHESIS);
+			} else {
+				String name = tokenizer.parseIdentifier();
+				if (!unique.add(name)) {
+					throw new TemplateParseException(tokenizer,
+							"duplicate variable name: %s", name);
+				}
+				assigner = new SingleName(name);
 			}
-			builder.add(name);
+			assigners.add(assigner);
 		} while (tokenizer.tryConsume(Symbol.COMMA));
-		List<String> varNames = builder.build();
-		if (varNames.size() == 1) {
-			return new Name(varNames.get(0));
+		if (assigners.size() > 1 || forceUnpack) {
+			return new Unpacker(ImmutableList.copyOf(assigners), location);
 		}
-		return new UnpackNames(varNames, location);
+		return assigners.get(0);
 	}
 
 	static Assigner parseAssignment(Tokenizer tokenizer) {
@@ -72,7 +85,7 @@ class Variables {
 
 	private static Assigner parseAssigner(Tokenizer tokenizer,
 			Set<String> unique) {
-		final Names names = parseNames(tokenizer, unique);
+		final NameAssigner names = parseNames(tokenizer, unique);
 		tokenizer.consume(Symbol.ASSIGNMENT);
 		final Term term = tokenizer.parseExpression();
 		return new Assigner() {
@@ -106,16 +119,16 @@ class Variables {
 	 * Assigns a value to a particular name, or unpacks a sequence into several
 	 * names.
 	 */
-	interface Names {
+	interface NameAssigner {
 
 		void assign(Scope scope, Object value);
 	}
 
-	private static class Name implements Names {
+	private static class SingleName implements NameAssigner {
 
 		private final String varName;
 
-		Name(String varName) {
+		SingleName(String varName) {
 			this.varName = varName;
 		}
 
@@ -130,26 +143,26 @@ class Variables {
 		}
 	}
 
-	private static class UnpackNames implements Names {
+	private static class Unpacker implements NameAssigner {
 
-		private final List<String> varNames;
+		private final List<NameAssigner> varNames;
 		private final Location location;
 
-		UnpackNames(List<String> varNames, Location location) {
+		Unpacker(ImmutableList<NameAssigner> varNames, Location location) {
 			this.varNames = varNames;
 			this.location = location;
 		}
 
 		@Override
 		public void assign(Scope scope, Object value) {
-			Iterator<String> iter = varNames.iterator();
+			Iterator<NameAssigner> iter = varNames.iterator();
 			for (Object unpacked : Values.toIterable(value)) {
 				if (!iter.hasNext()) {
 					throw new TemplateEvalException(location,
 							"too many values %s to unpack into names: %s",
 							value, varNames);
 				}
-				scope.set(iter.next(), unpacked);
+				iter.next().assign(scope, unpacked);
 			}
 			if (iter.hasNext()) {
 				throw new TemplateEvalException(location,

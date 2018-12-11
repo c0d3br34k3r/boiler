@@ -51,4 +51,8 @@ public abstract class Scope implements Function<Term, Object> {
 	public abstract void renderTextFile(Appendable writer, String path)
 			throws IOException;
 
+	public void print(Location location, String message) {
+		// TODO
+	}
+
 }
