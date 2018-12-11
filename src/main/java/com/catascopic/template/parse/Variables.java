@@ -31,7 +31,7 @@ class Variables {
 			Set<String> unique) {
 		return parseNames(tokenizer, unique, false);
 	}
-	
+
 	private static NameAssigner parseNames(Tokenizer tokenizer,
 			Set<String> unique, boolean forceUnpack) {
 		Location location = tokenizer.getLocation();
@@ -145,35 +145,35 @@ class Variables {
 
 	private static class Unpacker implements NameAssigner {
 
-		private final List<NameAssigner> varNames;
+		private final List<NameAssigner> assigners;
 		private final Location location;
 
 		Unpacker(ImmutableList<NameAssigner> varNames, Location location) {
-			this.varNames = varNames;
+			this.assigners = varNames;
 			this.location = location;
 		}
 
 		@Override
 		public void assign(Scope scope, Object value) {
-			Iterator<NameAssigner> iter = varNames.iterator();
+			Iterator<NameAssigner> iter = assigners.iterator();
 			for (Object unpacked : Values.toIterable(value)) {
 				if (!iter.hasNext()) {
 					throw new TemplateEvalException(location,
 							"too many values %s to unpack into names: %s",
-							value, varNames);
+							value, assigners);
 				}
 				iter.next().assign(scope, unpacked);
 			}
 			if (iter.hasNext()) {
 				throw new TemplateEvalException(location,
 						"not enough values %s to unpack into names: %s",
-						value, varNames);
+						value, assigners);
 			}
 		}
 
 		@Override
 		public String toString() {
-			return Joiner.on(", ").join(varNames);
+			return "(" + Joiner.on(", ").join(assigners) + ")";
 		}
 	}
 
