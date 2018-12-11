@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-
 // TODO: make this a more general settings class
 public class FunctionResolver {
 

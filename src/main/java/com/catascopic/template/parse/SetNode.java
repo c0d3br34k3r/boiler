@@ -28,7 +28,7 @@ class SetNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "SET " + assigner;
+		return "@{set " + assigner + "}";
 	}
 
 }

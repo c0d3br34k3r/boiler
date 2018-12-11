@@ -55,6 +55,17 @@ public class PositionReader implements Locatable {
 		buf[--pos] = (char) c;
 	}
 
+	public boolean tryRead(char match) throws IOException {
+		int ch = read();
+		if (ch == match) {
+			return true;
+		}
+		if (ch != -1) {
+			unread(ch);
+		}
+		return false;
+	}
+
 	@Override
 	public Location getLocation() {
 		return new Location(line, column);

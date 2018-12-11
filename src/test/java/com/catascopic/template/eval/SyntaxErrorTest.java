@@ -64,12 +64,13 @@ public class SyntaxErrorTest {
 	}
 
 	private static void evaluate(String expr) {
-		Tokenizer tokenizer = new Tokenizer(new PositionReader(
-				new StringReader(expr)), Tokenizer.Mode.STREAM);
+		Tokenizer tokenizer =
+				new Tokenizer(new PositionReader(new StringReader(expr)));
 		Term term;
 		term = tokenizer.parseExpression();
 		tokenizer.end();
-		term.evaluate(TestUtil.testScope(ImmutableMap.of("word", "automobile")));
+		term.evaluate(
+				TestUtil.testScope(ImmutableMap.of("word", "automobile")));
 	}
 
 }

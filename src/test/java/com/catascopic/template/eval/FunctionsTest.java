@@ -40,7 +40,8 @@ public class FunctionsTest {
 		Assert.assertEquals(range(0, 5, 2), Arrays.asList(0, 2, 4));
 		Assert.assertEquals(range(-5, 0, 2), Arrays.asList(-5, -3, -1));
 		Assert.assertEquals(range(1, 7, 3), Arrays.asList(1, 4));
-		Assert.assertEquals(range(0, 30, 5), Arrays.asList(0, 5, 10, 15, 20, 25));
+		Assert.assertEquals(range(0, 30, 5),
+				Arrays.asList(0, 5, 10, 15, 20, 25));
 	}
 
 	@Test
@@ -57,13 +58,8 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", null, null, -2), "eca");
 		Assert.assertEquals(slice("abcde", -2, null, -2), "db");
 		Assert.assertEquals(slice("abcde", -2), "de");
-		Assert.assertEquals(slice("abcde", -100, 100), "abcde");
-		Assert.assertEquals(slice("abcde", 100, -100, -1), "edcba");
-		Assert.assertEquals(slice("abcde", 100, 100), "");
-		Assert.assertEquals(slice("abcde", -100, -100), "");
-		Assert.assertEquals(slice("abcde", 100, 100, -1), "");
-		Assert.assertEquals(slice("abcde", -100, -100, -1), "");
-		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2), Arrays.asList(3, 4));
+		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2),
+				Arrays.asList(3, 4));
 	}
 
 }

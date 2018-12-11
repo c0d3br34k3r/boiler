@@ -10,19 +10,19 @@ public class ElseTagTest {
 	@Test
 	public void testBasicIfElse() {
 		Assert.assertEquals("foo is false", render(
-				"<% if foo %>foo is true<% else %>foo is false<% end %>", 
+				"@{if foo}foo is true@{else}foo is false@{end}", 
 				"foo", false));
 	}
 
 	@Test
 	public void testIfElseIfElse() {
-		String template = "<% if foo %>"
+		String template = "@{if foo}"
 				+ "foo is true"
-				+ "<% else if bar %>"
+				+ "@{else if bar}"
 				+ "bar is true"
-				+ "<% else %>"
+				+ "@{else}"
 				+ "neither is true"
-				+ "<% end %>";
+				+ "@{end}";
 
 		Assert.assertEquals("foo is true", render(template,
 				"foo", true, "bar", false));

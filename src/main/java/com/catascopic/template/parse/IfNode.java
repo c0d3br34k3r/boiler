@@ -102,8 +102,8 @@ class IfNode implements Node {
 	@Override
 	public String toString() {
 		return elseNode == EmptyNode.EMPTY
-				? "IF " + condition + " " + block
-				: "IF " + condition + " " + block + " ELSE " + elseNode;
+				? "@{if " + condition + " " + block + "@{end}"
+				: "@{if " + condition + " " + block + elseNode + "@{end}";
 	}
 
 }

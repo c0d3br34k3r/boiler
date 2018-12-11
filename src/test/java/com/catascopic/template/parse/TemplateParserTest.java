@@ -13,18 +13,18 @@ public class TemplateParserTest {
 
 	@Test
 	public void test() throws IOException {
-		String text = "<% set i, j, k = '123' %>\n"
+		String text = "@{set i, j, k = '123'}\n"
 				+ "title\n"
-				+ "  <% if a == 2 %>  \n"
-				+ "i(<<i>>): <<3 * a>>\n"
-				+ "  <% else if b == 2 %>  \n"
-				+ "j(<<j>>):  <<'*' * a * 4>>\n"
-				+ "  <% else if c == 2 %>\n"
-				+ "k(<<k>>): baz\n"
-				+ "<% else if c == 3 %>\n"
+				+ "  @{if a == 2}  \n"
+				+ "i(${i}): ${3 * a}\n"
+				+ "  @{else if b == 2}  \n"
+				+ "j(${j}): ${'*' * a * 4}\n"
+				+ "  @{else if c == 2}\n"
+				+ "k(${k}): baz\n"
+				+ "@{else if c == 3}\n"
 				+ "stop\n"
-				+ "<% end %>"
-				+ "<<locals()>>";
+				+ "@{end}"
+				+ "${locals()}";
 		System.out.println(text);
 		List<Tag> document = TagParser.parse(new StringReader(text));
 		System.out.println();
@@ -33,7 +33,7 @@ public class TemplateParserTest {
 		System.out.println();
 		System.out.println(template);
 		System.out.println();
-		System.out.println(template.render(ImmutableMap.of("a", 2, "b", 1, "c", 1)));
+		System.out.println(template.render(ImmutableMap.of("a", 5, "b", 5, "c", 3)));
 	}
 
 }

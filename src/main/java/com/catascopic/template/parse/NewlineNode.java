@@ -18,4 +18,9 @@ enum NewlineNode implements Node, Tag {
 		parser.add(this);
 	}
 
+	@Override
+	public String toString() {
+		return "\n";
+	}
+
 }
