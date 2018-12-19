@@ -1,14 +1,14 @@
 package com.catascopic.template.eval;
 
+import com.catascopic.template.Context;
 import com.catascopic.template.Null;
-import com.catascopic.template.Scope;
 
 enum NullTerm implements Term {
 
 	NULL;
 
 	@Override
-	public Object evaluate(Scope scope) {
+	public Object evaluate(Context context) {
 		return Null.NULL;
 	}
 

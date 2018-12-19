@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 
 class UnaryTerm implements Term {
 
@@ -13,8 +13,8 @@ class UnaryTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return operator.apply(term.evaluate(scope));
+	public Object evaluate(Context context) {
+		return operator.apply(term.evaluate(context));
 	}
 
 	@Override

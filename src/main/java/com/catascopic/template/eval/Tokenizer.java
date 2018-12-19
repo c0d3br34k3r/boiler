@@ -2,10 +2,10 @@ package com.catascopic.template.eval;
 
 import java.io.IOException;
 
+import com.catascopic.template.Context;
 import com.catascopic.template.Locatable;
 import com.catascopic.template.Location;
 import com.catascopic.template.PositionReader;
-import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
@@ -96,9 +96,9 @@ public class Tokenizer implements Locatable {
 		return new Term() {
 
 			@Override
-			public Object evaluate(Scope scope) {
+			public Object evaluate(Context context) {
 				try {
-					return term.evaluate(scope);
+					return term.evaluate(context);
 				} catch (TemplateEvalException e) {
 					throw new TemplateEvalException(location, e,
 							this.toString());

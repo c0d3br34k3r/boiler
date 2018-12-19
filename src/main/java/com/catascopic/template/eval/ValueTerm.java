@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.google.common.base.Preconditions;
 
 class ValueTerm implements Term {
@@ -12,7 +12,7 @@ class ValueTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
+	public Object evaluate(Context context) {
 		return value;
 	}
 

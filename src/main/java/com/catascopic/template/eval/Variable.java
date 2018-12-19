@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 
 class Variable implements Term {
 
@@ -11,8 +11,8 @@ class Variable implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return scope.get(name);
+	public Object evaluate(Context context) {
+		return context.get(name);
 	}
 
 	@Override

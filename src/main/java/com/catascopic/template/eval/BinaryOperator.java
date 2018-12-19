@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.catascopic.template.Values;
 
 enum BinaryOperator {
@@ -88,17 +88,19 @@ enum BinaryOperator {
 	AND {
 
 		@Override
-		Object apply(Term left, Term right, Scope scope) {
-			Object leftValue = left.evaluate(scope);
-			return Values.isTrue(leftValue) ? right.evaluate(scope) : leftValue;
+		Object apply(Term left, Term right, Context context) {
+			Object leftValue = left.evaluate(context);
+			return Values.isTrue(leftValue) ? right.evaluate(context)
+					: leftValue;
 		}
 	},
 	OR {
 
 		@Override
-		Object apply(Term left, Term right, Scope scope) {
-			Object leftValue = left.evaluate(scope);
-			return Values.isTrue(leftValue) ? leftValue : right.evaluate(scope);
+		Object apply(Term left, Term right, Context context) {
+			Object leftValue = left.evaluate(context);
+			return Values.isTrue(leftValue) ? leftValue : right.evaluate(
+					context);
 		}
 	};
 
@@ -106,8 +108,8 @@ enum BinaryOperator {
 		throw new AssertionError();
 	}
 
-	Object apply(Term left, Term right, Scope scope) {
-		return apply(left.evaluate(scope), right.evaluate(scope));
+	Object apply(Term left, Term right, Context context) {
+		return apply(left.evaluate(context), right.evaluate(context));
 	}
 
 }

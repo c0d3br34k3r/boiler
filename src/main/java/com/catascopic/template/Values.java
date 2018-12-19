@@ -469,19 +469,11 @@ public final class Values {
 	}
 
 	public static String index(String str, int index) {
-		return String.valueOf(str.charAt(getIndex(index, str)));
+		return String.valueOf(str.charAt(getIndex(index, str.length())));
 	}
 
 	public static <E> E index(List<E> list, int index) {
-		return list.get(getIndex(index, list));
-	}
-
-	public static int getIndex(int index, List<?> seq) {
-		return getIndex(index, seq.size());
-	}
-
-	public static int getIndex(int index, String str) {
-		return getIndex(index, str.length());
+		return list.get(getIndex(index, list.size()));
 	}
 
 	public static int getIndex(int index, int len) {

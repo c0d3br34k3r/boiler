@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.catascopic.template.Values;
 
 class IndexTerm implements Term {
@@ -14,8 +14,8 @@ class IndexTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return Values.index(term.evaluate(scope), index.evaluate(scope));
+	public Object evaluate(Context context) {
+		return Values.index(term.evaluate(context), index.evaluate(context));
 	}
 
 	@Override
