@@ -2,12 +2,12 @@ package com.catascopic.template;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.catascopic.template.eval.Term;
-import com.google.common.base.Function;
 
-public abstract class Scope implements Function<Term, Object> {
+public abstract class Scope implements Context {
 
 	// package-private
 	Map<String, Object> values = new HashMap<>();
@@ -18,6 +18,7 @@ public abstract class Scope implements Function<Term, Object> {
 
 	Scope() {}
 
+	@Override
 	public final Object get(String name) {
 		Object value = values.get(name);
 		// TODO: null masking
@@ -43,7 +44,12 @@ public abstract class Scope implements Function<Term, Object> {
 		return input.evaluate(this);
 	}
 
-	public abstract TemplateFunction getFunction(String name);
+	@Override
+	public Object call(String functionName, List<Object> arguments) {
+		return getFunction(functionName).apply(new Params(arguments, this));
+	}
+
+	abstract TemplateFunction getFunction(String name);
 
 	public abstract void renderTemplate(Appendable writer, String path,
 			Assigner assigner) throws IOException;

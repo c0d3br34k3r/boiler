@@ -2,7 +2,6 @@ package com.catascopic.template.eval;
 
 import java.util.List;
 
-import com.catascopic.template.Params;
 import com.catascopic.template.Scope;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -19,8 +18,7 @@ class FunctionTerm implements Term {
 
 	@Override
 	public Object evaluate(Scope scope) {
-		return scope.getFunction(name).apply(
-				new Params(Lists.transform(params, scope), scope));
+		return scope.call(name, Lists.transform(params, scope));
 	}
 
 	@Override

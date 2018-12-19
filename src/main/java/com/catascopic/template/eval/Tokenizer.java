@@ -187,6 +187,14 @@ public class Tokenizer implements Locatable {
 				"unexpected char '%c' (%s)", ch, Character.getName(ch));
 	}
 
+	private void require(char required) throws IOException {
+		int ch = reader.read();
+		if (ch != required) {
+			throw new TemplateParseException(reader,
+					"expected '%c', got '%c'", required, ch);
+		}
+	}
+
 	private Token parseString(char end) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		for (;;) {
@@ -291,14 +299,6 @@ public class Tokenizer implements Locatable {
 				reader.unread(ch);
 				break;
 			}
-		}
-	}
-
-	private void require(char required) throws IOException {
-		int ch = reader.read();
-		if (ch != required) {
-			throw new TemplateParseException(reader,
-					"expected '%c', got '%c'", required, ch);
 		}
 	}
 

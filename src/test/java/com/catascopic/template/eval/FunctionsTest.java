@@ -11,6 +11,9 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.catascopic.template.Values;
+import com.google.common.collect.ImmutableMap;
+
 public class FunctionsTest {
 
 	@Test
@@ -60,6 +63,13 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", -2), "de");
 		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2),
 				Arrays.asList(3, 4));
+		
+	}
+
+	@Test
+	public void testUneval() {
+		System.out.println(Values.uneval((Object) ImmutableMap.of("what", 
+				Arrays.asList(5, "\\5"))));
 	}
 
 }

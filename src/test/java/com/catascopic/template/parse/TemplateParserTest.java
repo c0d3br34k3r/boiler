@@ -24,7 +24,7 @@ public class TemplateParserTest {
 				+ "@{else if c == 3}\n"
 				+ "stop\n"
 				+ "@{end}"
-				+ "${locals()}";
+				+ "${uneval('99/9')}";
 		System.out.println(text);
 		List<Tag> document = TagParser.parse(new StringReader(text));
 		System.out.println();

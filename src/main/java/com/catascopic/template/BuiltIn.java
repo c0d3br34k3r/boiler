@@ -341,6 +341,13 @@ enum BuiltIn implements TemplateFunction {
 			tokenizer.end();
 			return expression.evaluate(params.scope());
 		}
+	},
+	UNEVAL {
+
+		@Override
+		public Object apply(Params params) {
+			return Values.uneval(params.get(0));
+		}
 	};
 
 	// TODO: other possibilities:

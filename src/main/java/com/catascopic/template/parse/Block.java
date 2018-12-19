@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.util.List;
 
 import com.catascopic.template.Scope;
+import com.google.common.collect.ImmutableList;
 
 class Block implements Node {
 
 	private final List<Node> nodes;
 
-	Block(List<Node> nodes) {
+	Block(ImmutableList<Node> nodes) {
 		this.nodes = nodes;
 	}
 
@@ -22,11 +23,7 @@ class Block implements Node {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Node node : nodes) {
-			builder.append(node);
-		}
-		return builder.toString();
+		return "block, nodes=" + nodes;
 	}
 
 }

@@ -126,20 +126,20 @@ class Variables {
 
 	private static class SingleName implements NameAssigner {
 
-		private final String varName;
+		private final String name;
 
 		SingleName(String varName) {
-			this.varName = varName;
+			this.name = varName;
 		}
 
 		@Override
 		public void assign(Scope scope, Object value) {
-			scope.set(varName, value);
+			scope.set(name, value);
 		}
 
 		@Override
 		public String toString() {
-			return varName;
+			return name;
 		}
 	}
 
