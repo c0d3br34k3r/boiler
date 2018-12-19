@@ -30,6 +30,12 @@ class TagCleaner {
 		}
 	}
 
+	void comment() {
+		if (state != State.NOT_CLEAN) {
+			state = State.CLEAN;
+		}
+	}
+
 	void endLine(Tag newline) {
 		if (state == State.CLEAN) {
 			clean();
@@ -47,8 +53,13 @@ class TagCleaner {
 	}
 
 	private void clean() {
-		tags.set(safeLength, onlyInstruction);
-		tags.subList(safeLength + 1, tags.size()).clear();
+		if (onlyInstruction != null) {
+			tags.set(safeLength, onlyInstruction);
+			onlyInstruction = null;
+			tags.subList(safeLength + 1, tags.size()).clear();
+		} else {
+			tags.subList(safeLength, tags.size()).clear();
+		}
 	}
 
 	List<Tag> result() {
@@ -61,4 +72,5 @@ class TagCleaner {
 		CLEAN,
 		NOT_CLEAN;
 	}
+
 }

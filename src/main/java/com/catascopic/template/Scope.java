@@ -23,7 +23,7 @@ public abstract class Scope implements Context {
 		Object value = values.get(name);
 		// TODO: null masking
 		if (value == null) {
-			if (!values.containsKey(name)) {
+			if (values.containsKey(name)) {
 				return null;
 			}
 			return getAlt(name);

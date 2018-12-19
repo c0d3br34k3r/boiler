@@ -106,6 +106,13 @@ enum BuiltIn implements TemplateFunction {
 					: params.asList());
 		}
 	},
+	STREAM {
+
+		@Override
+		public Object apply(Params params) {
+			return new Stream(params.getIterable(0));
+		}
+	},
 	ENTRIES {
 
 		@Override

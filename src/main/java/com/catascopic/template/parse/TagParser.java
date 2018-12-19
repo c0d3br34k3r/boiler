@@ -84,22 +84,13 @@ class TagParser {
 				mode = Mode.END;
 				break loop;
 			case '@':
-				if (reader.tryRead('{')) {
-					mode = Mode.TAG;
-					break loop;
-				}
-				break;
 			case '$':
-				if (reader.tryRead('{')) {
-					mode = Mode.EVAL;
-					break loop;
-				}
-				break;
 			case '#':
 				if (reader.tryRead('{')) {
-					mode = Mode.COMMENT;
+					mode = getMode(ch);
 					break loop;
 				}
+				builder.append((char) ch);
 				break;
 			case '\n':
 				mode = Mode.NEWLINE;
@@ -109,6 +100,18 @@ class TagParser {
 			}
 		}
 		return builder.toString();
+	}
+
+	private static Mode getMode(int ch) {
+		switch (ch) {
+		case '@':
+			return Mode.TAG;
+		case '$':
+			return Mode.EVAL;
+		case '#':
+			return Mode.COMMENT;
+		}
+		throw new AssertionError();
 	}
 
 	private void parseTag() {
@@ -156,13 +159,16 @@ class TagParser {
 	}
 
 	private void skipCommentAndParseNext() throws IOException {
-		loop: for (;;) {
+		for (;;) {
 			int c = reader.read();
 			switch (c) {
 			case -1:
 				throw new TemplateParseException(reader, "unclosed comment");
 			case '}':
-				break loop;
+				tags.comment();
+				mode = Mode.TEXT;
+				parseNext();
+				return;
 			default:
 			}
 		}
