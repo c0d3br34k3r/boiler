@@ -78,7 +78,7 @@ Returns a sequence of the key-value pairs in the map.
 
 ### `contains(str, substr)` or `contains(seq, x)`
 
-Returns true if the given string contains the given substring, or if the given sequence contains the given object.
+Returns true if the given string contains the given substring, or if the given sequence contains the given value.
 
 ### `capitalize(str)`
 
@@ -96,15 +96,13 @@ Returns true if the given string starts with the given substring.
 
 Returns true if the given string ends with the given substring.
 
-### `indexOf(str, substr, index?)`
-`indexOf(seq, x, index?)`
+### `indexOf(str, substr, index?)` or `indexOf(seq, x, index?)`
 
-Returns the first index of a substring within a string, or an object within a sequence, searching forwards from the given index.  Returns -1 if none was found.  The value of the index defaults to 0.
+Returns the first index of a substring within a string, or an value within a sequence, searching forwards from the given index.  Returns -1 if none was found.  The value of the index defaults to 0.
 
-### `lastIndexOf(str, substr, index?)`
-`lastIndexOf(seq, x, index?)`
+### `lastIndexOf(str, substr, index?)` or `lastIndexOf(seq, x, index?)`
 
-Returns the last index of a substring within a string, or an object within a sequence, searching backwards from the given index.  Returns -1 if none was found.  The value of the index defaults to the length of the string or sequence.
+Returns the last index of a substring within a string, or an value within a sequence, searching backwards from the given index.  Returns -1 if none was found.  The value of the index defaults to the length of the string or sequence.
 
 ### `join(seq, separator)`
 
@@ -167,4 +165,4 @@ Evaluates the string as an expression, using the same parsing syntax as a regula
 
 ### `uneval(x)`
 
-Returns a JSON-compatible string representation of the object, which can be parsed back to an equivalent object using `eval`.  The argument may be a boolean, string, number, list, or map (lists and maps must contain only these types as well).
+Returns a JSON-compatible string representation of the value, which can be parsed back to an equivalent value using `eval`.  The argument may be a boolean, string, number, list, or map (lists and maps must contain only these types as well).
