@@ -58,7 +58,9 @@ For example, `zip(['a', 'b', 'c'], [4, 5, 6])` returns `[['a', 4], ['b', 5], ['c
 
 This functions identicaly to the `enumerate` function in Python 3.
 
-stream
+### `stream(seq)` (BETA)
+
+Similar to `enumerate`, returns a sequence of triples consisting of the item from the original sequence, a boolean indicating if it is the first item in the sequence, and a second boolean indicating if it is the last item in the sequence.  This can be useful for dealing with iterable objects that have no defined length.
 
 ### `keys(map)`
 
@@ -124,7 +126,7 @@ Returns a copy of the given string with all letters in lower case.
 
 Returns a copy of the given string with all whitespace at the beginning and end removed.
 
-### `collapse(str, replaceChar?)
+### `collapse(str, replaceChar?)`
 
 Like trim, but also reduces all subsequences of whitespace not at the beginning or end with the replacement character.  By default, the value of `replaceChar` is `' '`.
 
