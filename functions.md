@@ -56,11 +56,13 @@ Returns a sequence that aggregates elements from two or more sequences.  The nth
 
 For example, `zip(['a', 'b', 'c'], [4, 5, 6])` returns `[['a', 4], ['b', 5], ['c', 6]]`.
 
-This functions identicaly to the `enumerate` function in Python 3.
+This functions identicaly to the `zip` function in Python 3.
 
-### `stream(seq)` (BETA)
+### `stream(seq)`
 
-Similar to `enumerate`, returns a sequence of triples consisting of the item from the original sequence, a boolean indicating if it is the first item in the sequence, and a second boolean indicating if it is the last item in the sequence.  This can be useful for dealing with iterable objects that have no defined length.
+Similar to `enumerate`, returns a sequence of triples consisting of the index of the item within the sequence, a boolean indicating whether the item is the last in the sequence, and the item itself.
+
+For example, `enumerate(['a', 'b', 'c'])` returns `[[0, false, 'a'], [1, false, 'b'], [2, true, 'c']]`.
 
 ### `keys(map)`
 
