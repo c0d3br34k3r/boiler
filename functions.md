@@ -1,8 +1,10 @@
-`bool(x)`
+# Built-In Functions
+
+# `bool(x)`
 
 Returns the boolean value of its argument.  `0`, `0.0`, `false`, `null`, `''`, `[]`, and `{}` are considered false and all other values are considered true.
 
-`float(num)`
+# `float(num)`
 
 Converts a numeric type to a floating point number (the `double` type in Java).
 
