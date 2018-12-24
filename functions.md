@@ -62,7 +62,7 @@ This functions identicaly to the `zip` function in Python 3.
 
 Similar to `enumerate`, returns a sequence of triples consisting of the index of the item within the sequence, a boolean indicating whether the item is the last in the sequence, and the item itself.
 
-For example, `enumerate(['a', 'b', 'c'])` returns `[[0, false, 'a'], [1, false, 'b'], [2, true, 'c']]`.
+For example, `zip(['a', 'b', 'c'])` returns `[[0, false, 'a'], [1, false, 'b'], [2, true, 'c']]`.
 
 ### `keys(map)`
 
