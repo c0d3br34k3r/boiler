@@ -143,7 +143,7 @@ Converts a string in lower camel case to a separator format.  For example, `came
 Returns a string padded to the given length using repetitions of the given character.  A `true` alignment value specifies left-aligned padding; `false` is right-aligned.  The default value of `padChar` is `' '` and the default value of `align` is `true`.
 
 Examples:
-- `pad('cat', 5)` returns `'&nbsp;&nbsp;cat'`
+- `pad('cat', 5)` returns <pre>`'  cat'`</pre>
 - `pad(42, 4, '0')` returns `'0042'`
 - `pad('dog', 6, '*', false)` returns `'dog***'`
 
