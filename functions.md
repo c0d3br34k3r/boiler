@@ -20,9 +20,9 @@ Converts a value to a string by invoking its `toString` method.
 
 ### `len(x)`
 
-## Math Functions
-
 Returns the length of a string, the size of a list, or the number of entries in a map.
+
+## Math Functions
 
 ### `min(seq)` or `min(num*)`
 
