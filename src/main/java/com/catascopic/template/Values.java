@@ -1,5 +1,6 @@
 package com.catascopic.template;
 
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import com.catascopic.template.eval.Tokenizer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
@@ -89,8 +91,9 @@ public final class Values {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
 			throw new TemplateEvalException(
-					String.format("cannot convert %s (%s) to a number",
-							value, value.getClass().getName()), e);
+					String.format("cannot convert %s (%s) to a number", value,
+							value.getClass().getName()),
+					e);
 		}
 	}
 
@@ -172,9 +175,8 @@ public final class Values {
 		if (iterable instanceof String) {
 			return new StringAsList((String) iterable);
 		}
-		throw new TemplateEvalException(
-				"%s (%s) is not iterable",
-				iterable, iterable.getClass().getName());
+		throw new TemplateEvalException("%s (%s) is not iterable", iterable,
+				iterable.getClass().getName());
 	}
 
 	public static boolean equal(Object o1, Object o2) {
@@ -257,9 +259,8 @@ public final class Values {
 		if (obj instanceof Map) {
 			return ((Map<?, ?>) obj).size();
 		}
-		throw new TemplateEvalException(
-				"%s (%s) does not have a length",
-				obj, obj.getClass().getName());
+		throw new TemplateEvalException("%s (%s) does not have a length", obj,
+				obj.getClass().getName());
 	}
 
 	public static Object indexOf(Object seq, Object item) {
@@ -390,7 +391,8 @@ public final class Values {
 	}
 
 	@VisibleForTesting
-	static List<Integer> strictSliceRange(Integer start, Integer stop,
+	static List<Integer> strictSliceRange(Integer start,
+			Integer stop,
 			Integer step, int len) {
 		int istep = step == null ? 1 : step;
 		if (istep == 0) {
@@ -464,8 +466,8 @@ public final class Values {
 		if (seq instanceof String) {
 			return index((String) seq, index);
 		}
-		throw new TemplateEvalException(
-				"%s (%s) is not indexable", seq, seq.getClass().getName());
+		throw new TemplateEvalException("%s (%s) is not indexable", seq,
+				seq.getClass().getName());
 	}
 
 	public static String index(String str, int index) {
@@ -479,8 +481,7 @@ public final class Values {
 	public static int getIndex(int index, int len) {
 		int adjusted = index < 0 ? len + index : index;
 		if (adjusted < 0 || adjusted >= len) {
-			throw new TemplateEvalException(
-					"index %s is out of bounds", index);
+			throw new TemplateEvalException("index %s is out of bounds", index);
 		}
 		return adjusted;
 	}
@@ -542,6 +543,11 @@ public final class Values {
 				}
 			};
 
+	public Object eval(String expression) {
+		return new Tokenizer(new PositionReader(new StringReader(expression)))
+				.parseExpression().evaluate(NullContext.CONTEXT);
+	}
+
 	public static String uneval(Object obj) {
 		if (obj instanceof String) {
 			return escape((String) obj);
@@ -552,7 +558,14 @@ public final class Values {
 		if (obj instanceof Map) {
 			return uneval((Map<?, ?>) obj);
 		}
-		return String.valueOf(obj);
+		if (obj instanceof Number || obj instanceof Boolean) {
+			return obj.toString();
+		}
+		if (obj == null) {
+			return "null";
+		}
+		throw new TemplateEvalException("%s (%s) has no evaluable string form",
+				obj, obj.getClass().getName());
 	}
 
 	public static String uneval(Iterable<?> iterable) {

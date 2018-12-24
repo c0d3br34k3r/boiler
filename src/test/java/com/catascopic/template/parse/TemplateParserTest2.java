@@ -13,8 +13,9 @@ public class TemplateParserTest2 {
 	@Test
 	public void test() throws IOException {
 		TemplateEngine engine = TemplateEngine.create();
-		System.out.println(engine.render(Paths.get("test2.template"),
+		System.out.println(engine.render(Paths.get("key.template"),
 				ImmutableMap.<String, Object> of("order", "qwertyuiopasdfghjklzxcvbnm")));
+		
 	}
 
 }
