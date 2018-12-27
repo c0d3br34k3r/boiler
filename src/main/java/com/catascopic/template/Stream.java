@@ -19,7 +19,7 @@ class Stream implements Iterable<List<Object>> {
 		final Iterator<?> iterator = items.iterator();
 		return new UnmodifiableIterator<List<Object>>() {
 
-			boolean first = true;
+			int i; // = 0
 
 			@Override
 			public boolean hasNext() {
@@ -28,10 +28,8 @@ class Stream implements Iterable<List<Object>> {
 
 			@Override
 			public List<Object> next() {
-				boolean wasFirst = first;
-				first = false;
-				return Arrays.asList(iterator.next(),
-						wasFirst, !iterator.hasNext());
+				Object value = iterator.next();
+				return Arrays.asList(i++, !iterator.hasNext(), value);
 			}
 		};
 	}
