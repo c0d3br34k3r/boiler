@@ -3,6 +3,7 @@ package com.catascopic.template;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 class FileScope extends Scope implements LocalAccess {
@@ -31,15 +32,20 @@ class FileScope extends Scope implements LocalAccess {
 	}
 
 	@Override
-	public void collect(Map<String, Object> locals) {
-		parent.collect(locals);
+	public void collectLocals(Map<String, Object> locals) {
+		parent.collectLocals(locals);
 		locals.putAll(values);
+	}
+
+	@Override
+	public void collectPaths(List<Path> paths) {
+		paths.add(file);
 	}
 
 	@Override
 	public Map<String, Object> locals() {
 		Map<String, Object> locals = new HashMap<>();
-		collect(locals);
+		collectLocals(locals);
 		return locals;
 	}
 
@@ -71,7 +77,12 @@ class FileScope extends Scope implements LocalAccess {
 		}
 
 		@Override
-		public void collect(Map<String, Object> locals) {
+		public void collectLocals(Map<String, Object> locals) {
+			// nothing to collect
+		}
+
+		@Override
+		public void collectPaths(List<Path> paths) {
 			// nothing to collect
 		}
 	};

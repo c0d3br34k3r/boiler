@@ -2,7 +2,7 @@ package com.catascopic.template.eval;
 
 import java.util.List;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.google.common.collect.Lists;
 
 class ListTerm implements Term {
@@ -14,8 +14,8 @@ class ListTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return Lists.transform(items, scope);
+	public Object evaluate(Context context) {
+		return Lists.transform(items, context);
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 
 public interface Term {
 
-	Object evaluate(Scope scope);
+	Object evaluate(Context context);
 
 }

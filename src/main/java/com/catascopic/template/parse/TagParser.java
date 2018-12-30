@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.eval.Symbol;
 import com.catascopic.template.eval.Tokenizer;
 import com.google.common.base.CharMatcher;
 
@@ -82,23 +83,14 @@ class TagParser {
 			case -1:
 				mode = Mode.END;
 				break loop;
-			case '<':
-				int ch2 = reader.read();
-				switch (ch2) {
-				case '<':
-					mode = Mode.EVAL;
+			case '@':
+			case '$':
+			case '#':
+				if (reader.tryRead('{')) {
+					mode = getMode(ch);
 					break loop;
-				case '%':
-					mode = Mode.TAG;
-					break loop;
-				case '#':
-					mode = Mode.COMMENT;
-					break loop;
-				case -1:
-					break;
-				default:
-					reader.unread(ch2);
 				}
+				builder.append((char) ch);
 				break;
 			case '\n':
 				mode = Mode.NEWLINE;
@@ -110,11 +102,23 @@ class TagParser {
 		return builder.toString();
 	}
 
+	private static Mode getMode(int ch) {
+		switch (ch) {
+		case '@':
+			return Mode.TAG;
+		case '$':
+			return Mode.EVAL;
+		case '#':
+			return Mode.COMMENT;
+		}
+		throw new AssertionError();
+	}
+
 	private void parseTag() {
-		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.TAG);
+		Tokenizer tokenizer = new Tokenizer(reader);
 		Tag tag = getTag(tokenizer);
 		tags.instruction(tag);
-		tokenizer.end();
+		tokenizer.consume(Symbol.RIGHT_CURLY_BRACKET);
 		mode = Mode.TEXT;
 	}
 
@@ -148,34 +152,26 @@ class TagParser {
 	}
 
 	private void parseEval() {
-		Tokenizer tokenizer = new Tokenizer(reader, Tokenizer.Mode.EVAL);
+		Tokenizer tokenizer = new Tokenizer(reader);
 		tags.text(EvalNode.getTag(tokenizer));
-		tokenizer.end();
+		tokenizer.consume(Symbol.RIGHT_CURLY_BRACKET);
 		mode = Mode.TEXT;
 	}
 
 	private void skipCommentAndParseNext() throws IOException {
-		loop: for (;;) {
+		for (;;) {
 			int c = reader.read();
 			switch (c) {
 			case -1:
-				break loop;
-			case '#':
-				int c2 = reader.read();
-				switch (c2) {
-				case '>':
-					parseTextOrTag();
-					return;
-				case -1:
-					break loop;
-				default:
-					reader.unread(c2);
-				}
-				break;
+				throw new TemplateParseException(reader, "unclosed comment");
+			case '}':
+				tags.comment();
+				mode = Mode.TEXT;
+				parseNext();
+				return;
 			default:
 			}
 		}
-		throw new TemplateParseException(reader, "unclosed comment");
 	}
 
 	private enum Mode {

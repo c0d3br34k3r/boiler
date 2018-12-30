@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.catascopic.template.eval.UnaryOperator;
-
 public class UnaryOperatorTest {
 
 	@Test

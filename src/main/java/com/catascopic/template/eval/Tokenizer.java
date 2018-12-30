@@ -2,10 +2,10 @@ package com.catascopic.template.eval;
 
 import java.io.IOException;
 
+import com.catascopic.template.Context;
 import com.catascopic.template.Locatable;
 import com.catascopic.template.Location;
 import com.catascopic.template.PositionReader;
-import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
@@ -14,15 +14,9 @@ public class Tokenizer implements Locatable {
 
 	private PositionReader reader;
 	private Token peeked;
-	private final Mode mode;
 
-	public Tokenizer(PositionReader reader, Mode mode) {
+	public Tokenizer(PositionReader reader) {
 		this.reader = reader;
-		this.mode = mode;
-	}
-
-	public enum Mode {
-		STREAM, TAG, EVAL;
 	}
 
 	public Token peek() {
@@ -102,9 +96,9 @@ public class Tokenizer implements Locatable {
 		return new Term() {
 
 			@Override
-			public Object evaluate(Scope scope) {
+			public Object evaluate(Context context) {
 				try {
-					return term.evaluate(scope);
+					return term.evaluate(context);
 				} catch (TemplateEvalException e) {
 					throw new TemplateEvalException(location, e,
 							this.toString());
@@ -159,19 +153,24 @@ public class Tokenizer implements Locatable {
 		case '/': return Symbol.SLASH;
 		case '?': return Symbol.QUESTION_MARK;
 		case ':': return Symbol.COLON;
+		case '%': return Symbol.PERCENT;
 		case '.': return parseDot();
 		case '&': require('&'); return Symbol.AND;
 		case '|': require('|'); return Symbol.OR;
-		case '%': return tryRead('>') ? end(Mode.TAG) : Symbol.PERCENT;
-		case '=': return tryRead('=') ? Symbol.EQUAL : Symbol.ASSIGNMENT;
-		case '!': return tryRead('=') ? Symbol.NOT_EQUAL : Symbol.NOT;
-		case '<': return tryRead('=')
+		case '=': return reader.tryRead('=')
+				? Symbol.EQUAL
+				: Symbol.ASSIGNMENT;
+		case '!': return reader.tryRead('=')
+				? Symbol.NOT_EQUAL
+				: Symbol.NOT;
+		case '<': return reader.tryRead('=')
 				? Symbol.LESS_THAN_OR_EQUAL
 				: Symbol.LESS_THAN;
-		case '>': return parseGreaterThan();
+		case '>': return reader.tryRead('=')
+				? Symbol.GREATER_THAN_OR_EQUAL
+				: Symbol.GREATER_THAN;
+		case -1: return Tokens.END;
 		// @formatter:on
-		case -1:
-			return end(Mode.STREAM);
 		case '"':
 		case '\'':
 			return parseString((char) ch);
@@ -186,6 +185,14 @@ public class Tokenizer implements Locatable {
 		}
 		throw new TemplateParseException(reader,
 				"unexpected char '%c' (%s)", ch, Character.getName(ch));
+	}
+
+	private void require(char required) throws IOException {
+		int ch = reader.read();
+		if (ch != required) {
+			throw new TemplateParseException(reader,
+					"expected '%c', got '%c'", required, ch);
+		}
 	}
 
 	private Token parseString(char end) throws IOException {
@@ -293,48 +300,6 @@ public class Tokenizer implements Locatable {
 				break;
 			}
 		}
-	}
-
-	private void require(char required) throws IOException {
-		int ch = reader.read();
-		if (ch != required) {
-			throw new TemplateParseException(reader,
-					"expected '%c', got '%c'", required, ch);
-		}
-	}
-
-	private boolean tryRead(char match) throws IOException {
-		int ch = reader.read();
-		if (ch == match) {
-			return true;
-		}
-		if (ch != -1) {
-			reader.unread(ch);
-		}
-		return false;
-	}
-
-	private Token parseGreaterThan() throws IOException {
-		int ch = reader.read();
-		switch (ch) {
-		case '>':
-			return end(Mode.EVAL);
-		case '=':
-			return Symbol.GREATER_THAN_OR_EQUAL;
-		default:
-			reader.unread(ch);
-			// fallthrough
-		case -1:
-			return Symbol.GREATER_THAN;
-		}
-	}
-
-	private Token end(Mode check) {
-		if (mode != check) {
-			throw new TemplateParseException(reader,
-					"expected end of %s but was end of %s", mode, check);
-		}
-		return Tokens.END;
 	}
 
 	private void readEscapeChar(StringBuilder builder) throws IOException {

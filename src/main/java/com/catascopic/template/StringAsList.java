@@ -6,19 +6,19 @@ import java.util.RandomAccess;
 class StringAsList extends AbstractList<String>
 		implements RandomAccess {
 
-	private final String string;
+	private final String str;
 
 	StringAsList(String str) {
-		this.string = str;
+		this.str = str;
 	}
 
 	@Override
 	public String get(int index) {
-		return String.valueOf(string.charAt(index));
+		return String.valueOf(str.charAt(index));
 	}
 
 	@Override
 	public int size() {
-		return string.length();
+		return str.length();
 	}
 }

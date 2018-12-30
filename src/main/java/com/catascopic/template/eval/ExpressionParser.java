@@ -13,28 +13,31 @@ class ExpressionParser {
 		return left;
 	}
 
-	private static final TermParser EXPRESSION_PARSER =
-	// @formatter:off
-		new BinaryTermParser(
-		  new BinaryTermParser(
-		    new BinaryTermParser(
-		      new BinaryTermParser(
-		        new BinaryTermParser(
-		          new BinaryTermParser(
-		            new ValueParser(),
-		            Symbol.STAR,
-		            Symbol.SLASH,
-		            Symbol.PERCENT),
-		          Symbol.PLUS,
-		          Symbol.MINUS),
-		        Symbol.LESS_THAN,
-		        Symbol.LESS_THAN_OR_EQUAL, 
-		        Symbol.GREATER_THAN,
-		        Symbol.GREATER_THAN_OR_EQUAL),
-		      Symbol.EQUAL, 
-		      Symbol.NOT_EQUAL),
-		    Symbol.AND),
-		  Symbol.OR);
-	// @formatter:on
+	private static final TermParser EXPRESSION_PARSER;
+
+	static {
+		ValueParser valueParser = new ValueParser();
+		BinaryTermParser multiplication = new BinaryTermParser(
+				valueParser,
+				Symbol.STAR,
+				Symbol.SLASH,
+				Symbol.PERCENT);
+		BinaryTermParser addition = new BinaryTermParser(
+				multiplication,
+				Symbol.PLUS,
+				Symbol.MINUS);
+		BinaryTermParser compare = new BinaryTermParser(
+				addition,
+				Symbol.LESS_THAN,
+				Symbol.LESS_THAN_OR_EQUAL,
+				Symbol.GREATER_THAN,
+				Symbol.GREATER_THAN_OR_EQUAL);
+		BinaryTermParser equal = new BinaryTermParser(
+				compare,
+				Symbol.EQUAL,
+				Symbol.NOT_EQUAL);
+		BinaryTermParser and = new BinaryTermParser(equal, Symbol.AND);
+		EXPRESSION_PARSER = new BinaryTermParser(and, Symbol.OR);
+	}
 
 }

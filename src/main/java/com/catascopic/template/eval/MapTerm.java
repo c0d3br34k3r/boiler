@@ -2,7 +2,7 @@ package com.catascopic.template.eval;
 
 import java.util.Map;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 
@@ -15,8 +15,8 @@ class MapTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return Maps.transformValues(items, scope);
+	public Object evaluate(Context context) {
+		return Maps.transformValues(items, context);
 	}
 
 	@Override

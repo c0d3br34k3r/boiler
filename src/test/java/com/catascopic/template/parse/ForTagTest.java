@@ -36,23 +36,23 @@ public class ForTagTest {
 		return Arrays.asList(new Object[][] {
 			{
 				"foo (3)(1)(4)(1)(5) bar",
-				"foo <% for n in values %>(<<n>>)<% end %> bar",
+				"foo @{for n in values}(${n})@{end} bar",
 				ImmutableMap.of("values", Arrays.asList(3, 1, 4, 1, 5)) 
 			}, {
 				"foo 3-1-4-1-5 bar",
-				"foo <% for n in values[:-1] %><<n>>-<% end %><<values[-1]>> bar",
+				"foo @{for n in values[:-1]}${n}-@{end}${values[-1]} bar",
 				ImmutableMap.of("values", Arrays.asList(3, 1, 4, 1, 5))
 			}, {
 				"foo 3-1-4-1-5 bar",
-				"foo <% for i, n in enumerate(values) %><<n>><% if i != len(values) - 1 %>-<% end %><% end %> bar",
+				"foo @{for i, n in enumerate(values)}${n}@{if i != len(values) - 1}-@{end}@{end} bar",
 				ImmutableMap.of("values", Arrays.asList(3, 1, 4, 1, 5))
 			}, {
 				"foo (3)(1)(4)(1)(5) bar",
-				"foo <% for n in [3, 1, 4, 1, 5] %>(<<n>>)<% end %> bar",
+				"foo @{for n in [3, 1, 4, 1, 5]}(${n})@{end} bar",
 				ImmutableMap.of()
 			}, {
 				"foo [a=1][b=2][c=3] bar",
-				"foo <% for k, v in entries(map) %>[<<k>>=<<v>>]<% end %> bar",
+				"foo @{for k, v in entries(map)}[${k}=${v}]@{end} bar",
 				ImmutableMap.of("map", ImmutableMap.of("a", 1, "b", 2, "c", 3))
 			},
 		});

@@ -1,0 +1,3 @@
+@{set message = "attack at dawn!"}
+@{set key = eval(template('key.template', {order: 'qwertyuiopasdfghjklzxcvbnm'}))}
+@{for letter in message}${upper(key[letter] || letter)}@{end}

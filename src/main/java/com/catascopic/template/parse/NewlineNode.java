@@ -20,7 +20,7 @@ enum NewlineNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "<newline>";
+		return "\n";
 	}
 
 }

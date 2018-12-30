@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.catascopic.template.Values;
 
 class ConditionalTerm implements Term {
@@ -16,16 +16,15 @@ class ConditionalTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return Values.isTrue(condition.evaluate(scope))
-				? first.evaluate(scope)
-				: second.evaluate(scope);
+	public Object evaluate(Context context) {
+		return Values.isTrue(condition.evaluate(context))
+				? first.evaluate(context)
+				: second.evaluate(context);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("CONDITIONAL(%s, %s, %s)",
-				condition, first, second);
+		return String.format("%s ? %s : %s)", condition, first, second);
 	}
 
 }

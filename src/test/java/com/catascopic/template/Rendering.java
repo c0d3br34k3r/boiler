@@ -2,7 +2,6 @@ package com.catascopic.template;
 
 import java.util.Map;
 
-import com.catascopic.template.Template;
 import com.google.common.collect.ImmutableMap;
 
 public class Rendering {

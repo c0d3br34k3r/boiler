@@ -11,6 +11,9 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.catascopic.template.Values;
+import com.google.common.collect.ImmutableMap;
+
 public class FunctionsTest {
 
 	@Test
@@ -40,14 +43,14 @@ public class FunctionsTest {
 		Assert.assertEquals(range(0, 5, 2), Arrays.asList(0, 2, 4));
 		Assert.assertEquals(range(-5, 0, 2), Arrays.asList(-5, -3, -1));
 		Assert.assertEquals(range(1, 7, 3), Arrays.asList(1, 4));
-		Assert.assertEquals(range(0, 30, 5), Arrays.asList(0, 5, 10, 15, 20, 25));
+		Assert.assertEquals(range(0, 30, 5),
+				Arrays.asList(0, 5, 10, 15, 20, 25));
 	}
 
 	@Test
 	public void testSlice() {
 		Assert.assertEquals(slice("abcde", 0, 2, 1), "ab");
 		Assert.assertEquals(slice("abcde", null, 2), "ab");
-		Assert.assertEquals(slice("abcde", 0, 5), "abcde");
 		Assert.assertEquals(slice("abcde", 5, 5), "");
 		Assert.assertEquals(slice("abcde", 5, 0), "");
 		Assert.assertEquals(slice("abcde", -1, 0, -1), "edcb");
@@ -58,7 +61,15 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", null, null, -2), "eca");
 		Assert.assertEquals(slice("abcde", -2, null, -2), "db");
 		Assert.assertEquals(slice("abcde", -2), "de");
-		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2), Arrays.asList(3, 4));
+		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2),
+				Arrays.asList(3, 4));
+		
+	}
+
+	@Test
+	public void testUneval() {
+		System.out.println(Values.uneval((Object) ImmutableMap.of("what", 
+				Arrays.asList(5, "\\5"))));
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Scope;
+import com.catascopic.template.Context;
 import com.catascopic.template.Values;
 
 class SliceTerm implements Term {
@@ -18,15 +18,15 @@ class SliceTerm implements Term {
 	}
 
 	@Override
-	public Object evaluate(Scope scope) {
-		return Values.slice(seq.evaluate(scope),
-				get(start, scope),
-				get(stop, scope),
-				get(step, scope));
+	public Object evaluate(Context context) {
+		return Values.slice(seq.evaluate(context),
+				get(start, context),
+				get(stop, context),
+				get(step, context));
 	}
 
-	private static Integer get(Term term, Scope scope) {
-		Object value = term.evaluate(scope);
+	private static Integer get(Term term, Context context) {
+		Object value = term.evaluate(context);
 		return value == null
 				? null
 				: Values.toNumber(value).intValue();

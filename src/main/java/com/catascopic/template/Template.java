@@ -3,6 +3,9 @@ package com.catascopic.template;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import com.catascopic.template.parse.Node;
@@ -19,7 +22,7 @@ public class Template {
 	}
 
 	public static Template parse(String text) {
-		return parse(text, FunctionResolver.builtinOnly());
+		return parse(text, FunctionResolver.builtInOnly());
 	}
 
 	public static Template parse(Reader reader, FunctionResolver functions)
@@ -28,7 +31,19 @@ public class Template {
 	}
 
 	public static Template parse(Reader reader) throws IOException {
-		return parse(reader, FunctionResolver.builtinOnly());
+		return parse(reader, FunctionResolver.builtInOnly());
+	}
+
+	public static Template parse(Path file, FunctionResolver functions)
+			throws IOException {
+		try (Reader reader =
+				Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+			return parse(reader, functions);
+		}
+	}
+
+	public static Template parse(Path file) throws IOException {
+		return parse(file, FunctionResolver.builtInOnly());
 	}
 
 	private final Node node;
