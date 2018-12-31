@@ -1,6 +1,6 @@
-#{My secret code!}
+My secret code!
 @{set alphabet = 'abcdefghijklmnopqrstuvwxyz'}
 @{for plain, cipher in zip(alphabet, order)}
-${plain} : ${upper(cipher)}
+${plain} = ${upper(cipher)}
 @{end}
-#{Don't share this with anyone!}
+Remember, don't share this with anyone!

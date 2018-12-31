@@ -1,7 +1,6 @@
 package com.catascopic.template.eval;
 
 import com.catascopic.template.Context;
-import com.catascopic.template.Null;
 
 enum NullTerm implements Term {
 
@@ -9,7 +8,7 @@ enum NullTerm implements Term {
 
 	@Override
 	public Object evaluate(Context context) {
-		return Null.NULL;
+		return null;
 	}
 
 	@Override

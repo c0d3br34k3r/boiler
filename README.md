@@ -1,8 +1,21 @@
+# Boiler
+
+A general-purpose templating language that supports for-loops, if-else conditionals, and can process complex evaluable expressions with native JSON support.
+
+For a complete guide to Boiler, check out the wiki!
+
+But if you can't be bothered, here is an example template that should give you a good idea of what the syntax looks like.  This template renders the output of a FizzBuzz program.
+
 ```
-______  _____ _____ _      ___________ 
-| ___ \|  _  |_   _| |    |  ___| ___ \
-| |_/ /| | | | | | | |    | |__ | |_/ /
-| ___ \| | | | | | | |    |  __||    / 
-| |_/ /\ \_/ /_| |_| |____| |___| |\ \ 
-\____/  \___/ \___/\_____/\____/\_| \_|
+@{for n in range(100)}
+    @{if n % 15 == 0}
+FizzBuzz
+    @{else if n % 3 == 0}
+Fizz
+    @{else if n % 5 == 0}
+Buzz
+    @{else}
+${n}
+    @{end}
+@{end}
 ```

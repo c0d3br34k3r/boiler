@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.catascopic.template.eval.Term;
-
-public abstract class Scope implements Context {
+public abstract class Scope extends SimpleContext {
 
 	// package-private
 	Map<String, Object> values = new HashMap<>();
@@ -21,7 +19,6 @@ public abstract class Scope implements Context {
 	@Override
 	public final Object get(String name) {
 		Object value = values.get(name);
-		// TODO: null masking
 		if (value == null) {
 			if (values.containsKey(name)) {
 				return null;
@@ -38,11 +35,6 @@ public abstract class Scope implements Context {
 	}
 
 	public abstract Map<String, Object> locals();
-
-	@Override
-	public final Object apply(Term input) {
-		return input.evaluate(this);
-	}
 
 	@Override
 	public Object call(String functionName, List<Object> arguments) {

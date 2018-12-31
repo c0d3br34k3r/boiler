@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Queue;
 
+import com.catascopic.template.TemplateEvalException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -28,12 +29,12 @@ public class TemplateParser {
 
 			@Override
 			public Node buildElse(Node elseNode) {
-				throw new IllegalStateException("else not allowed");
+				throw new TemplateEvalException("else not allowed");
 			}
 
 			@Override
 			public Node build() {
-				throw new IllegalStateException("unbalanced end");
+				throw new TemplateEvalException("unbalanced end");
 			}
 
 			@Override
@@ -47,7 +48,7 @@ public class TemplateParser {
 		}
 		BlockBuilder last = stack.remove();
 		if (last != nodeBuilder) {
-			throw new IllegalStateException("unclosed block");
+			throw new TemplateEvalException("unclosed block");
 		}
 		return new Block(builder.build());
 	}

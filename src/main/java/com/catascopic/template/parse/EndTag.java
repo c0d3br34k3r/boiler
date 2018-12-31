@@ -9,4 +9,9 @@ enum EndTag implements Tag {
 		parser.endBlock();
 	}
 
+	@Override
+	public String toString() {
+		return "<end>";
+	}
+
 }
