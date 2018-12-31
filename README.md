@@ -1,25 +1,21 @@
-The simplest type of template has one or more placeholders in which the user can insert their own text, similar to how `printf` works, except the placeholders have names rather than simply being indices.
+# Boiler
 
-Here is the opening line of Jane Austen's *Pride and Prejudice*, with a few words replaced with variable names, for a "Mad Libs" effect:
-```
-It is a truth ${adverb} acknowledged, that a ${adjective} man in possession of
-a good ${noun1}, must be in want of a ${noun2}.
-```
+A general-purpose templating language that supports for-loops, if-else conditionals, and can process complex evaluable expressions with native JSON support.
 
-We'll complete our template using this map, displayed here in JSON:
-```
-{
-	"adverb": "accidentally",
-	"adjective": "cowardly",
-	"noun1": "toothpaste",
-	"noun2": "surprise"
-}
-```
+For a complete guide to Boiler, check out the wiki!
 
-And the resulting output is:
-```
-It is a truth accidentally acknowledged, that a cowardly man in possession of
-a good toothpaste, must be in want of a surprise.
-```
+But if you can't be bothered, here is an example template that should give you a good idea of what the syntax looks like.  This template renders the output of a FizzBuzz program.
 
-So far this isn't anything we can't do without printf, though it does look a little cleaner.
+```
+@{for n in range(100)}
+    @{if n % 3 == 0 && n % 5 == 0}
+FizzBuzz
+    @{else if n % 3 == 0}
+Fizz
+    @{else if n % 5 == 0}
+Buzz
+    @{else}
+${n}
+    @{end}
+@{end}
+```
