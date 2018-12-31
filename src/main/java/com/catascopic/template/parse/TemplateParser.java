@@ -12,6 +12,8 @@ import com.google.common.collect.ImmutableList.Builder;
 
 // TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 public class TemplateParser {
+	
+	private TemplateParser() {}
 
 	public static Node parse(Reader reader) throws IOException {
 		return new TemplateParser().parse(TagParser.parse(reader));
