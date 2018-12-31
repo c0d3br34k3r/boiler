@@ -8,7 +8,7 @@ But if you can't be bothered, here is an example template that should give you a
 
 ```
 @{for n in range(100)}
-    @{if n % 3 == 0 && n % 5 == 0}
+    @{if n % 15 == 0}
 FizzBuzz
     @{else if n % 3 == 0}
 Fizz
