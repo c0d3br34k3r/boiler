@@ -5,18 +5,18 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-class FileScope extends Scope {
+class FileScope extends Scope implements LocalAccess {
 
 	private final Path file;
 	private final TemplateEngine engine;
-	private final FileScope parent;
+	private final LocalAccess parent;
 
 	FileScope(Path file, TemplateEngine engine,
 			Map<String, ? extends Object> initial) {
 		super(initial);
 		this.file = file;
 		this.engine = engine;
-		this.parent = null;
+		this.parent = BASE;
 	}
 
 	private FileScope(Path file, FileScope parent) {
@@ -33,10 +33,14 @@ class FileScope extends Scope {
 	@Override
 	public Map<String, Object> locals() {
 		Map<String, Object> locals = new HashMap<>();
-		for (FileScope scope = this; scope != null; scope = scope.parent) {
-			locals.putAll(scope.values);
-		}
+		collectLocals(locals);
 		return locals;
+	}
+
+	@Override
+	public void collectLocals(Map<String, Object> locals) {
+		parent.collectLocals(locals);
+		locals.putAll(values);
 	}
 
 	@Override
@@ -50,7 +54,12 @@ class FileScope extends Scope {
 		Path resolvedFile = file.resolveSibling(path);
 		Scope extended = new FileScope(resolvedFile, this);
 		assigner.assign(extended);
-		engine.getTemplate(resolvedFile).render(writer, extended);
+		try {
+			engine.getTemplate(resolvedFile).render(writer, extended);
+		} catch (TemplateEvalException e) {
+			e.setResource(resolvedFile);
+			throw e;
+		}
 	}
 
 	@Override
@@ -58,23 +67,18 @@ class FileScope extends Scope {
 			throws IOException {
 		writer.append(engine.getTextFile(file.resolveSibling(path)));
 	}
-	//
-	// private static final LocalAccess BASE = new LocalAccess() {
-	//
-	// @Override
-	// public Object get(String name) {
-	// throw new TemplateEvalException("%s is undefined", name);
-	// }
-	//
-	// @Override
-	// public Map<String, Object> scopedLocals() {
-	// return Collections.emptyMap();
-	// }
-	//
-	// @Override
-	// public Path path() {
-	// return null;
-	// }
-	// };
+
+	private static final LocalAccess BASE = new LocalAccess() {
+
+		@Override
+		public Object get(String name) {
+			throw new TemplateEvalException("%s is undefined", name);
+		}
+
+		@Override
+		public void collectLocals(Map<String, Object> locals) {
+			// nothing to add
+		}
+	};
 
 }

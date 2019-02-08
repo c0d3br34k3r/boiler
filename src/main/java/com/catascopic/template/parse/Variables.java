@@ -158,9 +158,10 @@ class Variables {
 			Iterator<NameAssigner> iter = assigners.iterator();
 			for (Object unpacked : Values.toIterable(value)) {
 				if (!iter.hasNext()) {
-					throw new TemplateEvalException(location,
+					TemplateEvalException x = new TemplateEvalException(
 							"too many values %s to unpack into names: %s",
 							value, assigners);
+					x.setLocation(location);
 				}
 				iter.next().assign(scope, unpacked);
 			}

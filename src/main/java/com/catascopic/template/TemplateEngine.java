@@ -39,8 +39,13 @@ public class TemplateEngine {
 
 	public void render(Path path, Appendable writer,
 			Map<String, ? extends Object> params) throws IOException {
-		templateCache.get(path).render(writer,
-				new FileScope(path, this, params));
+		try {
+			templateCache.get(path).render(writer,
+					new FileScope(path, this, params));
+		} catch (TemplateEvalException e) {
+			e.setResource(path);
+			throw e;
+		}
 	}
 
 	public String render(Path path, Map<String, Object> params)

@@ -2,6 +2,7 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 
+import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
@@ -29,8 +30,9 @@ class IfNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
+		Location location = tokenizer.getLocation();
 		final Term condition = tokenizer.parseExpression();
-		return new NodeBuilder() {
+		return new NodeBuilder(location) {
 
 			@Override
 			public void handle(TemplateParser parser) {
@@ -55,9 +57,10 @@ class IfNode implements Node {
 	}
 
 	public static Tag parseElseTag(Tokenizer tokenizer) {
+		Location location = tokenizer.getLocation();
 		if (tokenizer.tryConsume("if")) {
 			final Term condition = tokenizer.parseExpression();
-			return new NodeBuilder() {
+			return new NodeBuilder(location) {
 
 				@Override
 				public void handle(TemplateParser parser) {
@@ -80,7 +83,7 @@ class IfNode implements Node {
 				}
 			};
 		}
-		return new NodeBuilder() {
+		return new NodeBuilder(location) {
 
 			@Override
 			public void handle(TemplateParser parser) {

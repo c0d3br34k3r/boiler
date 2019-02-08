@@ -7,13 +7,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Queue;
 
+import com.catascopic.template.Location;
 import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
 // TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 public class TemplateParser {
-	
+
 	private TemplateParser() {}
 
 	public static Node parse(Reader reader) throws IOException {
@@ -29,12 +31,12 @@ public class TemplateParser {
 
 			@Override
 			public Node buildElse(Node elseNode) {
-				throw new TemplateEvalException("else not allowed");
+				throw new TemplateParseException("else not allowed");
 			}
 
 			@Override
 			public Node build() {
-				throw new TemplateEvalException("unbalanced end");
+				throw new TemplateParseException("unbalanced end");
 			}
 
 			@Override
@@ -71,6 +73,7 @@ public class TemplateParser {
 
 			@Override
 			public Node build() {
+				// TODO: catch exception, add info?
 				return ifBlock.buildElse(elseBlock.build());
 			}
 
@@ -81,6 +84,7 @@ public class TemplateParser {
 
 			@Override
 			public Node buildElse(Node elseNode) {
+				// TODO: catch exception, add info?
 				return ifBlock.buildElse(elseBlock.buildElse(elseNode));
 			}
 		});

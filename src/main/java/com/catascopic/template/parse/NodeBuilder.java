@@ -3,9 +3,17 @@ package com.catascopic.template.parse;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.catascopic.template.Location;
+import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
 
 abstract class NodeBuilder implements Tag, BlockBuilder {
+
+	private final Location location;
+
+	NodeBuilder(Location location) {
+		this.location = location;
+	}
 
 	private List<Node> nodes = new ArrayList<>();
 
@@ -27,7 +35,7 @@ abstract class NodeBuilder implements Tag, BlockBuilder {
 	}
 
 	protected Node build(Block block, Node elseNode) {
-		throw new IllegalStateException("else not allowed" + block);
+		throw new TemplateParseException(location, "else not allowed" + block);
 	}
 
 }

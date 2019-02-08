@@ -1,4 +1,1 @@
-@{set (((((a))))) = 'q'}
-@{for i, (k, v) in enumerate(entries(locals()))}
-${i + 1}. ${k}=${v}
-@{end}
+${'a' - 'b'}

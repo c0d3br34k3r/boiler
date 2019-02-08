@@ -1,7 +1,8 @@
 package com.catascopic.template;
 
-import java.util.Collections;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 
 class BasicScope extends Scope {
 
@@ -24,7 +25,7 @@ class BasicScope extends Scope {
 
 	@Override
 	public Map<String, Object> locals() {
-		return Collections.unmodifiableMap(values);
+		return ImmutableMap.copyOf(values);
 	}
 
 	@Override

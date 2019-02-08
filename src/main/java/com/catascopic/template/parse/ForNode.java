@@ -2,6 +2,7 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 
+import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
@@ -31,8 +32,9 @@ class ForNode implements Node {
 	static Tag parseTag(Tokenizer tokenizer) {
 		final NameAssigner names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
+		Location location = tokenizer.getLocation();
 		final Term sequence = tokenizer.parseExpression();
-		return new NodeBuilder() {
+		return new NodeBuilder(location) {
 
 			@Override
 			public void handle(TemplateParser parser) {

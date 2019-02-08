@@ -100,8 +100,8 @@ public class Tokenizer implements Locatable {
 				try {
 					return term.evaluate(context);
 				} catch (TemplateEvalException e) {
-					throw new TemplateEvalException(location, e,
-							this.toString());
+					e.setLocation(location, this.toString());
+					throw e;
 				}
 			}
 
