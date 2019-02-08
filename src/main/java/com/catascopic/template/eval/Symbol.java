@@ -26,6 +26,7 @@ public enum Symbol implements Token {
 	MINUS(BinaryOperator.SUBTRACT, UnaryOperator.NEGATIVE),
 	STAR(BinaryOperator.MULTIPLY),
 	SLASH(BinaryOperator.DIVIDE),
+	POWER(BinaryOperator.POWER),
 	PERCENT(BinaryOperator.MODULO);
 
 	private final BinaryOperator binaryOperator;

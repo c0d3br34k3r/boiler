@@ -3,21 +3,20 @@ package com.catascopic.template;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-class FileScope extends Scope implements LocalAccess {
+class FileScope extends Scope {
 
 	private final Path file;
 	private final TemplateEngine engine;
-	private final LocalAccess parent;
+	private final FileScope parent;
 
 	FileScope(Path file, TemplateEngine engine,
 			Map<String, ? extends Object> initial) {
 		super(initial);
 		this.file = file;
 		this.engine = engine;
-		this.parent = BASE;
+		this.parent = null;
 	}
 
 	private FileScope(Path file, FileScope parent) {
@@ -32,20 +31,11 @@ class FileScope extends Scope implements LocalAccess {
 	}
 
 	@Override
-	public void collectLocals(Map<String, Object> locals) {
-		parent.collectLocals(locals);
-		locals.putAll(values);
-	}
-
-	@Override
-	public void collectPaths(List<Path> paths) {
-		paths.add(file);
-	}
-
-	@Override
 	public Map<String, Object> locals() {
 		Map<String, Object> locals = new HashMap<>();
-		collectLocals(locals);
+		for (FileScope scope = this; scope != null; scope = scope.parent) {
+			locals.putAll(scope.values);
+		}
 		return locals;
 	}
 
@@ -68,23 +58,23 @@ class FileScope extends Scope implements LocalAccess {
 			throws IOException {
 		writer.append(engine.getTextFile(file.resolveSibling(path)));
 	}
-
-	private static final LocalAccess BASE = new LocalAccess() {
-
-		@Override
-		public Object get(String name) {
-			throw new TemplateEvalException("%s is undefined", name);
-		}
-
-		@Override
-		public void collectLocals(Map<String, Object> locals) {
-			// nothing to collect
-		}
-
-		@Override
-		public void collectPaths(List<Path> paths) {
-			// nothing to collect
-		}
-	};
+	//
+	// private static final LocalAccess BASE = new LocalAccess() {
+	//
+	// @Override
+	// public Object get(String name) {
+	// throw new TemplateEvalException("%s is undefined", name);
+	// }
+	//
+	// @Override
+	// public Map<String, Object> scopedLocals() {
+	// return Collections.emptyMap();
+	// }
+	//
+	// @Override
+	// public Path path() {
+	// return null;
+	// }
+	// };
 
 }

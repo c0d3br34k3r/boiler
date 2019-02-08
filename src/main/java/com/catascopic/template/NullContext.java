@@ -2,15 +2,8 @@ package com.catascopic.template;
 
 import java.util.List;
 
-import com.catascopic.template.eval.Term;
-
 public enum NullContext implements Context {
 	CONTEXT;
-
-	@Override
-	public Object apply(Term term) {
-		return term.evaluate(CONTEXT);
-	}
 
 	@Override
 	public Object get(String name) {

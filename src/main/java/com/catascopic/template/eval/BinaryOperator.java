@@ -33,6 +33,13 @@ enum BinaryOperator {
 			return Values.divide(left, right);
 		}
 	},
+	POWER {
+
+		@Override
+		Object apply(Object left, Object right) {
+			return Values.power(left, right);
+		}
+	},
 	MODULO {
 
 		@Override
@@ -40,9 +47,6 @@ enum BinaryOperator {
 			return Values.modulo(left, right);
 		}
 	},
-
-	// TODO: EXPONENT?
-
 	GREATER_THAN {
 
 		@Override

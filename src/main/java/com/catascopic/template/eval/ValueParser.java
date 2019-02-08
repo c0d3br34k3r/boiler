@@ -17,7 +17,8 @@ import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-class ValueParser implements TermParser {
+enum ValueParser implements TermParser {
+	INSTANCE;
 
 	@Override
 	public Term parse(Tokenizer tokenizer) {
@@ -60,7 +61,7 @@ class ValueParser implements TermParser {
 			tokenizer.consume(RIGHT_PARENTHESIS);
 			return term;
 		case LEFT_BRACKET:
-			return new ListTerm(parseTerms(tokenizer, RIGHT_BRACKET));
+			return new ListTerm(parseList(tokenizer, RIGHT_BRACKET));
 		case LEFT_CURLY_BRACKET:
 			return new MapTerm(parseMap(tokenizer));
 		default:
@@ -73,7 +74,7 @@ class ValueParser implements TermParser {
 			String identifier) {
 		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
 			return new FunctionTerm(identifier,
-					parseTerms(tokenizer, RIGHT_PARENTHESIS));
+					parseList(tokenizer, RIGHT_PARENTHESIS));
 		}
 		return new Variable(identifier);
 	}
@@ -113,7 +114,7 @@ class ValueParser implements TermParser {
 		return new SliceTerm(seq, index, stop, step);
 	}
 
-	private static List<Term> parseTerms(Tokenizer tokenizer, Symbol end) {
+	private static List<Term> parseList(Tokenizer tokenizer, Symbol end) {
 		if (tokenizer.tryConsume(end)) {
 			return Collections.emptyList();
 		}

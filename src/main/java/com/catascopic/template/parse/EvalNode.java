@@ -3,7 +3,6 @@ package com.catascopic.template.parse;
 import java.io.IOException;
 
 import com.catascopic.template.Scope;
-import com.catascopic.template.Values;
 import com.catascopic.template.eval.Term;
 import com.catascopic.template.eval.Tokenizer;
 
@@ -17,7 +16,7 @@ class EvalNode implements Node, Tag {
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		writer.append(Values.toString(expression.evaluate(scope)));
+		writer.append(String.valueOf(expression.evaluate(scope)));
 	}
 
 	static Tag getTag(Tokenizer tokenizer) {
@@ -31,7 +30,7 @@ class EvalNode implements Node, Tag {
 
 	@Override
 	public String toString() {
-		return "${" + expression + "}";
+		return "eval[" + expression + "]";
 	}
 
 }

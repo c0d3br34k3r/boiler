@@ -74,6 +74,13 @@ enum BuiltIn implements TemplateFunction {
 			return Values.abs(params.getNumber(0));
 		}
 	},
+	SQRT {
+
+		@Override
+		public Object apply(Params params) {
+			return Math.sqrt(params.getNumber(0).doubleValue());
+		}
+	},
 	RANGE {
 
 		@Override
@@ -211,6 +218,13 @@ enum BuiltIn implements TemplateFunction {
 		public Object apply(Params params) {
 			return Splitter.on(params.getString(1)).splitToList(
 					params.getString(0));
+		}
+	},
+	SPLIT_LINES {
+
+		@Override
+		public Object apply(Params params) {
+			return Values.splitLines(params.getString(0));
 		}
 	},
 	UPPER {
@@ -363,8 +377,6 @@ enum BuiltIn implements TemplateFunction {
 	// regexReplace
 	// group
 	// sum
-	// exp
-	// sqrt
 	// floor/ceiling/round
 	// stringCompare
 	// substringBefore/substringAfter

@@ -48,7 +48,7 @@ public class Params {
 	}
 
 	public String getString(int index) {
-		return Values.toString(get(index));
+		return String.valueOf((get(index)));
 	}
 
 	public String getString(int index, String defaultValue) {

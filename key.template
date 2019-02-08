@@ -1,6 +1,36 @@
-My secret code!
-@{set alphabet = 'abcdefghijklmnopqrstuvwxyz'}
-@{for plain, cipher in zip(alphabet, order)}
-${plain} = ${upper(cipher)}
+return new ${className}(
+@{for i, last, field in stream(sortedFieldList)}
+	@{if field.use == 'optional'}
+		@{if filter(map(sortedFieldList, lambda), lambda)}
+			@{if field.maxOccurs == 'unbounded'}
+${field.name}s
+			@{else if field.type == 'group'}
+MoreObjects.firstNonNull(${field.name}, ${field.className}.empty())
+			@{else if field.type == 'attr'}
+Optional.of(${field.name}).map(${field.className}::${typeSubstitute == 'string' ? 'parse' : 'new'})
+			@{else}
+Optional.of(${field.name})
+			@{end}
+		@{else}
+			@{if field.maxOccurs == 'unbounded'}
+Collections.emptyList()
+			@{else if field.type == 'group'}
+${field.className}.empty()
+			@{else}
+Optional.empty()
+			@{end}
+		@{end}
+	@{else if field.maxOccurs == 'unbounded'}
+${field.name}s
+	@{else if field.type == 'attr' || field.valueType}
+		@{if typeSubstitute == 'string'}
+${field.className}.parse(${field.name})
+		@{else}
+new ${field.className}(${field.name})
+		@{end}
+	@{else}
+${field.name}
+	@{end}
+	@{if !last},@{end}
 @{end}
-Remember, don't share this with anyone!
+);

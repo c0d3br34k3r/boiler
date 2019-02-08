@@ -23,7 +23,7 @@ class Block implements Node {
 
 	@Override
 	public String toString() {
-		return "block, nodes=" + nodes;
+		return "block" + nodes;
 	}
 
 }

@@ -1,3 +1,11 @@
-@{set message = "attack at dawn!"}
-@{set key = eval(template('key.template', {order: 'qwertyuiopasdfghjklzxcvbnm'}))}
-@{for letter in message}${upper(key[letter] || letter)}@{end}
+@{for n in range(100)}
+    @{if n % 15 == 0}
+FizzBuzz
+    @{else if n % 3 == 0}
+Fizz
+    @{else if n % 5 == 0}
+Buzz
+    @{else}
+${n}
+    @{end}
+@{end}

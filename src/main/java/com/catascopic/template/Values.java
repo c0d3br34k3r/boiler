@@ -1,6 +1,9 @@
 package com.catascopic.template;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.escape.Escaper;
 import com.google.common.escape.Escapers;
+import com.google.common.math.IntMath;
 
 public final class Values {
 
@@ -90,10 +94,9 @@ public final class Values {
 			}
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			throw new TemplateEvalException(
-					String.format("cannot convert %s (%s) to a number", value,
-							value.getClass().getName()),
-					e);
+			throw new TemplateEvalException(e,
+					"cannot convert %s (%s) to a number", value,
+					value.getClass().getName());
 		}
 	}
 
@@ -120,12 +123,11 @@ public final class Values {
 			if (n1 != null) {
 				return add(n1, (Number) o2);
 			}
-		}
-		if (o1 instanceof Iterable && o2 instanceof Iterable) {
+		} else if (o1 instanceof Iterable && o2 instanceof Iterable) {
 			return Iterables.concat((Iterable<?>) o1, (Iterable<?>) o2);
 		}
 		// TODO: should we be able to add things that aren't strings?
-		return toString(o1) + toString(o2);
+		return String.valueOf(o1) + o2;
 	}
 
 	public static Number add(Number n1, Number n2) {
@@ -139,10 +141,10 @@ public final class Values {
 		Number n1 = tryConvertNumber(o1);
 		Number n2 = tryConvertNumber(o2);
 		if (n1 == null) {
-			return Strings.repeat(toString(o1), n2.intValue());
+			return Strings.repeat(String.valueOf(o1), n2.intValue());
 		}
 		if (n2 == null) {
-			return Strings.repeat(toString(o2), n1.intValue());
+			return Strings.repeat(String.valueOf(o2), n1.intValue());
 		}
 		if (n1 instanceof Integer && n2 instanceof Integer) {
 			return n1.intValue() * n2.intValue();
@@ -157,6 +159,15 @@ public final class Values {
 			return n1.intValue() / n2.intValue();
 		}
 		return n1.doubleValue() / n2.doubleValue();
+	}
+
+	public static Number power(Object o1, Object o2) {
+		Number n1 = toNumber(o1);
+		Number n2 = toNumber(o2);
+		if (n1 instanceof Integer && n2 instanceof Integer) {
+			return IntMath.pow(n1.intValue(), n2.intValue());
+		}
+		return Math.pow(n1.doubleValue(), n2.doubleValue());
 	}
 
 	public static Number modulo(Object o1, Object o2) {
@@ -196,17 +207,6 @@ public final class Values {
 			return Integer.compare(n1.intValue(), n2.intValue());
 		}
 		return Double.compare(n1.doubleValue(), n2.doubleValue());
-	}
-
-	public static String toString(Object obj) {
-		if (obj instanceof Number && !(obj instanceof Integer)) {
-			Number number = (Number) obj;
-			double d = number.doubleValue();
-			if (Math.rint(d) == d) {
-				return Long.toString(number.longValue());
-			}
-		}
-		return String.valueOf(obj);
 	}
 
 	private static final CharMatcher UPPER = CharMatcher.inRange('A', 'Z');
@@ -453,7 +453,7 @@ public final class Values {
 
 	public static Object index(Object indexable, Object index) {
 		if (indexable instanceof Map) {
-			return ((Map<?, ?>) indexable).get(toString(index));
+			return ((Map<?, ?>) indexable).get(String.valueOf(index));
 		}
 		// TODO: alternate indexable interface?
 		return index(indexable, toNumber(index).intValue());
@@ -534,8 +534,8 @@ public final class Values {
 		return Iterables.transform(map.entrySet(), ENTRIES);
 	}
 
-	private static final Function<Entry<?, ?>, List<Object>> ENTRIES =
-			new Function<Entry<?, ?>, List<Object>>() {
+	private static final Function<Entry<?, ?>, List<
+			Object>> ENTRIES = new Function<Entry<?, ?>, List<Object>>() {
 
 				@Override
 				public List<Object> apply(Entry<?, ?> input) {
@@ -543,7 +543,7 @@ public final class Values {
 				}
 			};
 
-	public Object eval(String expression) {
+	public static Object eval(String expression) {
 		return new Tokenizer(new PositionReader(new StringReader(expression)))
 				.parseExpression().evaluate(NullContext.CONTEXT);
 	}
@@ -617,6 +617,23 @@ public final class Values {
 
 	public static String escape(String str) {
 		return "\"" + ESCAPER.escape(str) + "\"";
+	}
+
+	public static Iterable<String> splitLines(final String str) {
+		BufferedReader reader = new BufferedReader(new StringReader(str));
+		List<String> result = new ArrayList<>();
+		for (;;) {
+			String line;
+			try {
+				line = reader.readLine();
+			} catch (IOException e) {
+				throw new AssertionError(e);
+			}
+			if (line == null) {
+				return result;
+			}
+			result.add(line);
+		}
 	}
 
 }

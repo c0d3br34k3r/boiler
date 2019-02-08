@@ -1,11 +1,12 @@
 package com.catascopic.template;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Scope extends SimpleContext {
+public abstract class Scope implements Context {
 
 	// package-private
 	Map<String, Object> values = new HashMap<>();
@@ -50,7 +51,7 @@ public abstract class Scope extends SimpleContext {
 			throws IOException;
 
 	public void print(Location location, String message) {
-		// TODO
+		System.out.println(message);
 	}
 
 }

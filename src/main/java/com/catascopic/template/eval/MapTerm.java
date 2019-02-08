@@ -1,10 +1,12 @@
 package com.catascopic.template.eval;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.catascopic.template.Context;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 class MapTerm implements Term {
 
@@ -16,7 +18,11 @@ class MapTerm implements Term {
 
 	@Override
 	public Object evaluate(Context context) {
-		return Maps.transformValues(items, context);
+		Builder<String, Object> builder = ImmutableMap.builder();
+		for (Entry<String, Term> entry : items.entrySet()) {
+			builder.put(entry.getKey(), entry.getValue().evaluate(context));
+		}
+		return builder.build();
 	}
 
 	@Override

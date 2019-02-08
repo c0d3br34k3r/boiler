@@ -2,10 +2,7 @@ package com.catascopic.template;
 
 import java.util.List;
 
-import com.catascopic.template.eval.Term;
-import com.google.common.base.Function;
-
-public interface Context extends Function<Term, Object> {
+public interface Context {
 
 	Object get(String name);
 

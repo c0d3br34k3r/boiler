@@ -149,7 +149,9 @@ public class Tokenizer implements Locatable {
 		case ',': return Symbol.COMMA;
 		case '+': return Symbol.PLUS;
 		case '-': return Symbol.MINUS;
-		case '*': return Symbol.STAR;
+		case '*': return reader.tryRead('*')
+				? Symbol.POWER
+				: Symbol.STAR;
 		case '/': return Symbol.SLASH;
 		case '?': return Symbol.QUESTION_MARK;
 		case ':': return Symbol.COLON;

@@ -27,7 +27,7 @@ abstract class NodeBuilder implements Tag, BlockBuilder {
 	}
 
 	protected Node build(Block block, Node elseNode) {
-		throw new IllegalStateException("else not allowed");
+		throw new IllegalStateException("else not allowed" + block);
 	}
 
 }

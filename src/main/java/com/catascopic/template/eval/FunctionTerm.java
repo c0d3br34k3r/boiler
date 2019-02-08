@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.catascopic.template.Context;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 class FunctionTerm implements Term {
 
@@ -18,7 +17,7 @@ class FunctionTerm implements Term {
 
 	@Override
 	public Object evaluate(Context context) {
-		return context.call(name, Lists.transform(params, context));
+		return context.call(name, ListTerm.evaluateList(params, context));
 	}
 
 	@Override

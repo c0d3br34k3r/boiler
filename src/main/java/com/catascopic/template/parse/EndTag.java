@@ -11,7 +11,7 @@ enum EndTag implements Tag {
 
 	@Override
 	public String toString() {
-		return "<end>";
+		return "end";
 	}
 
 }

@@ -43,6 +43,7 @@ public class FunctionResolver {
 			addFunctions(BuiltIn.class);
 		}
 
+		// Use HashMap so functions can be replaced
 		private Map<String, TemplateFunction> functions = new HashMap<>();
 
 		public <F extends Enum<F> & TemplateFunction> Builder addFunctions(

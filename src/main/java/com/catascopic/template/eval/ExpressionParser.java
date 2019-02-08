@@ -16,9 +16,11 @@ class ExpressionParser {
 	private static final TermParser EXPRESSION_PARSER;
 
 	static {
-		ValueParser valueParser = new ValueParser();
+		BinaryTermParser power = new BinaryTermParser(
+				ValueParser.INSTANCE,
+				Symbol.POWER);
 		BinaryTermParser multiplication = new BinaryTermParser(
-				valueParser,
+				power,
 				Symbol.STAR,
 				Symbol.SLASH,
 				Symbol.PERCENT);

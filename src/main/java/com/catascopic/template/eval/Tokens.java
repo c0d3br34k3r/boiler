@@ -1,7 +1,5 @@
 package com.catascopic.template.eval;
 
-import com.catascopic.template.Values;
-
 class Tokens {
 
 	private Tokens() {}
@@ -71,7 +69,7 @@ class Tokens {
 
 		@Override
 		public String toString() {
-			return Values.toString(value);
+			return value.toString();
 		}
 
 		@Override
