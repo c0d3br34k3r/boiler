@@ -83,6 +83,9 @@ class TagParser {
 			case -1:
 				mode = Mode.END;
 				break loop;
+			case '\n':
+				mode = Mode.NEWLINE;
+				break loop;
 			case '@':
 			case '$':
 			case '#':
@@ -90,11 +93,7 @@ class TagParser {
 					mode = getMode(ch);
 					break loop;
 				}
-				builder.append((char) ch);
-				break;
-			case '\n':
-				mode = Mode.NEWLINE;
-				break loop;
+				// fallthrough
 			default:
 				builder.append((char) ch);
 			}
