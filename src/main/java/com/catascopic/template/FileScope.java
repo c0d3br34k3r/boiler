@@ -11,8 +11,7 @@ class FileScope extends Scope implements LocalAccess {
 	private final TemplateEngine engine;
 	private final LocalAccess parent;
 
-	FileScope(Path file, TemplateEngine engine,
-			Map<String, ? extends Object> initial) {
+	FileScope(Path file, TemplateEngine engine, Map<String, ? extends Object> initial) {
 		super(initial);
 		this.file = file;
 		this.engine = engine;
@@ -49,8 +48,8 @@ class FileScope extends Scope implements LocalAccess {
 	}
 
 	@Override
-	public void renderTemplate(Appendable writer, String path,
-			Assigner assigner) throws IOException {
+	public void renderTemplate(Appendable writer, String path, Assigner assigner)
+			throws IOException {
 		Path resolvedFile = file.resolveSibling(path);
 		Scope extended = new FileScope(resolvedFile, this);
 		assigner.assign(extended);
@@ -63,8 +62,7 @@ class FileScope extends Scope implements LocalAccess {
 	}
 
 	@Override
-	public void renderTextFile(Appendable writer, String path)
-			throws IOException {
+	public void renderTextFile(Appendable writer, String path) throws IOException {
 		writer.append(engine.getTextFile(file.resolveSibling(path)));
 	}
 

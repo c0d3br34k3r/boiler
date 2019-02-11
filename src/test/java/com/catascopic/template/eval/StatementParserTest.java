@@ -12,9 +12,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.catascopic.template.PositionReader;
+import com.catascopic.template.TrackingReader;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Tokenizer;
+import com.catascopic.template.value.Values;
 import com.catascopic.template.TestUtil;
-import com.catascopic.template.Values;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -39,7 +41,7 @@ public class StatementParserTest {
 	private static Object evaluate(String expr, boolean print) {
 		Tokenizer tokenizer = createParser(expr);
 		Term term;
-		term = tokenizer.parseTerm();
+		term = tokenizer.parseExpression();
 		tokenizer.end();
 		if (print) {
 			System.out.printf("%-24s %s%n", expr, term);
@@ -48,7 +50,7 @@ public class StatementParserTest {
 	}
 
 	private static Tokenizer createParser(String str) {
-		return new Tokenizer(new PositionReader(new StringReader(str)));
+		return new Tokenizer(new TrackingReader(new StringReader(str)));
 	}
 
 	private static Object evaluate(Term term) {

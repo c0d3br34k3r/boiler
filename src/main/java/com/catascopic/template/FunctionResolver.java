@@ -3,6 +3,7 @@ package com.catascopic.template;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.catascopic.template.value.Values;
 import com.google.common.collect.ImmutableMap;
 
 // TODO: make this a more general settings class

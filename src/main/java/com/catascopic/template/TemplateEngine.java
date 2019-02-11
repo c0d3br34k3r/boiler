@@ -26,8 +26,7 @@ public class TemplateEngine {
 		return create(functions, DEFAULT_CACHE_SIZE);
 	}
 
-	public static TemplateEngine create(FunctionResolver functions,
-			int cacheSize) {
+	public static TemplateEngine create(FunctionResolver functions, int cacheSize) {
 		return new TemplateEngine(functions, cacheSize);
 	}
 
@@ -37,8 +36,8 @@ public class TemplateEngine {
 		this.textCache = new TextCache(cacheSize);
 	}
 
-	public void render(Path path, Appendable writer,
-			Map<String, ? extends Object> params) throws IOException {
+	public void render(Path path, Appendable writer, Map<String, ? extends Object> params)
+			throws IOException {
 		try {
 			templateCache.get(path).render(writer,
 					new FileScope(path, this, params));
@@ -48,8 +47,7 @@ public class TemplateEngine {
 		}
 	}
 
-	public String render(Path path, Map<String, Object> params)
-			throws IOException {
+	public String render(Path path, Map<String, Object> params) throws IOException {
 		StringBuilder builder = new StringBuilder();
 		render(path, builder, params);
 		return builder.toString();
@@ -87,9 +85,8 @@ public class TemplateEngine {
 
 		@Override
 		protected Node parse(Path file) throws IOException {
-			try (Reader reader = Files.newBufferedReader(file,
-					StandardCharsets.UTF_8)) {
-				return TemplateParser.parse(reader);
+			try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+				return TemplateParser.parse(TrackingReader.create(reader, file));
 			}
 		}
 	}

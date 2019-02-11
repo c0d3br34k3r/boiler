@@ -5,7 +5,9 @@ import java.io.StringReader;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.catascopic.template.PositionReader;
+import com.catascopic.template.TrackingReader;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Tokenizer;
 import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.TestUtil;
@@ -65,7 +67,7 @@ public class SyntaxErrorTest {
 
 	private static void evaluate(String expr) {
 		Tokenizer tokenizer =
-				new Tokenizer(new PositionReader(new StringReader(expr)));
+				new Tokenizer(new TrackingReader(new StringReader(expr)));
 		Term term;
 		term = tokenizer.parseExpression();
 		tokenizer.end();

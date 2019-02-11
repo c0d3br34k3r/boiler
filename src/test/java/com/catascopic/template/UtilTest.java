@@ -3,6 +3,8 @@ package com.catascopic.template;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.catascopic.template.value.Values;
+
 public class UtilTest {
 
 	@Test

@@ -27,7 +27,7 @@ public class Template {
 
 	public static Template parse(Reader reader, FunctionResolver functions)
 			throws IOException {
-		return new Template(TemplateParser.parse(reader), functions);
+		return new Template(TemplateParser.parse(TrackingReader.create(reader)), functions);
 	}
 
 	public static Template parse(Reader reader) throws IOException {
@@ -36,8 +36,7 @@ public class Template {
 
 	public static Template parse(Path file, FunctionResolver functions)
 			throws IOException {
-		try (Reader reader =
-				Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+		try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
 			return parse(reader, functions);
 		}
 	}
@@ -64,8 +63,7 @@ public class Template {
 		return builder.toString();
 	}
 
-	public void render(Appendable writer, Map<String, ? extends Object> params)
-			throws IOException {
+	public void render(Appendable writer, Map<String, ? extends Object> params) throws IOException {
 		node.render(writer, new BasicScope(params, functions));
 	}
 

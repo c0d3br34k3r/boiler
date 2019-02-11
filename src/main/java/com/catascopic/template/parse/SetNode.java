@@ -2,7 +2,7 @@ package com.catascopic.template.parse;
 
 import com.catascopic.template.Assigner;
 import com.catascopic.template.Scope;
-import com.catascopic.template.eval.Tokenizer;
+import com.catascopic.template.expr.Tokenizer;
 
 class SetNode implements Node, Tag {
 

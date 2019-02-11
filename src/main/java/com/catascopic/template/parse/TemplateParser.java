@@ -1,31 +1,29 @@
 package com.catascopic.template.parse;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
 
-import com.catascopic.template.Location;
 import com.catascopic.template.TemplateEvalException;
 import com.catascopic.template.TemplateParseException;
+import com.catascopic.template.TrackingReader;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
-// TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 public class TemplateParser {
 
 	private TemplateParser() {}
 
-	public static Node parse(Reader reader) throws IOException {
+	public static Node parse(TrackingReader reader) throws IOException {
 		return new TemplateParser().parse(TagParser.parse(reader));
 	}
 
 	private Queue<BlockBuilder> stack =
 			Collections.asLifoQueue(new ArrayDeque<BlockBuilder>());
 
-	private Node parse(Collection<Tag> tags) {
+	private Node parse(List<Tag> tags) {
 		final Builder<Node> builder = ImmutableList.builder();
 		BlockBuilder nodeBuilder = new BlockBuilder() {
 

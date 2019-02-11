@@ -1,9 +1,9 @@
 package com.catascopic.template.eval;
 
-import static com.catascopic.template.Values.camelToSeparator;
-import static com.catascopic.template.Values.range;
-import static com.catascopic.template.Values.separatorToCamel;
-import static com.catascopic.template.Values.slice;
+import static com.catascopic.template.value.Values.camelToSeparator;
+import static com.catascopic.template.value.Values.range;
+import static com.catascopic.template.value.Values.separatorToCamel;
+import static com.catascopic.template.value.Values.slice;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +11,7 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.catascopic.template.Values;
+import com.catascopic.template.value.Values;
 import com.google.common.collect.ImmutableMap;
 
 public class FunctionsTest {

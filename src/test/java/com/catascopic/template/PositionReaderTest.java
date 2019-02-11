@@ -10,7 +10,7 @@ public class PositionReaderTest {
 
 	@Test
 	public void testReader() throws IOException {
-		PositionReader reader = new PositionReader(new StringReader("8888"));
+		TrackingReader reader = new TrackingReader(new StringReader("8888"));
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());
 		Assert.assertEquals('8', reader.read());

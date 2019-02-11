@@ -1,13 +1,11 @@
 package com.catascopic.template;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import com.catascopic.template.eval.Term;
-import com.catascopic.template.eval.Tokenizer;
+import com.catascopic.template.value.Values;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -53,18 +51,14 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.min(params.size() == 1
-					? params.getIterable(0)
-					: params.asList());
+			return Values.min(params.size() == 1 ? params.getIterable(0) : params.asList());
 		}
 	},
 	MAX {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.max(params.size() == 1
-					? params.getIterable(0)
-					: params.asList());
+			return Values.max(params.size() == 1 ? params.getIterable(0) : params.asList());
 		}
 	},
 	ABS {
@@ -87,13 +81,11 @@ enum BuiltIn implements TemplateFunction {
 		public Object apply(Params params) {
 			switch (params.size()) {
 			case 0:
-				throw new TemplateEvalException(
-						"range must have at least 1 param");
+				throw new TemplateEvalException("range must have at least 1 param");
 			case 1:
 				return Values.range(params.getInt(0));
 			default:
-				return Values.range(params.getInt(0), params.getInt(1),
-						params.getInt(2, 1));
+				return Values.range(params.getInt(0), params.getInt(1), params.getInt(2, 1));
 			}
 		}
 	},
@@ -101,23 +93,21 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return new Enumeration(params.getIterable(0));
-		}
-	},
-	ZIP {
-
-		@Override
-		public Object apply(Params params) {
-			return new Zip(params.size() == 1
-					? params.getIterable(0)
-					: params.asList());
+			return Values.enumerate(params.getIterable(0));
 		}
 	},
 	STREAM {
 
 		@Override
 		public Object apply(Params params) {
-			return new Stream(params.getIterable(0));
+			return Values.stream(params.getIterable(0));
+		}
+	},
+	ZIP {
+
+		@Override
+		public Object apply(Params params) {
+			return Values.zip(params.size() == 1 ? params.getIterable(0) : params.asList());
 		}
 	},
 	ENTRIES {
@@ -152,8 +142,8 @@ enum BuiltIn implements TemplateFunction {
 			if (seq instanceof Collection) {
 				return ((Collection<?>) seq).contains(params.get(1));
 			}
-			throw new TemplateEvalException("%s (%s) is not a container", seq,
-					seq.getClass().getName());
+			throw new TemplateEvalException("%s (%s) is not a container",
+					seq, seq.getClass().getName());
 		}
 	},
 	CAPITALIZE {
@@ -167,8 +157,7 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return params.getString(0).replace(params.getString(1),
-					params.getString(2));
+			return params.getString(0).replace(params.getString(1), params.getString(2));
 		}
 	},
 	STARTS_WITH {
@@ -189,8 +178,7 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.indexOf(params.get(0), params.get(1),
-					params.getInt(2, 0));
+			return Values.indexOf(params.get(0), params.get(1), params.getInt(2, 0));
 		}
 	},
 	LAST_INDEX_OF {
@@ -200,24 +188,21 @@ enum BuiltIn implements TemplateFunction {
 			if (params.size() <= 2) {
 				return Values.lastIndexOf(params.get(0), params.get(1));
 			}
-			return Values.lastIndexOf(params.get(0), params.get(1),
-					params.getInt(2));
+			return Values.lastIndexOf(params.get(0), params.get(1), params.getInt(2));
 		}
 	},
 	JOIN {
 
 		@Override
 		public Object apply(Params params) {
-			return Joiner.on(params.getString(1)).join(
-					Values.toIterable(params.get(0)));
+			return Joiner.on(params.getString(1)).join(Values.toIterable(params.get(0)));
 		}
 	},
 	SPLIT {
 
 		@Override
 		public Object apply(Params params) {
-			return Splitter.on(params.getString(1)).splitToList(
-					params.getString(0));
+			return Splitter.on(params.getString(1)).splitToList(params.getString(0));
 		}
 	},
 	SPLIT_LINES {
@@ -231,7 +216,6 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			// TODO: Ascii.toUpperCase?
 			return params.getString(0).toUpperCase();
 		}
 	},
@@ -261,58 +245,29 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.separatorToCamel(params.getString(0),
-					params.getString(1, "_"));
+			return Values.separatorToCamel(params.getString(0), params.getString(1, "_"));
 		}
 	},
 	CAMEL_TO_SEPARATOR {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.camelToSeparator(params.getString(0),
-					params.getString(1, "_"));
+			return Values.camelToSeparator(params.getString(0), params.getString(1, "_"));
 		}
 	},
 	PAD {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.pad(params.getString(0), params.getInt(1),
+			return Values.pad(params.getString(0), params.getInt(1), 
 					params.getChar(2, " "), params.getBoolean(3, true));
 		}
 	},
-	// MATCHES {
-	//
-	// @Override
-	// public Object apply(Params params) {
-	// return Pattern.compile(params.getString(1)).matcher(params
-	// .getString(0)).matches();
-	// }
-	// },
-	// SEARCH {
-	//
-	// @Override
-	// public Object apply(Params params) {
-	// List<Object> result = new ArrayList<>();
-	// Matcher matcher = Pattern.compile(params.getString(1)).matcher(
-	// params.getString(0));
-	// int groups = matcher.groupCount() + 1;
-	// while (matcher.find()) {
-	// List<String> group = new ArrayList<>(groups);
-	// for (int i = 0; i < groups; i++) {
-	// group.add(i, matcher.group(i));
-	// }
-	// result.add(group);
-	// }
-	// return result;
-	// }
-	// },
 	TEMPLATE {
 
 		@Override
 		public Object apply(Params params) {
-			final Map<String, ?> map = params.getMap(1,
-					Collections.<String, Object> emptyMap());
+			final Map<String, ?> map = params.getMap(1, Collections.<String, Object> emptyMap());
 			Assigner assigner = new Assigner() {
 
 				@Override
@@ -324,8 +279,7 @@ enum BuiltIn implements TemplateFunction {
 			};
 			StringBuilder builder = new StringBuilder();
 			try {
-				params.scope().renderTemplate(builder,
-						params.getString(0), assigner);
+				params.scope().renderTemplate(builder, params.getString(0), assigner);
 			} catch (IOException e) {
 				throw new TemplateEvalException(e);
 			}
@@ -356,11 +310,7 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			Tokenizer tokenizer = new Tokenizer(new PositionReader(
-					new StringReader(params.getString(0))));
-			Term expression = tokenizer.parseTopLevelExpression();
-			tokenizer.end();
-			return expression.evaluate(params.scope());
+			return Values.eval(params.getString(0));
 		}
 	},
 	UNEVAL {

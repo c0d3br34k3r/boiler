@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
-import com.catascopic.template.Values;
-import com.catascopic.template.eval.Term;
-import com.catascopic.template.eval.Tokenizer;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Tokenizer;
 import com.catascopic.template.parse.Variables.NameAssigner;
+import com.catascopic.template.value.Values;
 
 class ForNode implements Node {
 
@@ -33,7 +33,7 @@ class ForNode implements Node {
 		final NameAssigner names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		Location location = tokenizer.getLocation();
-		final Term sequence = tokenizer.parseExpression();
+		final Term sequence = tokenizer.parseTopLevelExpression();
 		return new NodeBuilder(location) {
 
 			@Override

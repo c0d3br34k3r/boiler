@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
-import com.catascopic.template.Values;
-import com.catascopic.template.eval.Term;
-import com.catascopic.template.eval.Tokenizer;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Tokenizer;
+import com.catascopic.template.value.Values;
 
 class IfNode implements Node {
 
@@ -31,7 +31,7 @@ class IfNode implements Node {
 
 	static Tag parseTag(Tokenizer tokenizer) {
 		Location location = tokenizer.getLocation();
-		final Term condition = tokenizer.parseExpression();
+		final Term condition = tokenizer.parseTopLevelExpression();
 		return new NodeBuilder(location) {
 
 			@Override

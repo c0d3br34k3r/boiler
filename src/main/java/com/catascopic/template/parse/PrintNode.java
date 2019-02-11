@@ -1,8 +1,8 @@
 package com.catascopic.template.parse;
 
 import com.catascopic.template.Scope;
-import com.catascopic.template.eval.Term;
-import com.catascopic.template.eval.Tokenizer;
+import com.catascopic.template.expr.Term;
+import com.catascopic.template.expr.Tokenizer;
 
 class PrintNode implements Node, Tag {
 

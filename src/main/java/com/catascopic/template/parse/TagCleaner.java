@@ -3,12 +3,11 @@ package com.catascopic.template.parse;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 class TagCleaner {
 
 	private List<Tag> tags = new ArrayList<>();
 	private int safeLength = 0;
-	private Tag onlyInstruction;
+	private Tag cleanTag;
 	private State state = State.START;
 
 	void whitespace(Tag tag) {
@@ -20,11 +19,11 @@ class TagCleaner {
 		state = State.NOT_CLEAN;
 	}
 
-	void instruction(Tag tag) {
+	void statement(Tag tag) {
 		tags.add(tag);
 		if (state == State.START) {
 			state = State.CLEAN;
-			onlyInstruction = tag;
+			cleanTag = tag;
 		} else {
 			state = State.NOT_CLEAN;
 		}
@@ -36,11 +35,11 @@ class TagCleaner {
 		}
 	}
 
-	void endLine(Tag newline) {
+	void endLine() {
 		if (state == State.CLEAN) {
 			clean();
 		} else {
-			tags.add(newline);
+			tags.add(NewlineNode.NEWLINE);
 		}
 		safeLength = tags.size();
 		state = State.START;
@@ -53,12 +52,10 @@ class TagCleaner {
 	}
 
 	private void clean() {
-		if (onlyInstruction != null) {
-			tags.set(safeLength, onlyInstruction);
-			onlyInstruction = null;
-			tags.subList(safeLength + 1, tags.size()).clear();
-		} else {
-			tags.subList(safeLength, tags.size()).clear();
+		tags.subList(safeLength, tags.size()).clear();
+		if (cleanTag != null) {
+			tags.add(cleanTag);
+			cleanTag = null;
 		}
 	}
 

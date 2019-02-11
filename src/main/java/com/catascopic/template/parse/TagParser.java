@@ -1,19 +1,17 @@
 package com.catascopic.template.parse;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.List;
 
-import com.catascopic.template.PositionReader;
 import com.catascopic.template.TemplateParseException;
-import com.catascopic.template.eval.Symbol;
-import com.catascopic.template.eval.Tokenizer;
+import com.catascopic.template.TrackingReader;
+import com.catascopic.template.expr.Symbol;
+import com.catascopic.template.expr.Tokenizer;
 import com.google.common.base.CharMatcher;
 
-// TODO: re-modularize TagParser, TagCleaner, and TemplateParser
 class TagParser {
 
-	static List<Tag> parse(Reader reader) throws IOException {
+	static List<Tag> parse(TrackingReader reader) throws IOException {
 		return new TagParser(reader).parse();
 	}
 
@@ -25,12 +23,12 @@ class TagParser {
 		return tags.result();
 	}
 
-	private final PositionReader reader;
+	private TrackingReader reader;
 	private TagCleaner tags = new TagCleaner();
 	private Mode mode = Mode.TEXT;
 
-	TagParser(Reader reader) {
-		this.reader = new PositionReader(reader, 1);
+	TagParser(TrackingReader reader) {
+		this.reader = reader;
 	}
 
 	void setMode(Mode mode) {
@@ -45,8 +43,8 @@ class TagParser {
 		case NEWLINE:
 			newline();
 			break;
-		case TAG:
-			parseTag();
+		case STATEMENT:
+			parseStatement();
 			break;
 		case EVAL:
 			parseEval();
@@ -104,7 +102,7 @@ class TagParser {
 	private static Mode getMode(int ch) {
 		switch (ch) {
 		case '@':
-			return Mode.TAG;
+			return Mode.STATEMENT;
 		case '$':
 			return Mode.EVAL;
 		case '#':
@@ -113,16 +111,16 @@ class TagParser {
 		throw new AssertionError();
 	}
 
-	private void parseTag() {
+	private void parseStatement() {
 		Tokenizer tokenizer = new Tokenizer(reader);
 		Tag tag = getTag(tokenizer);
-		tags.instruction(tag);
+		tags.statement(tag);
 		tokenizer.consume(Symbol.RIGHT_CURLY_BRACKET);
 		mode = Mode.TEXT;
 	}
 
 	private void newline() {
-		tags.endLine(NewlineNode.NEWLINE);
+		tags.endLine();
 		mode = Mode.TEXT;
 	}
 
@@ -139,11 +137,6 @@ class TagParser {
 			return SetNode.parseTag(tokenizer);
 		case "print":
 			return PrintNode.getTag(tokenizer);
-		// TODO: revisit
-		// case "template":
-		// return TemplateNode.parseTag(tokenizer);
-		// case "textfile":
-		// return TextFileNode.parseTag(tokenizer);
 		case "end":
 			return EndTag.END;
 		default:
@@ -179,7 +172,7 @@ class TagParser {
 
 		TEXT,
 		NEWLINE,
-		TAG,
+		STATEMENT,
 		EVAL,
 		COMMENT,
 		END

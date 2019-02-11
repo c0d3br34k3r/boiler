@@ -3,6 +3,7 @@ package com.catascopic.template;
 import java.util.List;
 import java.util.Map;
 
+import com.catascopic.template.value.Values;
 import com.google.common.base.Joiner;
 
 public class Params {
@@ -74,8 +75,7 @@ public class Params {
 
 	public Object get(int index) {
 		if (list.size() <= index) {
-			throw new TemplateEvalException("missing parameter %s in %s ",
-					index, this);
+			throw new TemplateEvalException("missing parameter %s in %s ", index, this);
 		}
 		return list.get(index);
 	}
@@ -104,8 +104,8 @@ public class Params {
 	public char getChar(int index, String defaultValue) {
 		String str = getString(index, defaultValue);
 		if (str.length() != 1) {
-			throw new TemplateEvalException(
-					"param %d must be a 1-char string, but was %s", index, str);
+			throw new TemplateEvalException("param %d must be a 1-char string, but was %s", 
+					index, str);
 		}
 		return str.charAt(0);
 	}

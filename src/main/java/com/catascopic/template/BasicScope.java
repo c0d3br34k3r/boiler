@@ -12,8 +12,7 @@ class BasicScope extends Scope {
 		this.functions = functions;
 	}
 
-	BasicScope(Map<String, ? extends Object> values,
-			FunctionResolver functions) {
+	BasicScope(Map<String, ? extends Object> values, FunctionResolver functions) {
 		super(values);
 		this.functions = functions;
 	}
@@ -34,8 +33,7 @@ class BasicScope extends Scope {
 	}
 
 	@Override
-	public void renderTemplate(Appendable writer, String path,
-			Assigner assigner) {
+	public void renderTemplate(Appendable writer, String path, Assigner assigner) {
 		throw new TemplateEvalException("file resolution not allowed");
 	}
 
