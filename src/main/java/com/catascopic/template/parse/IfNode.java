@@ -59,7 +59,7 @@ class IfNode implements Node {
 	public static Tag parseElseTag(Tokenizer tokenizer) {
 		Location location = tokenizer.getLocation();
 		if (tokenizer.tryConsume("if")) {
-			final Term condition = tokenizer.parseExpression();
+			final Term condition = tokenizer.parseTopLevelExpression();
 			return new NodeBuilder(location) {
 
 				@Override

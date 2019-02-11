@@ -6,6 +6,6 @@ interface LocalAccess {
 
 	Object get(String name);
 
-	void collectLocals(Map<String, Object> locals);
+	void collectLocals(Map<String, Object> collected);
 
 }

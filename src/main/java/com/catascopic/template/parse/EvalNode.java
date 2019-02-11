@@ -20,7 +20,7 @@ class EvalNode implements Node, Tag {
 	}
 
 	static Tag getTag(Tokenizer tokenizer) {
-		return new EvalNode(tokenizer.parseExpression());
+		return new EvalNode(tokenizer.parseTopLevelExpression());
 	}
 
 	@Override

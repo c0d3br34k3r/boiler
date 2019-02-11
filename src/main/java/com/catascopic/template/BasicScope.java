@@ -25,7 +25,7 @@ class BasicScope extends Scope {
 
 	@Override
 	public Map<String, Object> locals() {
-		return ImmutableMap.copyOf(values);
+		return ImmutableMap.copyOf(locals);
 	}
 
 	@Override

@@ -358,7 +358,7 @@ enum BuiltIn implements TemplateFunction {
 		public Object apply(Params params) {
 			Tokenizer tokenizer = new Tokenizer(new PositionReader(
 					new StringReader(params.getString(0))));
-			Term expression = tokenizer.parseExpression();
+			Term expression = tokenizer.parseTopLevelExpression();
 			tokenizer.end();
 			return expression.evaluate(params.scope());
 		}

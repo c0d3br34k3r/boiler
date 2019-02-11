@@ -90,15 +90,15 @@ public class Tokenizer implements Locatable {
 		}
 	}
 
-	public Term parseExpression() {
+	public Term parseTopLevelExpression() {
 		final Location location = getLocation();
-		final Term term = parseTerm();
+		final Term expression = parseTopLevelExpression();
 		return new Term() {
 
 			@Override
 			public Object evaluate(Context context) {
 				try {
-					return term.evaluate(context);
+					return expression.evaluate(context);
 				} catch (TemplateEvalException e) {
 					e.setLocation(location, this.toString());
 					throw e;
@@ -107,12 +107,12 @@ public class Tokenizer implements Locatable {
 
 			@Override
 			public String toString() {
-				return term.toString();
+				return expression.toString();
 			}
 		};
 	}
 
-	Term parseTerm() {
+	public Term parseExpression() {
 		return ExpressionParser.parse(this);
 	}
 

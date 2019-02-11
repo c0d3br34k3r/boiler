@@ -32,15 +32,15 @@ class FileScope extends Scope implements LocalAccess {
 
 	@Override
 	public Map<String, Object> locals() {
-		Map<String, Object> locals = new HashMap<>();
-		collectLocals(locals);
-		return locals;
+		Map<String, Object> collected = new HashMap<>();
+		collectLocals(collected);
+		return collected;
 	}
 
 	@Override
-	public void collectLocals(Map<String, Object> locals) {
-		parent.collectLocals(locals);
-		locals.putAll(values);
+	public void collectLocals(Map<String, Object> collected) {
+		parent.collectLocals(collected);
+		collected.putAll(locals);
 	}
 
 	@Override

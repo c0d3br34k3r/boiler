@@ -84,7 +84,7 @@ enum ValueParser implements TermParser {
 		if (tokenizer.tryConsume(COLON)) {
 			index = NullTerm.NULL;
 		} else {
-			index = tokenizer.parseTerm();
+			index = tokenizer.parseExpression();
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
 				// [i]
 				return new IndexTerm(seq, index);
@@ -95,20 +95,20 @@ enum ValueParser implements TermParser {
 				return new SliceTerm(seq, index, NullTerm.NULL, NullTerm.NULL);
 			}
 		}
-		// [:] is not allowed since lists are immutable
+		// [:] is not allowed since lists are immutable and it's redundant
 		Term stop;
 		if (tokenizer.tryConsume(COLON)) {
 			stop = NullTerm.NULL;
 		} else {
-			stop = tokenizer.parseTerm();
+			stop = tokenizer.parseExpression();
 			if (tokenizer.tryConsume(RIGHT_BRACKET)) {
 				// [i:j], [:j]
 				return new SliceTerm(seq, index, stop, NullTerm.NULL);
 			}
 			tokenizer.consume(COLON);
 		}
-		// [i:j:], [i::], [::], [:j:] is not allowed because it's redundant
-		Term step = tokenizer.parseTerm();
+		// [i:j:], [i::], [::], [:j:] are not allowed because they're redundant
+		Term step = tokenizer.parseExpression();
 		tokenizer.consume(RIGHT_BRACKET);
 		// [i:j:k], [i::k], [:j:k], [::k]
 		return new SliceTerm(seq, index, stop, step);
@@ -120,7 +120,7 @@ enum ValueParser implements TermParser {
 		}
 		ImmutableList.Builder<Term> terms = ImmutableList.builder();
 		do {
-			terms.add(tokenizer.parseTerm());
+			terms.add(tokenizer.parseExpression());
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(end);
 		return terms.build();
@@ -134,7 +134,7 @@ enum ValueParser implements TermParser {
 		do {
 			String key = parseKey(tokenizer);
 			tokenizer.consume(COLON);
-			Term value = tokenizer.parseTerm();
+			Term value = tokenizer.parseExpression();
 			terms.put(key, value);
 		} while (tokenizer.tryConsume(COMMA));
 		tokenizer.consume(RIGHT_CURLY_BRACKET);
@@ -143,6 +143,7 @@ enum ValueParser implements TermParser {
 
 	private static String parseKey(Tokenizer tokenizer) {
 		Token token = tokenizer.next();
+		// TODO: string expressions? non-string keys?
 		switch (token.type()) {
 		case IDENTIFIER:
 			return token.identifier();

@@ -8,19 +8,19 @@ import java.util.Map;
 public abstract class Scope implements Context {
 
 	// package-private
-	Map<String, Object> values = new HashMap<>();
+	Map<String, Object> locals = new HashMap<>();
 
 	Scope(Map<String, ? extends Object> initial) {
-		values.putAll(initial);
+		locals.putAll(initial);
 	}
 
 	Scope() {}
 
 	@Override
 	public final Object get(String name) {
-		Object value = values.get(name);
+		Object value = locals.get(name);
 		if (value == null) {
-			if (values.containsKey(name)) {
+			if (locals.containsKey(name)) {
 				return null;
 			}
 			return getAlt(name);
@@ -31,7 +31,7 @@ public abstract class Scope implements Context {
 	abstract Object getAlt(String name);
 
 	public final void set(String name, Object value) {
-		values.put(name, value);
+		locals.put(name, value);
 	}
 
 	public abstract Map<String, Object> locals();

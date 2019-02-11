@@ -87,7 +87,7 @@ class Variables {
 			Set<String> unique) {
 		final NameAssigner names = parseNames(tokenizer, unique);
 		tokenizer.consume(Symbol.ASSIGNMENT);
-		final Term term = tokenizer.parseExpression();
+		final Term term = tokenizer.parseTopLevelExpression();
 		return new Assigner() {
 
 			@Override

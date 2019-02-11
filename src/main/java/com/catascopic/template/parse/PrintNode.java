@@ -19,7 +19,7 @@ class PrintNode implements Node, Tag {
 	}
 
 	static Tag getTag(Tokenizer tokenizer) {
-		return new PrintNode(tokenizer.parseExpression());
+		return new PrintNode(tokenizer.parseTopLevelExpression());
 	}
 
 	@Override
