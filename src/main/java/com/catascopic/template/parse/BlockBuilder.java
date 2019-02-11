@@ -1,5 +1,7 @@
 package com.catascopic.template.parse;
 
+import com.catascopic.template.Location;
+
 interface BlockBuilder {
 
 	void add(Node node);
@@ -7,5 +9,7 @@ interface BlockBuilder {
 	Node buildElse(Node elseNode);
 
 	Node build();
+	
+	Location location();
 
 }

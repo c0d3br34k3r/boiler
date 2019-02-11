@@ -35,7 +35,11 @@ abstract class NodeBuilder implements Tag, BlockBuilder {
 	}
 
 	protected Node build(Block block, Node elseNode) {
-		throw new TemplateParseException(location, "else not allowed" + block);
+		throw new TemplateParseException(location, "else not allowed");
+	}
+
+	public Location location() {
+		return location;
 	}
 
 }

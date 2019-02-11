@@ -18,7 +18,7 @@ import com.catascopic.template.value.Values;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
-// TODO: rework this, move to eval?
+// TODO: rework this?
 class Variables {
 
 	private Variables() {}
@@ -158,17 +158,20 @@ class Variables {
 			Iterator<NameAssigner> iter = assigners.iterator();
 			for (Object unpacked : Values.toIterable(value)) {
 				if (!iter.hasNext()) {
-					TemplateEvalException x = new TemplateEvalException(
+					TemplateEvalException e = new TemplateEvalException(
 							"too many values %s to unpack into names: %s",
 							value, assigners);
-					x.setLocation(location);
+					e.addLocation(location);
+					throw e;
 				}
 				iter.next().assign(scope, unpacked);
 			}
 			if (iter.hasNext()) {
-				throw new TemplateEvalException(location,
+				TemplateEvalException e = new TemplateEvalException(
 						"not enough values %s to unpack into names: %s",
 						value, assigners);
+				e.addLocation(location);
+				throw e;
 			}
 		}
 

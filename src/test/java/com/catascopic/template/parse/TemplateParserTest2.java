@@ -15,11 +15,6 @@ public class TemplateParserTest2 {
 		TemplateEngine engine = TemplateEngine.create();
 		System.out.println(engine.render(Paths.get("test.template"),
 				ImmutableMap.<String, Object> of("order", "qwertyuiopasdfghjklzxcvbnm")));
-		if (engine.equals(1)) {
-			
-		} else {
-			
-		}
 		
 	}
 

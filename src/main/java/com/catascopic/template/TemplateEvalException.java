@@ -1,15 +1,12 @@
 package com.catascopic.template;
 
-import java.nio.file.Path;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class TemplateEvalException extends RuntimeException {
 
-	private Queue<TemplateTrace> trace = Collections.asLifoQueue(
-			new ArrayDeque<TemplateTrace>());
+	private List<Location> trace = new ArrayList<>();
 
 	public TemplateEvalException(Throwable cause, String message) {
 		super(message, cause);
@@ -27,39 +24,16 @@ public class TemplateEvalException extends RuntimeException {
 		super(cause);
 	}
 
-	public TemplateEvalException(Throwable cause, String format,
-			Object... args) {
+	public TemplateEvalException(Throwable cause, String format, Object... args) {
 		super(String.format(format, args), cause);
 	}
 
-	// public TemplateEvalException(Location location, Throwable cause,
-	// String message) {
-	// super("at " + location + ": " + message, cause);
-	// }
-	//
-	// public TemplateEvalException(Location location, String message) {
-	// super("at " + location + ": " + message);
-	// }
-	//
-	// public TemplateEvalException(Location location, String format,
-	// Object... args) {
-	// super("at " + location + ": " + String.format(format, args));
-	// }
-	//
-	// public TemplateEvalException(Location location, Throwable cause) {
-	// super("at " + location, cause);
-	// }
-
-	public void setResource(Path file) {
-		System.out.println(file);
+	public void addLocation(Location location) {
+		trace.add(location);
 	}
 
-	public void setLocation(Location location, String string) {
-		System.out.println(location);
-	}
-
-	public static class TemplateTrace {
-
+	public List<Location> getTrace() {
+		return trace;
 	}
 
 }

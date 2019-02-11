@@ -38,8 +38,7 @@ public class Tokenizer implements Trackable {
 	public void consume(Symbol symbol) {
 		Token next = next();
 		if (next != symbol) {
-			throw new TemplateParseException(reader,
-					"expected %s, got %s", symbol, next);
+			throw new TemplateParseException(reader, "expected %s, got %s", symbol, next);
 		}
 	}
 
@@ -53,8 +52,7 @@ public class Tokenizer implements Trackable {
 
 	public boolean tryConsume(String identifier) {
 		Token token = peek();
-		if (token.type() == TokenType.IDENTIFIER
-				&& token.identifier().equals(identifier)) {
+		if (token.type() == TokenType.IDENTIFIER && token.identifier().equals(identifier)) {
 			next();
 			return true;
 		}
@@ -64,17 +62,14 @@ public class Tokenizer implements Trackable {
 	public void end() {
 		Token next = next();
 		if (next.type() != TokenType.END) {
-			throw new TemplateParseException(reader,
-					"expected end of tokens, got %s", next);
+			throw new TemplateParseException(reader, "expected end of tokens, got %s", next);
 		}
 	}
 
 	public void consumeIdentifier(String value) {
 		Token next = next();
-		if (next.type() != TokenType.IDENTIFIER
-				|| !next.identifier().equals(value)) {
-			throw new TemplateParseException(reader,
-					"expected %s, got %s", value, next);
+		if (next.type() != TokenType.IDENTIFIER || !next.identifier().equals(value)) {
+			throw new TemplateParseException(reader, "expected %s, got %s", value, next);
 		}
 	}
 
@@ -92,7 +87,7 @@ public class Tokenizer implements Trackable {
 
 	public Term parseTopLevelExpression() {
 		final Location location = getLocation();
-		final Term expression = parseTopLevelExpression();
+		final Term expression = parseExpression();
 		return new Term() {
 
 			@Override
@@ -100,7 +95,7 @@ public class Tokenizer implements Trackable {
 				try {
 					return expression.evaluate(context);
 				} catch (TemplateEvalException e) {
-					e.setLocation(location, this.toString());
+					e.addLocation(location);
 					throw e;
 				}
 			}

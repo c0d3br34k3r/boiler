@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.catascopic.template.Template;
+import com.catascopic.template.TrackingReader;
 import com.google.common.collect.ImmutableMap;
 
 public class TemplateParserTest {
@@ -26,7 +27,7 @@ public class TemplateParserTest {
 				+ "@{end}"
 				+ "${uneval('99/9')}";
 		System.out.println(text);
-		List<Tag> document = TagParser.parse(new StringReader(text));
+		List<Tag> document = parse(text);
 		System.out.println();
 		System.out.println(document);
 		Template template = Template.parse(text);
@@ -34,6 +35,11 @@ public class TemplateParserTest {
 		System.out.println(template);
 		System.out.println();
 		System.out.println(template.render(ImmutableMap.of("a", 5, "b", 5, "c", 3)));
+	}
+	
+	
+	public List<Tag> parse(String text) throws IOException {
+		return TagParser.parse(TrackingReader.create(new StringReader(text)));
 	}
 
 }

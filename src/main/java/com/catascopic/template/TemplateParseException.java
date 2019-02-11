@@ -4,15 +4,15 @@ package com.catascopic.template;
 public class TemplateParseException extends RuntimeException {
 
 	public TemplateParseException(Location location, String message) {
-		super(location(location) + ": " + message);
+		super(location + ": " + message);
 	}
 
 	public TemplateParseException(Location location, Throwable e) {
-		super(location(location), e);
+		super(location.toString(), e);
 	}
 
 	public TemplateParseException(Location location, String message, Throwable e) {
-		super(location(location) + ": " + message, e);
+		super(location + ": " + message, e);
 	}
 
 	public TemplateParseException(Location location, String format, Object... args) {
@@ -41,12 +41,6 @@ public class TemplateParseException extends RuntimeException {
 
 	public TemplateParseException(Trackable locatable, Throwable e, String format, Object... args) {
 		this(locatable.getLocation(), e, format, args);
-	}
-
-	private static String location(Location location) {
-		return String.format("at line %d, column %d",
-				location.line() + 1,
-				location.column() + 1);
 	}
 
 }

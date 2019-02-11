@@ -53,12 +53,7 @@ class FileScope extends Scope implements LocalAccess {
 		Path resolvedFile = file.resolveSibling(path);
 		Scope extended = new FileScope(resolvedFile, this);
 		assigner.assign(extended);
-		try {
-			engine.getTemplate(resolvedFile).render(writer, extended);
-		} catch (TemplateEvalException e) {
-			e.setResource(resolvedFile);
-			throw e;
-		}
+		engine.getTemplate(resolvedFile).render(writer, extended);
 	}
 
 	@Override

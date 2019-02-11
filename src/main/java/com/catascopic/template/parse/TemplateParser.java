@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
-import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.Location;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.TrackingReader;
 import com.google.common.collect.ImmutableList;
@@ -17,29 +17,34 @@ public class TemplateParser {
 	private TemplateParser() {}
 
 	public static Node parse(TrackingReader reader) throws IOException {
-		return new TemplateParser().parse(TagParser.parse(reader));
+		Location location = reader.getLocation();
+		return new TemplateParser().parse(TagParser.parse(reader), location);
 	}
 
-	private Queue<BlockBuilder> stack =
-			Collections.asLifoQueue(new ArrayDeque<BlockBuilder>());
+	private Queue<BlockBuilder> stack = Collections.asLifoQueue(new ArrayDeque<BlockBuilder>());
 
-	private Node parse(List<Tag> tags) {
+	private Node parse(List<Tag> tags, final Location location) {
 		final Builder<Node> builder = ImmutableList.builder();
 		BlockBuilder nodeBuilder = new BlockBuilder() {
 
 			@Override
 			public Node buildElse(Node elseNode) {
-				throw new TemplateParseException("else not allowed");
+				throw new TemplateParseException(location, "else not allowed");
 			}
 
 			@Override
 			public Node build() {
-				throw new TemplateParseException("unbalanced end");
+				throw new TemplateParseException(location, "unbalanced end");
 			}
 
 			@Override
 			public void add(Node node) {
 				builder.add(node);
+			}
+
+			@Override
+			public Location location() {
+				return location;
 			}
 		};
 		stack.add(nodeBuilder);
@@ -48,7 +53,7 @@ public class TemplateParser {
 		}
 		BlockBuilder last = stack.remove();
 		if (last != nodeBuilder) {
-			throw new TemplateEvalException("unclosed block");
+			throw new TemplateParseException(last.location(), "unclosed block");
 		}
 		return new Block(builder.build());
 	}
@@ -71,7 +76,6 @@ public class TemplateParser {
 
 			@Override
 			public Node build() {
-				// TODO: catch exception, add info?
 				return ifBlock.buildElse(elseBlock.build());
 			}
 
@@ -82,8 +86,12 @@ public class TemplateParser {
 
 			@Override
 			public Node buildElse(Node elseNode) {
-				// TODO: catch exception, add info?
 				return ifBlock.buildElse(elseBlock.buildElse(elseNode));
+			}
+
+			@Override
+			public Location location() {
+				return elseBlock.location();
 			}
 		});
 	}
