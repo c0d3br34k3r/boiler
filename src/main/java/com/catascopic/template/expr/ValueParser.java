@@ -35,13 +35,11 @@ enum ValueParser implements TermParser {
 			term = parseSymbol(token.symbol(), tokenizer);
 			break;
 		default:
-			throw new TemplateParseException(tokenizer,
-					"unexpected token %s", token);
+			throw new TemplateParseException(tokenizer, "unexpected token %s", token);
 		}
 		for (;;) {
 			if (tokenizer.tryConsume(DOT)) {
-				term = new IndexTerm(term,
-						new ValueTerm(tokenizer.parseIdentifier()));
+				term = new IndexTerm(term, new ValueTerm(tokenizer.parseIdentifier()));
 			} else if (tokenizer.tryConsume(LEFT_BRACKET)) {
 				term = parseIndex(tokenizer, term);
 			} else {
@@ -65,16 +63,14 @@ enum ValueParser implements TermParser {
 		case LEFT_CURLY_BRACKET:
 			return new MapTerm(parseMap(tokenizer));
 		default:
-			throw new TemplateParseException(tokenizer,
-					"unexpected symbol %s", symbol);
+			throw new TemplateParseException(tokenizer, "unexpected symbol %s", symbol);
 		}
 	}
 
 	private static Term parseIdentifier(Tokenizer tokenizer,
 			String identifier) {
 		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
-			return new FunctionTerm(identifier,
-					parseList(tokenizer, RIGHT_PARENTHESIS));
+			return new FunctionTerm(identifier, parseList(tokenizer, RIGHT_PARENTHESIS));
 		}
 		return new Variable(identifier);
 	}
@@ -153,7 +149,7 @@ enum ValueParser implements TermParser {
 			}
 			// fallthrough
 		default:
-			throw new TemplateParseException(tokenizer,
+			throw new TemplateParseException(tokenizer, 
 					"expected string literal or identifier, got %s", token);
 		}
 	}

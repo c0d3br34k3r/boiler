@@ -6,7 +6,7 @@ import com.catascopic.template.Context;
 import com.catascopic.template.Trackable;
 import com.catascopic.template.Location;
 import com.catascopic.template.TrackingReader;
-import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.TemplateRenderException;
 import com.catascopic.template.TemplateParseException;
 import com.google.common.base.CharMatcher;
 
@@ -94,7 +94,7 @@ public class Tokenizer implements Trackable {
 			public Object evaluate(Context context) {
 				try {
 					return expression.evaluate(context);
-				} catch (TemplateEvalException e) {
+				} catch (TemplateRenderException e) {
 					e.addLocation(location);
 					throw e;
 				}
@@ -114,8 +114,7 @@ public class Tokenizer implements Trackable {
 	public String parseIdentifier() {
 		Token next = next();
 		if (next.type() != TokenType.IDENTIFIER) {
-			throw new TemplateParseException(reader,
-					"expected identifier, got %s", next);
+			throw new TemplateParseException(reader, "expected identifier, got %s", next);
 		}
 		return next.identifier();
 	}
@@ -187,8 +186,7 @@ public class Tokenizer implements Trackable {
 	private void require(char required) throws IOException {
 		int ch = reader.read();
 		if (ch != required) {
-			throw new TemplateParseException(reader,
-					"expected '%c', got '%c'", required, ch);
+			throw new TemplateParseException(reader, "expected '%c', got '%c'", required, ch);
 		}
 	}
 
@@ -322,8 +320,7 @@ public class Tokenizer implements Trackable {
 		case -1:
 			throw new TemplateParseException(reader, "unclosed string");
 		default:
-			throw new TemplateParseException(reader,
-					"unexpected escaped '%c'", ch);
+			throw new TemplateParseException(reader, "unexpected escaped '%c'", ch);
 		}
 	}
 
@@ -332,8 +329,7 @@ public class Tokenizer implements Trackable {
 		for (int i = 0; i < 4; i++) {
 			int ch = reader.read();
 			if (ch == -1) {
-				throw new TemplateParseException(reader,
-						"unfinished unicode escape");
+				throw new TemplateParseException(reader, "unfinished unicode escape");
 			}
 			buf[i] = (char) ch;
 		}
@@ -341,8 +337,7 @@ public class Tokenizer implements Trackable {
 		try {
 			return (char) Integer.parseInt(escape, 16);
 		} catch (NumberFormatException e) {
-			throw new TemplateParseException(reader,
-					e, "invalid unicode escape: %s", escape);
+			throw new TemplateParseException(reader, e, "invalid unicode escape: %s", escape);
 		}
 	}
 

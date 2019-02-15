@@ -1,4 +1,4 @@
-package com.catascopic.template.eval;
+package com.catascopic.template.expr;
 
 import java.io.StringReader;
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class StatementParserTest {
 	}
 
 	private static Tokenizer createParser(String str) {
-		return new Tokenizer(new TrackingReader(new StringReader(str)));
+		return new Tokenizer(TrackingReader.create(new StringReader(str)));
 	}
 
 	private static Object evaluate(Term term) {

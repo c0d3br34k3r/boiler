@@ -28,7 +28,7 @@ public class FunctionResolver {
 	TemplateFunction get(String name) {
 		TemplateFunction function = functions.get(name);
 		if (function == null) {
-			throw new TemplateEvalException("undefined function %s", name);
+			throw new TemplateRenderException("undefined function %s", name);
 		}
 		return function;
 	}

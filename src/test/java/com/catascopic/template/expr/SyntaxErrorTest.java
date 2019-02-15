@@ -1,4 +1,4 @@
-package com.catascopic.template.eval;
+package com.catascopic.template.expr;
 
 import java.io.StringReader;
 
@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.catascopic.template.TrackingReader;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
-import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.TemplateRenderException;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.TestUtil;
 import com.google.common.collect.ImmutableMap;
@@ -47,7 +47,7 @@ public class SyntaxErrorTest {
 		try {
 			evaluate(expr);
 			Assert.fail(expr + " was valid");
-		} catch (TemplateParseException | TemplateEvalException e) {
+		} catch (TemplateParseException | TemplateRenderException e) {
 			System.out.printf("%-24s %s%n", expr, toString(e));
 		}
 	}
@@ -67,7 +67,7 @@ public class SyntaxErrorTest {
 
 	private static void evaluate(String expr) {
 		Tokenizer tokenizer =
-				new Tokenizer(new TrackingReader(new StringReader(expr)));
+				new Tokenizer(TrackingReader.create(new StringReader(expr)));
 		Term term;
 		term = tokenizer.parseExpression();
 		tokenizer.end();

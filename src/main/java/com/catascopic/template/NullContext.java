@@ -7,12 +7,12 @@ public enum NullContext implements Context {
 
 	@Override
 	public Object get(String name) {
-		throw new TemplateEvalException("identifier %s not allowed", name);
+		throw new TemplateRenderException("identifier %s not allowed", name);
 	}
 
 	@Override
 	public Object call(String functionName, List<Object> arguments) {
-		throw new TemplateEvalException("invocation %s not allowed", functionName);
+		throw new TemplateRenderException("invocation %s not allowed", functionName);
 	}
 
 }

@@ -65,7 +65,7 @@ class FileScope extends Scope implements LocalAccess {
 
 		@Override
 		public Object get(String name) {
-			throw new TemplateEvalException("%s is undefined", name);
+			throw new TemplateRenderException("%s is undefined", name);
 		}
 
 		@Override

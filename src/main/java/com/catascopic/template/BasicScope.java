@@ -19,7 +19,7 @@ class BasicScope extends Scope {
 
 	@Override
 	Object getAlt(String name) {
-		throw new TemplateEvalException("%s is undefined", name);
+		throw new TemplateRenderException("%s is undefined", name);
 	}
 
 	@Override
@@ -34,11 +34,11 @@ class BasicScope extends Scope {
 
 	@Override
 	public void renderTemplate(Appendable writer, String path, Assigner assigner) {
-		throw new TemplateEvalException("file resolution not allowed");
+		throw new TemplateRenderException("file resolution not allowed");
 	}
 
 	@Override
 	public void renderTextFile(Appendable writer, String path) {
-		throw new TemplateEvalException("file resolution not allowed");
+		throw new TemplateRenderException("file resolution not allowed");
 	}
 }

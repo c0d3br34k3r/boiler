@@ -1,4 +1,4 @@
-package com.catascopic.template.eval;
+package com.catascopic.template.expr;
 
 import static org.junit.Assert.assertEquals;
 

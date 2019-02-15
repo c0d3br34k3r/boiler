@@ -4,21 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.catascopic.template.Location;
-import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
 
-abstract class NodeBuilder implements Tag, BlockBuilder {
-
-	private final Location location;
-
-	NodeBuilder(Location location) {
-		this.location = location;
-	}
+abstract class NodeBuilder extends BlockBuilder implements Tag {
 
 	private List<Node> nodes = new ArrayList<>();
 
+	NodeBuilder(Location location) {
+		super(location);
+	}
+
 	@Override
-	public final void add(Node node) {
+	protected final void add(Node node) {
 		nodes.add(node);
 	}
 
@@ -35,11 +32,7 @@ abstract class NodeBuilder implements Tag, BlockBuilder {
 	}
 
 	protected Node build(Block block, Node elseNode) {
-		throw new TemplateParseException(location, "else not allowed");
-	}
-
-	public Location location() {
-		return location;
+		throw new UnsupportedOperationException();
 	}
 
 }

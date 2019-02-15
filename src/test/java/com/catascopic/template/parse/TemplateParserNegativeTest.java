@@ -2,15 +2,18 @@ package com.catascopic.template.parse;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 
 import org.junit.Test;
 
-import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.TestUtil;
+import com.catascopic.template.TrackingReader;
 
 public class TemplateParserNegativeTest {
 
-	@Test(expected = TemplateEvalException.class)
+	@Test
 	public void test() throws IOException {
-		TemplateParser.parse(new StringReader("<%else%>haha"));
+		TemplateParser.parse(TrackingReader.create(new StringReader("what\n@{else}\nhaha\n@{end}"))).render(
+				System.out, TestUtil.testScope(Collections.<String, Object> emptyMap()));
 	}
 }

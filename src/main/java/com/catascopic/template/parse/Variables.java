@@ -9,7 +9,7 @@ import java.util.Set;
 import com.catascopic.template.Assigner;
 import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
-import com.catascopic.template.TemplateEvalException;
+import com.catascopic.template.TemplateRenderException;
 import com.catascopic.template.TemplateParseException;
 import com.catascopic.template.expr.Symbol;
 import com.catascopic.template.expr.Term;
@@ -158,7 +158,7 @@ class Variables {
 			Iterator<NameAssigner> iter = assigners.iterator();
 			for (Object unpacked : Values.toIterable(value)) {
 				if (!iter.hasNext()) {
-					TemplateEvalException e = new TemplateEvalException(
+					TemplateRenderException e = new TemplateRenderException(
 							"too many values %s to unpack into names: %s",
 							value, assigners);
 					e.addLocation(location);
@@ -167,7 +167,7 @@ class Variables {
 				iter.next().assign(scope, unpacked);
 			}
 			if (iter.hasNext()) {
-				TemplateEvalException e = new TemplateEvalException(
+				TemplateRenderException e = new TemplateRenderException(
 						"not enough values %s to unpack into names: %s",
 						value, assigners);
 				e.addLocation(location);

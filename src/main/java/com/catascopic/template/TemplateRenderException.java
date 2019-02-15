@@ -4,27 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class TemplateEvalException extends RuntimeException {
+public class TemplateRenderException extends RuntimeException {
 
 	private List<Location> trace = new ArrayList<>();
 
-	public TemplateEvalException(Throwable cause, String message) {
+	public TemplateRenderException(Throwable cause, String message) {
 		super(message, cause);
 	}
 
-	public TemplateEvalException(String message) {
+	public TemplateRenderException(String message) {
 		super(message);
 	}
 
-	public TemplateEvalException(String format, Object... args) {
+	public TemplateRenderException(String format, Object... args) {
 		super(String.format(format, args));
 	}
 
-	public TemplateEvalException(Throwable cause) {
+	public TemplateRenderException(Throwable cause) {
 		super(cause);
 	}
 
-	public TemplateEvalException(Throwable cause, String format, Object... args) {
+	public TemplateRenderException(Throwable cause, String format, Object... args) {
 		super(String.format(format, args), cause);
 	}
 

@@ -43,13 +43,13 @@ public abstract class Scope implements Context {
 
 	abstract TemplateFunction getFunction(String name);
 
-	public abstract void renderTemplate(Appendable writer, String path, Assigner assigner) 
+	public abstract void renderTemplate(Appendable writer, String path, Assigner assigner)
 			throws IOException;
 
 	public abstract void renderTextFile(Appendable writer, String path) throws IOException;
 
 	public void print(Location location, String message) {
-		System.out.println(message);
+		System.out.println(location + ": " + message);
 	}
 
 }

@@ -1,15 +1,30 @@
 package com.catascopic.template.parse;
 
 import com.catascopic.template.Location;
+import com.catascopic.template.TemplateParseException;
 
-interface BlockBuilder {
+abstract class BlockBuilder {
 
-	void add(Node node);
+	private final Location location;
 
-	Node buildElse(Node elseNode);
+	BlockBuilder(Location location) {
+		this.location = location;
+	}
 
-	Node build();
-	
-	Location location();
+	BlockBuilder(BlockBuilder copy) {
+		this.location = copy.location;
+	}
+
+	protected abstract void add(Node node);
+
+	protected Node buildElse(Node elseNode) {
+		throw new UnsupportedOperationException();
+	}
+
+	protected abstract Node build();
+
+	protected void checkElse(BlockBuilder elseBuilder) {
+		throw new TemplateParseException(elseBuilder.location, "else not allowed in " + this);
+	}
 
 }

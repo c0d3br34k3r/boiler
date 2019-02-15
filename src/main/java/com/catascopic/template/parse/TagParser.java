@@ -85,30 +85,33 @@ class TagParser {
 				mode = Mode.NEWLINE;
 				break loop;
 			case '@':
-			case '$':
-			case '#':
-				if (reader.tryRead('{')) {
-					mode = getMode(ch);
+				if (getMode(Mode.STATEMENT)) {
 					break loop;
 				}
-				// fallthrough
+				break;
+			case '$':
+				if (getMode(Mode.EVAL)) {
+					break loop;
+				}
+				break;
+			case '#':
+				if (getMode(Mode.COMMENT)) {
+					break loop;
+				}
+				break;
 			default:
-				builder.append((char) ch);
 			}
+			builder.append((char) ch);
 		}
 		return builder.toString();
 	}
 
-	private static Mode getMode(int ch) {
-		switch (ch) {
-		case '@':
-			return Mode.STATEMENT;
-		case '$':
-			return Mode.EVAL;
-		case '#':
-			return Mode.COMMENT;
+	private boolean getMode(Mode mode) throws IOException {
+		if (reader.tryRead('{')) {
+			this.mode = mode;
+			return true;
 		}
-		throw new AssertionError();
+		return false;
 	}
 
 	private void parseStatement() {
@@ -138,10 +141,9 @@ class TagParser {
 		case "print":
 			return PrintNode.getTag(tokenizer);
 		case "end":
-			return EndTag.END;
+			return new EndTag(tokenizer.getLocation());
 		default:
-			throw new TemplateParseException(tokenizer,
-					"unknown tag: %s", tagName);
+			throw new TemplateParseException(tokenizer, "unknown tag: %s", tagName);
 		}
 	}
 

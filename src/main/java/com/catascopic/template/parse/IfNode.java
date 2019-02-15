@@ -30,7 +30,7 @@ class IfNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		Location location = tokenizer.getLocation();
+		final Location location = tokenizer.getLocation();
 		final Term condition = tokenizer.parseTopLevelExpression();
 		return new NodeBuilder(location) {
 
@@ -50,14 +50,17 @@ class IfNode implements Node {
 			}
 
 			@Override
+			protected void checkElse(BlockBuilder builder) {}
+
+			@Override
 			public String toString() {
-				return "if " + condition;
+				return "if block at " + location;
 			}
 		};
 	}
 
 	public static Tag parseElseTag(Tokenizer tokenizer) {
-		Location location = tokenizer.getLocation();
+		final Location location = tokenizer.getLocation();
 		if (tokenizer.tryConsume("if")) {
 			final Term condition = tokenizer.parseTopLevelExpression();
 			return new NodeBuilder(location) {
@@ -78,8 +81,11 @@ class IfNode implements Node {
 				}
 
 				@Override
+				protected void checkElse(BlockBuilder builder) {}
+
+				@Override
 				public String toString() {
-					return "else if " + condition;
+					return "else-if block at " + location;
 				}
 			};
 		}
@@ -97,7 +103,7 @@ class IfNode implements Node {
 
 			@Override
 			public String toString() {
-				return "else";
+				return "else block at " + location;
 			}
 		};
 	}

@@ -25,26 +25,21 @@ public class TemplateParser {
 
 	private Node parse(List<Tag> tags, final Location location) {
 		final Builder<Node> builder = ImmutableList.builder();
-		BlockBuilder nodeBuilder = new BlockBuilder() {
+		BlockBuilder nodeBuilder = new BlockBuilder(location) {
 
 			@Override
-			public Node buildElse(Node elseNode) {
-				throw new TemplateParseException(location, "else not allowed");
-			}
-
-			@Override
-			public Node build() {
+			protected Node build() {
 				throw new TemplateParseException(location, "unbalanced end");
 			}
 
 			@Override
-			public void add(Node node) {
+			protected void add(Node node) {
 				builder.add(node);
 			}
 
 			@Override
-			public Location location() {
-				return location;
+			public String toString() {
+				return "outer template block";
 			}
 		};
 		stack.add(nodeBuilder);
@@ -53,7 +48,7 @@ public class TemplateParser {
 		}
 		BlockBuilder last = stack.remove();
 		if (last != nodeBuilder) {
-			throw new TemplateParseException(last.location(), "unclosed block");
+			throw new TemplateParseException(location, "unclosed block: " + last);
 		}
 		return new Block(builder.build());
 	}
@@ -70,28 +65,34 @@ public class TemplateParser {
 		stack.add(nodeBuilder);
 	}
 
-	void beginElse(final BlockBuilder elseBlock) {
+	void beginElse(final NodeBuilder elseBlock) {
 		final BlockBuilder ifBlock = stack.remove();
-		stack.add(new BlockBuilder() {
+		ifBlock.checkElse(elseBlock);
+		stack.add(new BlockBuilder(elseBlock) {
 
 			@Override
-			public Node build() {
+			protected Node build() {
 				return ifBlock.buildElse(elseBlock.build());
 			}
 
 			@Override
-			public void add(Node node) {
+			protected void add(Node node) {
 				elseBlock.add(node);
 			}
 
 			@Override
-			public Node buildElse(Node elseNode) {
+			protected Node buildElse(Node elseNode) {
 				return ifBlock.buildElse(elseBlock.buildElse(elseNode));
 			}
 
 			@Override
-			public Location location() {
-				return elseBlock.location();
+			protected void checkElse(BlockBuilder elseBuilder) {
+				elseBlock.checkElse(elseBuilder);
+			}
+
+			@Override
+			public String toString() {
+				return elseBlock.toString();
 			}
 		});
 	}

@@ -81,7 +81,7 @@ enum BuiltIn implements TemplateFunction {
 		public Object apply(Params params) {
 			switch (params.size()) {
 			case 0:
-				throw new TemplateEvalException("range must have at least 1 param");
+				throw new TemplateRenderException("range must have at least 1 param");
 			case 1:
 				return Values.range(params.getInt(0));
 			default:
@@ -142,7 +142,7 @@ enum BuiltIn implements TemplateFunction {
 			if (seq instanceof Collection) {
 				return ((Collection<?>) seq).contains(params.get(1));
 			}
-			throw new TemplateEvalException("%s (%s) is not a container",
+			throw new TemplateRenderException("%s (%s) is not a container",
 					seq, seq.getClass().getName());
 		}
 	},
@@ -281,7 +281,7 @@ enum BuiltIn implements TemplateFunction {
 			try {
 				params.scope().renderTemplate(builder, params.getString(0), assigner);
 			} catch (IOException e) {
-				throw new TemplateEvalException(e);
+				throw new TemplateRenderException(e);
 			}
 			return builder.toString();
 		}

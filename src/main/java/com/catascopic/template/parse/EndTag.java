@@ -1,8 +1,12 @@
 package com.catascopic.template.parse;
 
-enum EndTag implements Tag {
+import com.catascopic.template.Location;
 
-	END;
+class EndTag implements Tag {
+
+	EndTag(Location location) {
+
+	}
 
 	@Override
 	public void handle(TemplateParser parser) {

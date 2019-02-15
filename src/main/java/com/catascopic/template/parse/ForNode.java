@@ -30,7 +30,7 @@ class ForNode implements Node {
 	}
 
 	static Tag parseTag(Tokenizer tokenizer) {
-		Location location = tokenizer.getLocation();
+		final Location location = tokenizer.getLocation();
 		final NameAssigner names = Variables.parseNames(tokenizer);
 		tokenizer.consumeIdentifier("in");
 		final Term sequence = tokenizer.parseTopLevelExpression();
@@ -48,7 +48,7 @@ class ForNode implements Node {
 
 			@Override
 			public String toString() {
-				return "for[" + names + " in " + sequence + "]";
+				return "for block at " + location;
 			}
 		};
 	}
