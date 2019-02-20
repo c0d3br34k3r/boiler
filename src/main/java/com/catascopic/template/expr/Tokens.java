@@ -74,8 +74,7 @@ class Tokens {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj instanceof ValueToken
-					&& ((ValueToken) obj).value == value;
+			return obj instanceof ValueToken && ((ValueToken) obj).value == value;
 		}
 
 		@Override
@@ -105,8 +104,7 @@ class Tokens {
 
 		@Override
 		public boolean equals(Object obj) {
-			return obj instanceof IdentifierToken
-					&& ((ValueToken) obj).value == value;
+			return obj instanceof IdentifierToken && ((ValueToken) obj).value == value;
 		}
 
 		@Override

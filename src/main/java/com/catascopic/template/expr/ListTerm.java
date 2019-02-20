@@ -3,6 +3,7 @@ package com.catascopic.template.expr;
 import java.util.List;
 
 import com.catascopic.template.Context;
+import com.catascopic.template.value.Values;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -29,7 +30,7 @@ class ListTerm implements Term {
 
 	@Override
 	public String toString() {
-		return items.toString();
+		return Values.uneval(items);
 	}
 
 }

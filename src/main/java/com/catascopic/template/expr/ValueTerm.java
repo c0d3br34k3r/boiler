@@ -1,6 +1,7 @@
 package com.catascopic.template.expr;
 
 import com.catascopic.template.Context;
+import com.catascopic.template.value.Values;
 import com.google.common.base.Preconditions;
 
 class ValueTerm implements Term {
@@ -18,7 +19,7 @@ class ValueTerm implements Term {
 
 	@Override
 	public String toString() {
-		return value instanceof String ? "'" + value + "'" : value.toString();
+		return Values.uneval(value);
 	}
 
 }
