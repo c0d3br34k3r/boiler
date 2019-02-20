@@ -30,8 +30,7 @@ class Range extends AbstractList<Integer> implements RandomAccess {
 
 	@Override
 	public String toString() {
-		return String.format("range(%s, %s, %s)",
-				offset, offset + size * step, step);
+		return String.format("range(%s, %s, %s)", offset, offset + size * step, step);
 	}
 
 }

@@ -104,7 +104,7 @@ public class Params {
 	public char getChar(int index, String defaultValue) {
 		String str = getString(index, defaultValue);
 		if (str.length() != 1) {
-			throw new TemplateRenderException("param %d must be a 1-char string, but was %s", 
+			throw new TemplateRenderException("param %d must be a 1-char string, but was %s",
 					index, str);
 		}
 		return str.charAt(0);

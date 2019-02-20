@@ -180,6 +180,13 @@ public final class Values {
 		return n1.doubleValue() % n2.doubleValue();
 	}
 
+	public static Number abs(Number num) {
+		if (num instanceof Integer) {
+			return Math.abs(num.intValue());
+		}
+		return Math.abs(num.doubleValue());
+	}
+
 	public static Iterable<?> toIterable(Object iterable) {
 		if (iterable instanceof Iterable) {
 			return (Iterable<?>) iterable;
@@ -240,7 +247,9 @@ public final class Values {
 		Iterator<String> parts = Splitter.on(separator).split(str).iterator();
 		result.append(parts.next());
 		while (parts.hasNext()) {
-			result.append(capitalize(parts.next()));
+			String part = parts.next();
+			result.append(Character.toUpperCase(part.charAt(0)))
+					.append(part.substring(1).toLowerCase());
 		}
 		return result.toString();
 	}
@@ -421,7 +430,8 @@ public final class Values {
 		if (seq instanceof List) {
 			return slice((List<?>) seq, start, stop, step);
 		}
-		throw new TemplateRenderException("%s (%s) is not indexable", seq, seq.getClass().getName());
+		throw new TemplateRenderException("%s (%s) is not indexable",
+				seq, seq.getClass().getName());
 	}
 
 	public static Object index(Object indexable, Object index) {
@@ -439,7 +449,8 @@ public final class Values {
 		if (seq instanceof String) {
 			return index((String) seq, index);
 		}
-		throw new TemplateRenderException("%s (%s) is not indexable", seq, seq.getClass().getName());
+		throw new TemplateRenderException("%s (%s) is not indexable",
+				seq, seq.getClass().getName());
 	}
 
 	public static String index(String str, int index) {
@@ -490,35 +501,28 @@ public final class Values {
 		return ORDER.max(seq);
 	}
 
-	public static Object abs(Number num) {
-		if (num instanceof Integer) {
-			return Math.abs(num.intValue());
-		}
-		return Math.abs(num.doubleValue());
-	}
-
-	public static Object entries(Map<?, ?> map) {
+	public static Iterable<List<?>> entries(Map<?, ?> map) {
 		return Iterables.transform(map.entrySet(), ENTRIES);
 	}
 
-	private static final Function<Entry<?, ?>, List<Object>> ENTRIES =
-			new Function<Entry<?, ?>, List<Object>>() {
+	private static final Function<Entry<?, ?>, List<?>> ENTRIES =
+			new Function<Entry<?, ?>, List<?>>() {
 
 				@Override
-				public List<Object> apply(Entry<?, ?> input) {
+				public List<?> apply(Entry<?, ?> input) {
 					return Arrays.asList(input.getKey(), input.getValue());
 				}
 			};
 
-	public static Object enumerate(Iterable<?> iterable) {
+	public static Iterable<List<?>> enumerate(Iterable<?> iterable) {
 		return new Enumeration(iterable);
 	}
 
-	public static Object stream(Iterable<?> iterable) {
+	public static Iterable<List<?>> stream(Iterable<?> iterable) {
 		return new Stream(iterable);
 	}
 
-	public static Object zip(Iterable<?> iterable) {
+	public static Iterable<List<?>> zip(Iterable<?> iterable) {
 		return new Zip(iterable);
 	}
 

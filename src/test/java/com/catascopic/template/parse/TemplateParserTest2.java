@@ -14,7 +14,7 @@ public class TemplateParserTest2 {
 	public void test() throws IOException {
 		TemplateEngine engine = TemplateEngine.create();
 		System.out.println(engine.render(Paths.get("test.template"),
-				ImmutableMap.<String, Object> of("order", "qwertyuiopasdfghjklzxcvbnm")));
+				ImmutableMap.<String, Object> of("a", 1, "b", 2)));
 		
 	}
 

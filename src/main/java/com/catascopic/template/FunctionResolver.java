@@ -47,17 +47,14 @@ public class FunctionResolver {
 		// Use HashMap so functions can be replaced
 		private Map<String, TemplateFunction> functions = new HashMap<>();
 
-		public <F extends Enum<F> & TemplateFunction> Builder addFunctions(
-				Class<F> functionEnum) {
+		public <F extends Enum<F> & TemplateFunction> Builder addFunctions(Class<F> functionEnum) {
 			for (F function : functionEnum.getEnumConstants()) {
-				functions.put(Values.separatorToCamel(
-						function.name().toLowerCase()), function);
+				functions.put(Values.separatorToCamel(function.name().toLowerCase()), function);
 			}
 			return this;
 		}
 
-		public Builder addFunctions(
-				Map<String, ? extends TemplateFunction> functionMap) {
+		public Builder addFunctions(Map<String, ? extends TemplateFunction> functionMap) {
 			functions.putAll(functionMap);
 			return this;
 		}

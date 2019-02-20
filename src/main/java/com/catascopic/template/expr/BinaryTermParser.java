@@ -21,8 +21,7 @@ class BinaryTermParser implements TermParser {
 			Token token = tokenizer.peek();
 			if (token.type() == TokenType.SYMBOL
 					&& symbols.contains(token.symbol())) {
-				left = new BinaryTerm(left,
-						tokenizer.next().symbol().binaryOperator(),
+				left = new BinaryTerm(left, tokenizer.next().symbol().binaryOperator(),
 						lowerOrder.parse(tokenizer));
 			} else {
 				return left;

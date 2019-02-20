@@ -3,8 +3,7 @@ package com.catascopic.template.value;
 import java.util.AbstractList;
 import java.util.RandomAccess;
 
-class StringAsList extends AbstractList<String>
-		implements RandomAccess {
+class StringAsList extends AbstractList<String> implements RandomAccess {
 
 	private final String str;
 

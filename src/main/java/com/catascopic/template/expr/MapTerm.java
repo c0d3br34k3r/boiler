@@ -27,8 +27,7 @@ class MapTerm implements Term {
 
 	@Override
 	public String toString() {
-		return "{" + Joiner.on(", ").withKeyValueSeparator(": ").join(items)
-				+ "}";
+		return "{" + Joiner.on(", ").withKeyValueSeparator(": ").join(items) + "}";
 	}
 
 }

@@ -94,8 +94,7 @@ enum BinaryOperator {
 		@Override
 		Object apply(Term left, Term right, Context context) {
 			Object leftValue = left.evaluate(context);
-			return Values.isTrue(leftValue) ? right.evaluate(context)
-					: leftValue;
+			return Values.isTrue(leftValue) ? right.evaluate(context) : leftValue;
 		}
 	},
 	OR {
@@ -103,8 +102,7 @@ enum BinaryOperator {
 		@Override
 		Object apply(Term left, Term right, Context context) {
 			Object leftValue = left.evaluate(context);
-			return Values.isTrue(leftValue) ? leftValue : right.evaluate(
-					context);
+			return Values.isTrue(leftValue) ? leftValue : right.evaluate(context);
 		}
 	};
 
