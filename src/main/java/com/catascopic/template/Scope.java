@@ -34,6 +34,10 @@ public abstract class Scope implements Context {
 		locals.put(name, value);
 	}
 
+	public final void setAll(Map<String, ?> values) {
+		locals.putAll(values);
+	}
+
 	public abstract Map<String, Object> locals();
 
 	@Override
@@ -46,7 +50,19 @@ public abstract class Scope implements Context {
 	public abstract void renderTemplate(Appendable writer, String path, Assigner assigner)
 			throws IOException;
 
+	public String renderTemplate(String path, Assigner assigner) throws IOException {
+		StringBuilder builder = new StringBuilder();
+		renderTemplate(builder, path, assigner);
+		return builder.toString();
+	}
+
 	public abstract void renderTextFile(Appendable writer, String path) throws IOException;
+
+	public String renderTextFile(String path) throws IOException {
+		StringBuilder builder = new StringBuilder();
+		renderTextFile(builder, path);
+		return builder.toString();
+	}
 
 	public void print(Location location, String message) {
 		System.out.println(location + ": " + message);

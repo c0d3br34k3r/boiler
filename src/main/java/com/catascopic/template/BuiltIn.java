@@ -259,7 +259,7 @@ enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Values.pad(params.getString(0), params.getInt(1), 
+			return Values.pad(params.getString(0), params.getInt(1),
 					params.getChar(2, " "), params.getBoolean(3, true));
 		}
 	},
@@ -272,31 +272,25 @@ enum BuiltIn implements TemplateFunction {
 
 				@Override
 				public void assign(Scope scope) {
-					for (Map.Entry<String, ?> entry : map.entrySet()) {
-						scope.set(entry.getKey(), entry.getValue());
-					}
+					scope.setAll(map);
 				}
 			};
-			StringBuilder builder = new StringBuilder();
 			try {
-				params.scope().renderTemplate(builder, params.getString(0), assigner);
+				return params.scope().renderTemplate(params.getString(0), assigner);
 			} catch (IOException e) {
 				throw new TemplateRenderException(e);
 			}
-			return builder.toString();
 		}
 	},
 	TEXT_FILE {
 
 		@Override
 		public Object apply(Params params) {
-			StringBuilder builder = new StringBuilder();
 			try {
-				params.scope().renderTextFile(builder, params.getString(0));
+				return params.scope().renderTextFile(params.getString(0));
 			} catch (IOException e) {
-				throw new AssertionError(e);
+				throw new TemplateRenderException(e);
 			}
-			return builder.toString();
 		}
 	},
 	LOCALS {
