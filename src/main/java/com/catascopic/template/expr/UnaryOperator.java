@@ -24,6 +24,13 @@ enum UnaryOperator {
 		Object apply(Object value) {
 			return Values.toNumber(value);
 		}
+	},
+	INVERT {
+
+		@Override
+		Object apply(Object value) {
+			return Values.invert(value);
+		}
 	};
 
 	abstract Object apply(Object value);

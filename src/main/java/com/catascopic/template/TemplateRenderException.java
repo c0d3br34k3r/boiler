@@ -28,8 +28,9 @@ public class TemplateRenderException extends RuntimeException {
 		super(String.format(format, args), cause);
 	}
 
-	public void addLocation(Location location) {
+	public TemplateRenderException addLocation(Location location) {
 		trace.add(location);
+		return this;
 	}
 
 	public List<Location> getTrace() {

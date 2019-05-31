@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import com.catascopic.template.Context;
 import com.catascopic.template.NullContext;
 import com.catascopic.template.TemplateRenderException;
 import com.catascopic.template.TrackingReader;
@@ -107,6 +108,10 @@ public final class Values {
 			return -num.intValue();
 		}
 		return -num.doubleValue();
+	}
+
+	public static Number invert(Object value) {
+		return ~toNumber(value).intValue();
 	}
 
 	public static Object add(Object o1, Object o2) {
@@ -527,8 +532,12 @@ public final class Values {
 	}
 
 	public static Object eval(String expression) {
+		return eval(expression, NullContext.CONTEXT);
+	}
+
+	public static Object eval(String expression, Context context) {
 		return new Tokenizer(TrackingReader.create(new StringReader(expression)))
-				.parseExpression().evaluate(NullContext.CONTEXT);
+				.parseExpression().evaluate(context);
 	}
 
 	public static String uneval(Object obj) {
@@ -601,7 +610,8 @@ public final class Values {
 		return "\"" + ESCAPER.escape(str) + "\"";
 	}
 
-	public static Iterable<String> splitLines(final String str) {
+	public static Iterable<String> splitLines(String str) {
+		// TODO: make this better but don't use regex
 		BufferedReader reader = new BufferedReader(new StringReader(str));
 		List<String> result = new ArrayList<>();
 		for (;;) {

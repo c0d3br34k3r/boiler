@@ -64,8 +64,6 @@ public abstract class Scope implements Context {
 		return builder.toString();
 	}
 
-	public void print(Location location, String message) {
-		System.out.println(location + ": " + message);
-	}
+	public abstract void print(Location location, String message) throws IOException;
 
 }

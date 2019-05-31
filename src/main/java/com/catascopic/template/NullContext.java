@@ -2,7 +2,14 @@ package com.catascopic.template;
 
 import java.util.List;
 
+/**
+ * A context where no references are allowed.
+ */
 public enum NullContext implements Context {
+
+	/**
+	 * The singleton NullContext.
+	 */
 	CONTEXT;
 
 	@Override

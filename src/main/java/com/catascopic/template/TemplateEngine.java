@@ -14,24 +14,24 @@ public class TemplateEngine {
 
 	private final ParseCache<Node> templateCache;
 	private final ParseCache<String> textCache;
-	private final FunctionResolver functions;
+	private final Settings settings;
 
 	private static final int DEFAULT_CACHE_SIZE = 64;
 
 	public static TemplateEngine create() {
-		return create(FunctionResolver.builtInOnly(), DEFAULT_CACHE_SIZE);
+		return create(Settings.defaultSettings(), DEFAULT_CACHE_SIZE);
 	}
 
-	public static TemplateEngine create(FunctionResolver functions) {
-		return create(functions, DEFAULT_CACHE_SIZE);
+	public static TemplateEngine create(Settings settings) {
+		return create(settings, DEFAULT_CACHE_SIZE);
 	}
 
-	public static TemplateEngine create(FunctionResolver functions, int cacheSize) {
-		return new TemplateEngine(functions, cacheSize);
+	public static TemplateEngine create(Settings settings, int cacheSize) {
+		return new TemplateEngine(settings, cacheSize);
 	}
 
-	private TemplateEngine(FunctionResolver functions, int cacheSize) {
-		this.functions = functions;
+	private TemplateEngine(Settings settings, int cacheSize) {
+		this.settings = settings;
 		this.templateCache = new TemplateCache(cacheSize);
 		this.textCache = new TextCache(cacheSize);
 	}
@@ -55,8 +55,8 @@ public class TemplateEngine {
 		return textCache.get(file);
 	}
 
-	TemplateFunction getFunction(String name) {
-		return functions.get(name);
+	Settings settings() {
+		return settings;
 	}
 
 	private static class TextCache extends ParseCache<String> {

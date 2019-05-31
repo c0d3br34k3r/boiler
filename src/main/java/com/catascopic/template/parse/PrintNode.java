@@ -1,7 +1,10 @@
 package com.catascopic.template.parse;
 
+import java.io.IOException;
+
 import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
+import com.catascopic.template.TemplateRenderException;
 import com.catascopic.template.expr.Term;
 import com.catascopic.template.expr.Tokenizer;
 
@@ -17,7 +20,11 @@ class PrintNode implements Node, Tag {
 
 	@Override
 	public void render(Appendable writer, Scope scope) {
-		scope.print(location, String.valueOf(expression.evaluate(scope)));
+		try {
+			scope.print(location, String.valueOf(expression.evaluate(scope)));
+		} catch (IOException e) {
+			throw new TemplateRenderException(e).addLocation(location);
+		}
 	}
 
 	static Tag getTag(Tokenizer tokenizer) {

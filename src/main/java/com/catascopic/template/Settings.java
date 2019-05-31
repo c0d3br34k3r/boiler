@@ -1,36 +1,42 @@
 package com.catascopic.template;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.catascopic.template.value.Values;
 import com.google.common.collect.ImmutableMap;
 
-// TODO: make this a more general settings class
-public class FunctionResolver {
+public class Settings {
 
 	public static Builder builder() {
 		return new Builder();
 	}
 
-	public static FunctionResolver builtInOnly() {
-		return BUILT_IN_ONLY;
+	public static Settings defaultSettings() {
+		return DEFAULT;
 	}
 
-	private static final FunctionResolver BUILT_IN_ONLY = builder().build();
+	private static final Settings DEFAULT = builder().build();
 
 	private final Map<String, TemplateFunction> functions;
+	private final Debugger debugger;
 
-	FunctionResolver(Map<String, TemplateFunction> functions) {
+	Settings(Map<String, TemplateFunction> functions, Debugger debugger) {
 		this.functions = functions;
+		this.debugger = debugger;
 	}
 
-	TemplateFunction get(String name) {
+	TemplateFunction getFunction(String name) {
 		TemplateFunction function = functions.get(name);
 		if (function == null) {
 			throw new TemplateRenderException("undefined function %s", name);
 		}
 		return function;
+	}
+
+	void print(Location location, String message) throws IOException {
+		debugger.print(location, message);
 	}
 
 	@Override
@@ -46,6 +52,7 @@ public class FunctionResolver {
 
 		// Use HashMap so functions can be replaced
 		private Map<String, TemplateFunction> functions = new HashMap<>();
+		private Debugger debugger = Debuggers.STANDARD_OUTPUT;
 
 		public <F extends Enum<F> & TemplateFunction> Builder addFunctions(Class<F> functionEnum) {
 			for (F function : functionEnum.getEnumConstants()) {
@@ -64,8 +71,13 @@ public class FunctionResolver {
 			return this;
 		}
 
-		public FunctionResolver build() {
-			return new FunctionResolver(ImmutableMap.copyOf(functions));
+		public Builder setDebugger(Debugger debugger) {
+			this.debugger = debugger;
+			return this;
+		}
+
+		public Settings build() {
+			return new Settings(ImmutableMap.copyOf(functions), debugger);
 		}
 	}
 

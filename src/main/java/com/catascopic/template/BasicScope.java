@@ -1,20 +1,21 @@
 package com.catascopic.template;
 
+import java.io.IOException;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
 class BasicScope extends Scope {
 
-	private FunctionResolver functions;
+	private Settings settings;
 
-	BasicScope(FunctionResolver functions) {
-		this.functions = functions;
+	BasicScope(Settings functions) {
+		this.settings = functions;
 	}
 
-	BasicScope(Map<String, ? extends Object> values, FunctionResolver functions) {
+	BasicScope(Map<String, ? extends Object> values, Settings settings) {
 		super(values);
-		this.functions = functions;
+		this.settings = settings;
 	}
 
 	@Override
@@ -29,7 +30,12 @@ class BasicScope extends Scope {
 
 	@Override
 	public TemplateFunction getFunction(String name) {
-		return functions.get(name);
+		return settings.getFunction(name);
+	}
+
+	@Override
+	public void print(Location location, String message) throws IOException {
+		settings.print(location, message);
 	}
 
 	@Override

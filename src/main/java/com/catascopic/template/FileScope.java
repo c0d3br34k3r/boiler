@@ -44,7 +44,12 @@ class FileScope extends Scope implements LocalAccess {
 
 	@Override
 	public TemplateFunction getFunction(String name) {
-		return engine.getFunction(name);
+		return engine.settings().getFunction(name);
+	}
+
+	@Override
+	public void print(Location location, String message) throws IOException {
+		engine.settings().print(location, message);
 	}
 
 	@Override

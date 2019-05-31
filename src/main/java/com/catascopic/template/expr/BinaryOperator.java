@@ -106,12 +106,30 @@ enum BinaryOperator {
 		}
 	};
 
-	Object apply(Object left, Object right) {
-		throw new AssertionError();
-	}
-
+	/**
+	 * Evaluates a binary operation. A BinaryOperator can override this method
+	 * if it doesn't always need to evaluate both operands. If it does, it can
+	 * implement {@link #apply(Object, Object)}.
+	 * 
+	 * @param left the left operand as a lazy-evaluated term
+	 * @param right the right operand as a lazy-evaluated term
+	 * @param context the context
+	 * @return the result of the operation
+	 */
 	Object apply(Term left, Term right, Context context) {
 		return apply(left.evaluate(context), right.evaluate(context));
+	}
+
+	/**
+	 * Evaluates a binary operation. A BinaryOperator can implement this method
+	 * if it always needs the result of both operands.
+	 * 
+	 * @param left the left operand as a value
+	 * @param right the right operand as a value
+	 * @return the result of the operation
+	 */
+	Object apply(Object left, Object right) {
+		throw new AssertionError();
 	}
 
 }
