@@ -2,10 +2,8 @@ package com.catascopic.template;
 
 import java.util.Map;
 
-interface LocalAccess {
+interface LocalAccess extends Lookup {
 
-	Object get(String name);
-
-	void collectLocals(Map<String, Object> collected);
+	void collect(Map<String, Object> collected);
 
 }

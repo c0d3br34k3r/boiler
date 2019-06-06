@@ -1,9 +1,11 @@
-package com.catascopic.template;
+package com.catascopic.template.parse;
+
+import com.catascopic.template.Scope;
 
 /**
  * Functional interface that assigns one or more variables to a given scope.
  */
-public interface Assigner {
+interface Assigner {
 
 	/**
 	 * Assigns one or more variables to a given scope.

@@ -13,11 +13,7 @@ public class Settings {
 		return new Builder();
 	}
 
-	public static Settings defaultSettings() {
-		return DEFAULT;
-	}
-
-	private static final Settings DEFAULT = builder().build();
+	public static final Settings DEFAULT = builder().build();
 
 	private final Map<String, TemplateFunction> functions;
 	private final Debugger debugger;

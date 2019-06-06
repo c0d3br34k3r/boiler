@@ -269,13 +269,7 @@ enum BuiltIn implements TemplateFunction {
 		public Object apply(Params params) {
 			final Map<String, ?> map = params.getMap(1, Collections.<String, Object> emptyMap());
 			try {
-				return params.scope().renderTemplate(params.getString(0), new Assigner() {
-
-					@Override
-					public void assign(Scope scope) {
-						scope.setAll(map);
-					}
-				});
+				return params.scope().renderTemplate(params.getString(0), map);
 			} catch (IOException e) {
 				throw new TemplateRenderException(e);
 			}

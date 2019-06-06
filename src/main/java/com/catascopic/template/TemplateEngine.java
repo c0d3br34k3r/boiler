@@ -19,7 +19,7 @@ public class TemplateEngine {
 	private static final int DEFAULT_CACHE_SIZE = 64;
 
 	public static TemplateEngine create() {
-		return create(Settings.defaultSettings(), DEFAULT_CACHE_SIZE);
+		return create(Settings.DEFAULT, DEFAULT_CACHE_SIZE);
 	}
 
 	public static TemplateEngine create(Settings settings) {
@@ -36,23 +36,60 @@ public class TemplateEngine {
 		this.textCache = new TextCache(cacheSize);
 	}
 
-	public void render(Path path, Appendable writer, Map<String, ? extends Object> params)
+	public void render(Path path, Appendable writer, Map<String, ?> params)
 			throws IOException {
-		templateCache.get(path).render(writer, new FileScope(path, this, params));
+		render(path, writer, newScope(path, params));
 	}
 
-	public String render(Path path, Map<String, Object> params) throws IOException {
+	public void render(Path path, Appendable writer, LocalAccess params)
+			throws IOException {
+		render(path, writer, newScope(path, params));
+	}
+
+	public String render(Path path, Map<String, ?> params) {
+		return render(path, newScope(path, params));
+	}
+
+	public String render(Path path, LocalAccess params) {
+		return render(path, newScope(path, params));
+	}
+
+	private Scope newScope(Path path, Map<String, ?> params) {
+		return new FileScope(path, this, params);
+	}
+
+	private Scope newScope(Path path, LocalAccess params) {
+		return new FileScope(path, this, params);
+	}
+
+	private String render(Path path, Scope scope) {
 		StringBuilder builder = new StringBuilder();
-		render(path, builder, params);
+		try {
+			render(path, builder, scope);
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
 		return builder.toString();
 	}
 
-	Node getTemplate(Path file) throws IOException {
-		return templateCache.get(file);
+	private void render(Path path, Appendable writer, Scope scope) throws IOException {
+		templateCache.get(path).render(writer, scope);
 	}
 
-	String getTextFile(Path file) throws IOException {
-		return textCache.get(file);
+	Node getTemplate(Path file) {
+		try {
+			return templateCache.get(file);
+		} catch (IOException e) {
+			throw new TemplateRenderException(e);
+		}
+	}
+
+	String getTextFile(Path file) {
+		try {
+			return textCache.get(file);
+		} catch (IOException e) {
+			throw new TemplateRenderException(e);
+		}
 	}
 
 	Settings settings() {

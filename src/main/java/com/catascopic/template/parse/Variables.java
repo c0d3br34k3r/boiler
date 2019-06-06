@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.catascopic.template.Assigner;
 import com.catascopic.template.Location;
 import com.catascopic.template.Scope;
 import com.catascopic.template.TemplateRenderException;

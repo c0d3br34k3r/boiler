@@ -22,7 +22,7 @@ public class Template {
 	}
 
 	public static Template parse(String text) {
-		return parse(text, Settings.defaultSettings());
+		return parse(text, Settings.DEFAULT);
 	}
 
 	public static Template parse(Reader reader, Settings settings)
@@ -31,7 +31,7 @@ public class Template {
 	}
 
 	public static Template parse(Reader reader) throws IOException {
-		return parse(reader, Settings.defaultSettings());
+		return parse(reader, Settings.DEFAULT);
 	}
 
 	public static Template parse(Path file, Settings settings)
@@ -42,7 +42,7 @@ public class Template {
 	}
 
 	public static Template parse(Path file) throws IOException {
-		return parse(file, Settings.defaultSettings());
+		return parse(file, Settings.DEFAULT);
 	}
 
 	private final Node node;
@@ -54,17 +54,37 @@ public class Template {
 	}
 
 	public String render(Map<String, ? extends Object> params) {
+		return render(newScope(params));
+	}
+
+	public String render(LocalAccess params) {
+		return render(newScope(params));
+	}
+
+	public void render(Appendable writer, Map<String, ? extends Object> params) throws IOException {
+		node.render(writer, newScope(params));
+	}
+
+	public void render(Appendable writer, LocalAccess params) throws IOException {
+		node.render(writer, newScope(params));
+	}
+
+	private Scope newScope(Map<String, ?> params) {
+		return new BasicScope(params, settings);
+	}
+
+	private Scope newScope(LocalAccess params) {
+		return new BasicScope(params, settings);
+	}
+
+	private String render(Scope scope) {
 		StringBuilder builder = new StringBuilder();
 		try {
-			render(builder, params);
+			node.render(builder, scope);
 		} catch (IOException e) {
 			throw new AssertionError(e);
 		}
 		return builder.toString();
-	}
-
-	public void render(Appendable writer, Map<String, ? extends Object> params) throws IOException {
-		node.render(writer, new BasicScope(params, settings));
 	}
 
 	@Override

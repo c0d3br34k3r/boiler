@@ -2,44 +2,35 @@ package com.catascopic.template;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
-class FileScope extends Scope implements LocalAccess {
+/**
+ * A {@link Scope} with a working directory that can resolve file paths. A
+ * FileScope can also have a parent if it was created by another FileScope
+ * (i.e., when a template calls another template). A FileScope resolves variable
+ * references recursively along its ancestry.
+ */
+class FileScope extends Scope {
 
 	private final Path file;
 	private final TemplateEngine engine;
-	private final LocalAccess parent;
 
-	FileScope(Path file, TemplateEngine engine, Map<String, ? extends Object> initial) {
+	FileScope(Path file, TemplateEngine engine, LocalAccess initial) {
 		super(initial);
 		this.file = file;
 		this.engine = engine;
-		this.parent = BASE;
+	}
+
+	FileScope(Path file, TemplateEngine engine, Map<String, ?> initial) {
+		super(initial);
+		this.file = file;
+		this.engine = engine;
 	}
 
 	private FileScope(Path file, FileScope parent) {
+		super(parent);
 		this.file = file;
 		this.engine = parent.engine;
-		this.parent = parent;
-	}
-
-	@Override
-	Object getAlt(String name) {
-		return parent.get(name);
-	}
-
-	@Override
-	public Map<String, Object> locals() {
-		Map<String, Object> collected = new HashMap<>();
-		collectLocals(collected);
-		return collected;
-	}
-
-	@Override
-	public void collectLocals(Map<String, Object> collected) {
-		parent.collectLocals(collected);
-		collected.putAll(locals);
 	}
 
 	@Override
@@ -53,30 +44,22 @@ class FileScope extends Scope implements LocalAccess {
 	}
 
 	@Override
-	public void renderTemplate(Appendable writer, String path, Assigner assigner)
-			throws IOException {
+	public String renderTemplate(String path, Map<String, ?> params) {
 		Path resolvedFile = file.resolveSibling(path);
 		Scope extended = new FileScope(resolvedFile, this);
-		assigner.assign(extended);
-		engine.getTemplate(resolvedFile).render(writer, extended);
+		extended.setAll(params);
+		StringBuilder builder = new StringBuilder();
+		try {
+			engine.getTemplate(resolvedFile).render(builder, extended);
+		} catch (IOException e) {
+			throw new AssertionError(e);
+		}
+		return builder.toString();
 	}
 
 	@Override
-	public void renderTextFile(Appendable writer, String path) throws IOException {
-		writer.append(engine.getTextFile(file.resolveSibling(path)));
+	public String renderTextFile(String path) {
+		return engine.getTextFile(file.resolveSibling(path));
 	}
-
-	private static final LocalAccess BASE = new LocalAccess() {
-
-		@Override
-		public Object get(String name) {
-			throw new TemplateRenderException("%s is undefined", name);
-		}
-
-		@Override
-		public void collectLocals(Map<String, Object> locals) {
-			// nothing to add
-		}
-	};
 
 }

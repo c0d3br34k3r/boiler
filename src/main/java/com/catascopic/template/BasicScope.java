@@ -3,29 +3,22 @@ package com.catascopic.template;
 import java.io.IOException;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-
+/**
+ * Scope implementation that has no working directory and cannot resolve file
+ * paths.
+ */
 class BasicScope extends Scope {
 
 	private Settings settings;
 
-	BasicScope(Settings functions) {
-		this.settings = functions;
-	}
-
-	BasicScope(Map<String, ? extends Object> values, Settings settings) {
-		super(values);
+	BasicScope(LocalAccess params, Settings settings) {
+		super(params);
 		this.settings = settings;
 	}
 
-	@Override
-	Object getAlt(String name) {
-		throw new TemplateRenderException("%s is undefined", name);
-	}
-
-	@Override
-	public Map<String, Object> locals() {
-		return ImmutableMap.copyOf(locals);
+	BasicScope(Map<String, ?> params, Settings settings) {
+		super(params);
+		this.settings = settings;
 	}
 
 	@Override
@@ -39,12 +32,12 @@ class BasicScope extends Scope {
 	}
 
 	@Override
-	public void renderTemplate(Appendable writer, String path, Assigner assigner) {
+	public String renderTemplate(String path, Map<String, ?> params) {
 		throw new TemplateRenderException("file resolution not allowed");
 	}
 
 	@Override
-	public void renderTextFile(Appendable writer, String path) {
+	public String renderTextFile(String path) {
 		throw new TemplateRenderException("file resolution not allowed");
 	}
 }
