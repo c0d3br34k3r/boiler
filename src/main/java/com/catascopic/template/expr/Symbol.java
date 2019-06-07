@@ -14,6 +14,7 @@ public enum Symbol implements Token {
 	COLON,
 	DOT,
 	NOT(UnaryOperator.NOT),
+	TILDE(UnaryOperator.INVERT),
 	AND(BinaryOperator.AND),
 	OR(BinaryOperator.OR),
 	EQUAL(BinaryOperator.EQUAL),

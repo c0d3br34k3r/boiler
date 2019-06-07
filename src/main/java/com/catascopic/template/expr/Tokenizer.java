@@ -143,6 +143,7 @@ public class Tokenizer implements Trackable {
 		case ',': return Symbol.COMMA;
 		case '+': return Symbol.PLUS;
 		case '-': return Symbol.MINUS;
+		case '~': return Symbol.TILDE;
 		case '*': return reader.tryRead('*')
 				? Symbol.POWER
 				: Symbol.STAR;

@@ -8,7 +8,7 @@ import java.util.List;
 public enum NullContext implements Context {
 
 	/**
-	 * The singleton NullContext.
+	 * The singleton {@link NullContext}.
 	 */
 	CONTEXT;
 

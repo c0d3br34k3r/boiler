@@ -142,13 +142,21 @@ public class StatementParserTest {
 			{ 21, "len([1, 'foo', []]) * 7" },
 			{ 9, "indexOf('uncopyrightable', 'h')" },
 			{ Values.range(5), "range(5)" },
-			{ 4, "max(range(5))" },
+			{ 4, "range(5).max()" },
 			{ 100, "max(7 * 13, 100)" },
 			{ "HELLO", "upper('hello')" },
+			{ "HELLO", "'hello'.upper()" },
 			{ "1 to the 2 to the 3", "join([1, 2, 3], ' to the ')" },
-			{ "h.e.l.l.o", "join('hello', '.')" },
+			{ "h.e.l.l.o", "'hello'.join('.')" },
+			{ "hello", "'h.e.l.l.o'.split('.').join('')" },
+			{ "hello", "'h.e.l.l.o'.replace('.', '')" },
 			{ "this-is-a-test", "camelToSeparator('thisIsATest', '-')" },
 			{ "this is a test", "collapse('  this \r\n is\ta   test ')" },
+			{ true, "[1, 2, 3].contains(2)" },
+			{ false, "[1, 2, 3].contains(4)" },
+			{ true, "false.int().str().bool()" },
+			{ true, "'monkey'.endsWith('key')" },
+			{ false, "'monkey'.startsWith('key')" },
 
 			{ 3, "6 / 2" },
 			{ 1, "6 / 4" },
@@ -175,6 +183,7 @@ public class StatementParserTest {
 			{ false, "false || false" },
 			{ true, "true && true" },
 			{ 1, "29 % 4" },
+			{ -1, "~0" },
 
 		});
 	}

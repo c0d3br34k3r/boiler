@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.catascopic.template.TemplateParseException;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
 
 enum ValueParser implements TermParser {
@@ -39,7 +40,15 @@ enum ValueParser implements TermParser {
 		}
 		for (;;) {
 			if (tokenizer.tryConsume(DOT)) {
-				term = new IndexTerm(term, new ValueTerm(tokenizer.parseIdentifier()));
+				String identifier = tokenizer.parseIdentifier();
+				if (tokenizer.tryConsume(Symbol.LEFT_PARENTHESIS)) {
+					Builder<Term> builder = ImmutableList.builder();
+					builder.add(term);
+					parseList(tokenizer, RIGHT_PARENTHESIS, builder);
+					term = new FunctionTerm(identifier, builder.build());
+				} else {
+					term = new IndexTerm(term, new ValueTerm(identifier));
+				}
 			} else if (tokenizer.tryConsume(LEFT_BRACKET)) {
 				term = parseIndex(tokenizer, term);
 			} else {
@@ -53,6 +62,7 @@ enum ValueParser implements TermParser {
 		case PLUS:
 		case MINUS:
 		case NOT:
+		case TILDE:
 			return new UnaryTerm(symbol.unaryOperator(), parse(tokenizer));
 		case LEFT_PARENTHESIS:
 			Term term = ExpressionParser.parse(tokenizer);
@@ -111,15 +121,19 @@ enum ValueParser implements TermParser {
 	}
 
 	private static List<Term> parseList(Tokenizer tokenizer, Symbol end) {
-		if (tokenizer.tryConsume(end)) {
-			return Collections.emptyList();
-		}
 		ImmutableList.Builder<Term> terms = ImmutableList.builder();
-		do {
-			terms.add(tokenizer.parseExpression());
-		} while (tokenizer.tryConsume(COMMA));
-		tokenizer.consume(end);
+		parseList(tokenizer, end, terms);
 		return terms.build();
+	}
+
+	private static void parseList(Tokenizer tokenizer, Symbol end,
+			ImmutableList.Builder<Term> terms) {
+		if (!tokenizer.tryConsume(end)) {
+			do {
+				terms.add(tokenizer.parseExpression());
+			} while (tokenizer.tryConsume(COMMA));
+			tokenizer.consume(end);
+		}
 	}
 
 	private static Map<String, Term> parseMap(Tokenizer tokenizer) {
@@ -149,7 +163,7 @@ enum ValueParser implements TermParser {
 			}
 			// fallthrough
 		default:
-			throw new TemplateParseException(tokenizer, 
+			throw new TemplateParseException(tokenizer,
 					"expected string literal or identifier, got %s", token);
 		}
 	}

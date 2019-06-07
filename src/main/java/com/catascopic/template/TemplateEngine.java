@@ -73,7 +73,7 @@ public class TemplateEngine {
 	}
 
 	private void render(Path path, Appendable writer, Scope scope) throws IOException {
-		templateCache.get(path).render(writer, scope);
+		getTemplate(path).render(writer, scope);
 	}
 
 	Node getTemplate(Path file) {
