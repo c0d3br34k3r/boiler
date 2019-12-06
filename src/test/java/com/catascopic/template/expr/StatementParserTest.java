@@ -104,6 +104,7 @@ public class StatementParserTest {
 			{ "atm", "word[:5:2]" },
 			{ "tol", "word[2::3]" },
 			{ "uooi", "word[1:-1:2]" },
+			{ "b", "word[~3]" },
 
 			{ "mob", "word[4:][:3]" },
 			{ "automobus", "word[:-4] + 'bus'" },

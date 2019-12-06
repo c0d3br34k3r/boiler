@@ -138,6 +138,8 @@ class TagParser {
 			return ForNode.parseTag(tokenizer);
 		case "set":
 			return SetNode.parseTag(tokenizer);
+		case "setblock":
+			return SetBlockNode.parseTag(tokenizer);
 		case "print":
 			return PrintNode.getTag(tokenizer);
 		case "end":

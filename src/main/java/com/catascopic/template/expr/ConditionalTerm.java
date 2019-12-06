@@ -24,7 +24,7 @@ class ConditionalTerm implements Term {
 
 	@Override
 	public String toString() {
-		return String.format("%s ? %s : %s)", condition, ifTrue, ifFalse);
+		return String.format("(%s ? %s : %s)", condition, ifTrue, ifFalse);
 	}
 
 }

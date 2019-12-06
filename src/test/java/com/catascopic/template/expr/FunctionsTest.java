@@ -4,6 +4,7 @@ import static com.catascopic.template.value.Values.camelToSeparator;
 import static com.catascopic.template.value.Values.range;
 import static com.catascopic.template.value.Values.separatorToCamel;
 import static com.catascopic.template.value.Values.slice;
+import static com.catascopic.template.value.Values.splitLines;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import com.catascopic.template.value.Values;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 
 public class FunctionsTest {
 
@@ -63,13 +65,25 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", -2), "de");
 		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2),
 				Arrays.asList(3, 4));
-		
 	}
 
 	@Test
-	public void testUneval() {
-		System.out.println(Values.uneval((Object) ImmutableMap.of("what", 
-				Arrays.asList(5, "\\5"))));
+	public void testSplitLines() {
+		// assertEquals(splitLines("foo"), Arrays.asList("foo"));
+		assertEquals(Arrays.asList("foo", "bar"), splitLines("foo\r\nbar"));
+	}
+
+	public static <E> void assertEquals(Iterable<E> expected, Iterable<E> actual) {
+		if (!Iterables.elementsEqual(expected, actual)) {
+			throw new AssertionError("expected: "
+					+ formatClassAndValue(expected, Iterables.toString(expected))
+					+ " but was: " + formatClassAndValue(actual, Iterables.toString(actual)));
+		}
+	}
+
+	private static String formatClassAndValue(Object value, String valueString) {
+		String className = value == null ? "null" : value.getClass().getName();
+		return className + "<" + valueString + ">";
 	}
 
 }

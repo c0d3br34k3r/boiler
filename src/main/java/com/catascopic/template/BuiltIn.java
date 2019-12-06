@@ -199,8 +199,7 @@ public enum BuiltIn implements TemplateFunction {
 	 * itself.
 	 * <p>
 	 * For example, <code>zip(['a', 'b', 'c'])</code> returns
-	 * <code>[[0, false, 'a'], [1, false,
-	 * 'b'], [2, true, 'c']]</code>.
+	 * <code>[[0, false, 'a'], [1, false, 'b'], [2, true, 'c']]</code>.
 	 */
 	STREAM {
 

@@ -1,9 +1,7 @@
 package com.catascopic.template.value;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,9 +20,11 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.escape.Escaper;
 import com.google.common.escape.Escapers;
 import com.google.common.math.IntMath;
@@ -610,22 +610,38 @@ public final class Values {
 		return "\"" + ESCAPER.escape(str) + "\"";
 	}
 
-	public static Iterable<String> splitLines(String str) {
-		// TODO: make this better but don't use regex
-		BufferedReader reader = new BufferedReader(new StringReader(str));
-		List<String> result = new ArrayList<>();
-		for (;;) {
-			String line;
-			try {
-				line = reader.readLine();
-			} catch (IOException e) {
-				throw new AssertionError(e);
+	public static Iterable<String> splitLines(final String str) {
+		return new Iterable<String>() {
+
+			@Override
+			public UnmodifiableIterator<String> iterator() {
+				return new AbstractIterator<String>() {
+
+					int index;
+
+					@Override
+					protected String computeNext() {
+						if (index == str.length()) {
+							return endOfData();
+						}
+						int lastIndex = index;
+						for (; index < str.length(); index++) {
+							System.out.println(Character.getName(str.charAt(index)));
+							switch (str.charAt(index)) {
+							case '\r':
+								if (index + 1 < str.length() && str.charAt(index + 1) == '\n') {
+									return str.substring(lastIndex, index += 2);
+								}
+							case '\n':
+								return str.substring(lastIndex, index++);
+							}
+						}
+						return str.substring(lastIndex);
+					}
+
+				};
 			}
-			if (line == null) {
-				return result;
-			}
-			result.add(line);
-		}
+		};
 	}
 
 }
