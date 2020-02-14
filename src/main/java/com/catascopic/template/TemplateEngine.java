@@ -46,11 +46,11 @@ public class TemplateEngine {
 		render(path, writer, newScope(path, params));
 	}
 
-	public String render(Path path, Map<String, ?> params) {
+	public String render(Path path, Map<String, ?> params) throws IOException {
 		return render(path, newScope(path, params));
 	}
 
-	public String render(Path path, LocalAccess params) {
+	public String render(Path path, LocalAccess params) throws IOException {
 		return render(path, newScope(path, params));
 	}
 
@@ -62,13 +62,9 @@ public class TemplateEngine {
 		return new FileScope(path, this, params);
 	}
 
-	private String render(Path path, Scope scope) {
+	private String render(Path path, Scope scope) throws IOException {
 		StringBuilder builder = new StringBuilder();
-		try {
-			render(path, builder, scope);
-		} catch (IOException e) {
-			throw new AssertionError(e);
-		}
+		render(path, builder, scope);
 		return builder.toString();
 	}
 

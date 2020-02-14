@@ -5,17 +5,14 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import com.catascopic.template.TemplateEngine;
-import com.google.common.collect.ImmutableMap;
+import com.catascopic.template.Template;
+import com.catascopic.template.value.Values;
 
 public class TemplateParserTest2 {
 
 	@Test
 	public void test() throws IOException {
-		TemplateEngine engine = TemplateEngine.create();
-		System.out.println(engine.render(Paths.get("test.template"),
-				ImmutableMap.<String, Object> of("a", 1, "b", 2)));
-		
+		System.out.print(Template.parse(Paths.get("sum.template")).render());
 	}
 
 }

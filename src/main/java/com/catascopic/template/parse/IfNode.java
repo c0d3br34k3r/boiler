@@ -22,7 +22,6 @@ class IfNode implements Node {
 
 	@Override
 	public void render(Appendable writer, Scope scope) throws IOException {
-		System.out.println(condition.evaluate(scope));
 		if (Values.isTrue(condition.evaluate(scope))) {
 			block.render(writer, scope);
 		} else {

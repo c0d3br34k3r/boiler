@@ -65,7 +65,7 @@ public final class Values {
 		if (value instanceof Boolean) {
 			return (Boolean) value ? 1 : 0;
 		}
-		throw new TemplateRenderException("cannot convert %s (%s) to a number",
+		throw new TemplateRenderException("cannot convert <%s> (%s) to a number",
 				value, value.getClass().getName());
 	}
 
@@ -97,7 +97,7 @@ public final class Values {
 			}
 			return Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			throw new TemplateRenderException(e, "cannot convert %s (%s) to a number",
+			throw new TemplateRenderException(e, "cannot convert <%s> (%s) to a number",
 					value, value.getClass().getName());
 		}
 	}
@@ -199,7 +199,7 @@ public final class Values {
 		if (iterable instanceof String) {
 			return new StringAsList((String) iterable);
 		}
-		throw new TemplateRenderException("%s (%s) is not iterable", iterable,
+		throw new TemplateRenderException("<%s> (%s) is not iterable", iterable,
 				iterable.getClass().getName());
 	}
 
@@ -273,7 +273,7 @@ public final class Values {
 		if (obj instanceof Map) {
 			return ((Map<?, ?>) obj).size();
 		}
-		throw new TemplateRenderException("%s (%s) does not have a length",
+		throw new TemplateRenderException("<%s> (%s) does not have a length",
 				obj, obj.getClass().getName());
 	}
 
@@ -320,14 +320,14 @@ public final class Values {
 
 	private static String requireString(Object item) {
 		if (!(item instanceof String)) {
-			throw new TemplateRenderException("%s (%s) is not a String",
+			throw new TemplateRenderException("<%s> (%s) is not a String",
 					item, item.getClass().getName());
 		}
 		return (String) item;
 	}
 
 	private static TemplateRenderException notSequence(Object obj) {
-		return new TemplateRenderException("%s (%s) is not a sequence",
+		return new TemplateRenderException("<%s> (%s) is not a sequence",
 				obj, obj.getClass().getName());
 	}
 
@@ -435,7 +435,7 @@ public final class Values {
 		if (seq instanceof List) {
 			return slice((List<?>) seq, start, stop, step);
 		}
-		throw new TemplateRenderException("%s (%s) is not indexable",
+		throw new TemplateRenderException("<%s> (%s) is not indexable",
 				seq, seq.getClass().getName());
 	}
 
@@ -454,7 +454,7 @@ public final class Values {
 		if (seq instanceof String) {
 			return index((String) seq, index);
 		}
-		throw new TemplateRenderException("%s (%s) is not indexable",
+		throw new TemplateRenderException("<%s> (%s) is not indexable",
 				seq, seq.getClass().getName());
 	}
 
@@ -506,18 +506,45 @@ public final class Values {
 		return ORDER.max(seq);
 	}
 
+	public static Number sum(Iterable<?> seq) {
+		double sum = 0.0;
+		for (Object value : seq) {
+			Number n = tryConvertNumber(value);
+			if (n == null) {
+				throw new TemplateRenderException("cannot convert <%s> (%s) to a number",
+						value, value.getClass().getName());
+			}
+			sum += n.doubleValue();
+		}
+		return tryConvertToInt(sum);
+	}
+
+	public static Number tryConvertToInt(double d) {
+		if (Math.rint(d) == d) {
+			return (int) d;
+		}
+		return d;
+	}
+
+	public static Number tryConvertToInt(Number n) {
+		if (n instanceof Integer) {
+			return n;
+		}
+		return tryConvertToInt(n.doubleValue());
+	}
+
 	public static Iterable<List<?>> entries(Map<?, ?> map) {
 		return Iterables.transform(map.entrySet(), ENTRIES);
 	}
 
-	private static final Function<Entry<?, ?>, List<?>> ENTRIES =
-			new Function<Entry<?, ?>, List<?>>() {
+	private static final Function<Entry<?, ?>, List<?>> ENTRIES = new Function<Entry<?, ?>, List<
+			?>>() {
 
-				@Override
-				public List<?> apply(Entry<?, ?> input) {
-					return Arrays.asList(input.getKey(), input.getValue());
-				}
-			};
+		@Override
+		public List<?> apply(Entry<?, ?> input) {
+			return Arrays.asList(input.getKey(), input.getValue());
+		}
+	};
 
 	public static Iterable<List<?>> enumerate(Iterable<?> iterable) {
 		return new Enumeration(iterable);
@@ -556,7 +583,7 @@ public final class Values {
 		if (obj == null) {
 			return "null";
 		}
-		throw new TemplateRenderException("%s (%s) has no evaluable string form",
+		throw new TemplateRenderException("<%s> (%s) has no evaluable string form",
 				obj, obj.getClass().getName());
 	}
 
@@ -585,7 +612,7 @@ public final class Values {
 			Entry<?, ?> entry = iter.next();
 			Object key = entry.getKey();
 			if (!(key instanceof String)) {
-				throw new TemplateRenderException("key %s (%s) is not a String",
+				throw new TemplateRenderException("key <%s> (%s) is not a String",
 						key, key.getClass().getName());
 			}
 			builder.append(escape((String) key))

@@ -118,6 +118,22 @@ public enum BuiltIn implements TemplateFunction {
 	},
 
 	/**
+	 * <code>sum(seq)</code><br>
+	 * OR<br>
+	 * <code>sum(num*)</code>
+	 * <p>
+	 * Returns the sum of the values in a sequence. This method accepts either a
+	 * sequence as a single argument, or two or more numeric arguments.
+	 */
+	SUM {
+
+		@Override
+		public Object apply(Params params) {
+			return Values.sum(params.size() == 1 ? params.getIterable(0) : params.asList());
+		}
+	},
+
+	/**
 	 * <code>abs(num)</code>
 	 * <p>
 	 * Returns the absolute value of a numeric value.
@@ -133,14 +149,13 @@ public enum BuiltIn implements TemplateFunction {
 	/**
 	 * <code>sqrt(num)</code>
 	 * <p>
-	 * Returns the square root of a numeric value. Always returns a
-	 * floating-point value.
+	 * Returns the square root of a numeric value.
 	 */
 	SQRT {
 
 		@Override
 		public Object apply(Params params) {
-			return Math.sqrt(params.getNumber(0).doubleValue());
+			return Values.tryConvertToInt(Math.sqrt(params.getNumber(0).doubleValue()));
 		}
 	},
 
@@ -411,7 +426,13 @@ public enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return Splitter.on(params.getString(1)).splitToList(params.getString(0));
+			Splitter splitter;
+			if (params.size() >= 2) {
+				splitter = Splitter.on(params.getString(1));
+			} else {
+				splitter = Splitter.on(CharMatcher.whitespace());
+			}
+			return splitter.splitToList(params.getString(0));
 		}
 	},
 

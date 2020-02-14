@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.catascopic.template.parse.Node;
 import com.catascopic.template.parse.TemplateParser;
+import com.google.common.collect.ImmutableMap;
 
 public class Template {
 
@@ -51,6 +52,10 @@ public class Template {
 	private Template(Node node, Settings settings) {
 		this.node = node;
 		this.settings = settings;
+	}
+
+	public String render() {
+		return render(newScope(newScope(ImmutableMap.<String, Object> of())));
 	}
 
 	public String render(Map<String, ? extends Object> params) {
