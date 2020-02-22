@@ -1,9 +1,7 @@
 package com.catascopic.template.value;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
+import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -23,6 +21,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.escape.Escaper;
@@ -129,6 +128,8 @@ public final class Values {
 			if (n1 != null) {
 				return add(n1, (Number) o2);
 			}
+		} else if (o1 instanceof Collection && o2 instanceof Collection) {
+			return combine((Collection<?>) o1, (Collection<?>) o2);
 		} else if (o1 instanceof Iterable && o2 instanceof Iterable) {
 			return Iterables.concat((Iterable<?>) o1, (Iterable<?>) o2);
 		}
@@ -637,22 +638,65 @@ public final class Values {
 		return "\"" + ESCAPER.escape(str) + "\"";
 	}
 
-	public static Iterable<String> splitLines(String str) {
-		// TODO: make this better but don't use regex
-		BufferedReader reader = new BufferedReader(new StringReader(str));
-		List<String> result = new ArrayList<>();
-		for (;;) {
-			String line;
-			try {
-				line = reader.readLine();
-			} catch (IOException e) {
-				throw new AssertionError(e);
+	public static Iterable<String> splitLines(final String str) {
+		return new Iterable<String>() {
+
+			@Override
+			public Iterator<String> iterator() {
+				return new Iterator<String>() {
+
+					int index;
+
+					@Override
+					public boolean hasNext() {
+						return index != -1;
+					}
+
+					@Override
+					public String next() {
+						int start = index;
+						while (index < str.length()) {
+							int i = index++;
+							switch (str.charAt(i)) {
+							case '\r':
+								if (index < str.length() && str.charAt(index) == '\n') {
+									index++;
+								}
+							case '\n':
+								return str.substring(start, i);
+							}
+						}
+						index = -1;
+						return str.substring(start);
+					}
+				};
 			}
-			if (line == null) {
-				return result;
+		};
+	}
+
+	private static Collection<?> combine(final Collection<?> c1, final Collection<?> c2) {
+		return new AbstractCollection<Object>() {
+
+			@Override
+			public Iterator<Object> iterator() {
+				return Iterators.concat(c1.iterator(), c2.iterator());
 			}
-			result.add(line);
-		}
+
+			@Override
+			public int size() {
+				return c1.size() + c2.size();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return c1.isEmpty() && c2.isEmpty();
+			}
+
+			@Override
+			public boolean contains(Object o) {
+				return c1.contains(o) || c2.contains(o);
+			}
+		};
 	}
 
 }

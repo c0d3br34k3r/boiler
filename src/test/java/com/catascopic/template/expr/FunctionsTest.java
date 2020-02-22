@@ -12,7 +12,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.catascopic.template.value.Values;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 
 public class FunctionsTest {
 
@@ -21,8 +23,7 @@ public class FunctionsTest {
 		Assert.assertEquals(camelToSeparator(""), "");
 		Assert.assertEquals(camelToSeparator("foo"), "foo");
 		Assert.assertEquals(camelToSeparator("fooBar"), "foo_bar");
-		Assert.assertEquals(camelToSeparator("fooBarBaz"),
-				"foo_bar_baz");
+		Assert.assertEquals(camelToSeparator("fooBarBaz"), "foo_bar_baz");
 	}
 
 	@Test
@@ -63,13 +64,31 @@ public class FunctionsTest {
 		Assert.assertEquals(slice("abcde", -2), "de");
 		Assert.assertEquals(slice(Arrays.asList(1, 2, 3, 4), 2),
 				Arrays.asList(3, 4));
-		
+
 	}
 
 	@Test
 	public void testUneval() {
-		System.out.println(Values.uneval((Object) ImmutableMap.of("what", 
+		System.out.println(Values.uneval((Object) ImmutableMap.of("what",
 				Arrays.asList(5, "\\5"))));
+	}
+
+	@Test
+	public void testSplitLInes() {
+		assertIterablesEqual(ImmutableList.of(""), Values.splitLines(""));
+		assertIterablesEqual(ImmutableList.of("abc"), Values.splitLines("abc"));
+		assertIterablesEqual(ImmutableList.of("a", "b", "c"), Values.splitLines("a\nb\nc"));
+		assertIterablesEqual(ImmutableList.of("ab", "c", ""), Values.splitLines("ab\rc\r"));
+		assertIterablesEqual(ImmutableList.of("a", "bc", "d",
+				"e", "", ""), Values.splitLines("a\r\nbc\rd\ne\n\r"));
+	}
+
+	static <E> void assertIterablesEqual(Iterable<E> expected, Iterable<E> actual) {
+		if (!Iterables.elementsEqual(expected, actual)) {
+			throw new AssertionError(String.format("expected %s but was %s",
+					Iterables.toString(expected),
+					Iterables.toString(actual)));
+		}
 	}
 
 }
