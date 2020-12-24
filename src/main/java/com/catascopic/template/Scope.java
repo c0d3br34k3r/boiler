@@ -18,7 +18,7 @@ public abstract class Scope implements Context, LocalAccess {
 	}
 
 	Scope(Map<String, ?> params) {
-		this(EmptyLocalAccess.EMPTY);
+		this(EmptyLocalAccess.EMPTY_LOCAL_ACCESS);
 		locals.putAll(params);
 	}
 

@@ -1,0 +1,10 @@
+@{set radius = 200}
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+	<rect height="480" width="640" y="0" x="0" fill="#${rectangleColor}"/>
+	<circle cx="320" cy="240" r="220" fill="#${circleColor}"/>
+	<polygon points="
+@{for angle in angles}
+	${cos(angle) * radius + 320},${sin(angle) * radius + 240} 
+@{end}
+	" fill="#${triangleColor}"/>
+</svg>

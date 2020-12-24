@@ -1,0 +1,37 @@
+@{set hours = [
+
+9.00,
+4.00,
+
+10.00,
+6.50,
+9.00,
+8.50,
+4.00,
+
+8.00,
+7.00,
+10.50,
+8.00,
+
+7.00,
+
+8.50,
+8.00,
+7.00,
+8.00,
+6.00,
+
+8.75,
+7,
+5,
+8,
+6
+
+]}
+@{set delta = sum(hours) - 8 * len(hours)}
+@{if delta == 0}
+EXACTLY EVEN
+@{else}
+${delta < 0 ? 'BEHIND' : 'AHEAD'} BY: ${abs(delta)} HOUR@{if abs(delta) != 1}S@{end}
+@{end}

@@ -4,7 +4,7 @@ import com.catascopic.template.Scope;
 
 public enum EmptyNode implements Node {
 
-	EMPTY;
+	EMPTY_NODE;
 
 	@Override
 	public void render(Appendable writer, Scope scope) {

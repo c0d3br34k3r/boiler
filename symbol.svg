@@ -1,0 +1,9 @@
+<svg width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+	<rect height="480" width="640" y="0" x="0" fill="#fcb670"/>
+	<circle cx="320" cy="240" r="220" fill="#0022fe"/>
+	<polygon points="
+	493.20508075688775,340.0 
+	146.79491924311225,340.0 
+	319.99999999999994,40.0 
+	" fill="#ff59ad"/>
+</svg>

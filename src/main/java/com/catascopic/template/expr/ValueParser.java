@@ -77,8 +77,7 @@ enum ValueParser implements TermParser {
 		}
 	}
 
-	private static Term parseIdentifier(Tokenizer tokenizer,
-			String identifier) {
+	private static Term parseIdentifier(Tokenizer tokenizer, String identifier) {
 		if (tokenizer.tryConsume(LEFT_PARENTHESIS)) {
 			return new FunctionTerm(identifier, parseList(tokenizer, RIGHT_PARENTHESIS));
 		}

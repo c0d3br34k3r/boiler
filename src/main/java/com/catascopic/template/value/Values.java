@@ -24,6 +24,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.escape.Escaper;
 import com.google.common.escape.Escapers;
 import com.google.common.math.IntMath;
@@ -109,7 +110,7 @@ public final class Values {
 		return -num.doubleValue();
 	}
 
-	public static Number invert(Object value) {
+	public static int invert(Object value) {
 		return ~toNumber(value).intValue();
 	}
 
@@ -538,14 +539,14 @@ public final class Values {
 		return Iterables.transform(map.entrySet(), ENTRIES);
 	}
 
-	private static final Function<Entry<?, ?>, List<?>> ENTRIES = new Function<Entry<?, ?>, List<
-			?>>() {
+	private static final Function<Entry<?, ?>, List<?>> ENTRIES =
+			new Function<Entry<?, ?>, List<?>>() {
 
-		@Override
-		public List<?> apply(Entry<?, ?> input) {
-			return Arrays.asList(input.getKey(), input.getValue());
-		}
-	};
+				@Override
+				public List<?> apply(Entry<?, ?> input) {
+					return Arrays.asList(input.getKey(), input.getValue());
+				}
+			};
 
 	public static Iterable<List<?>> enumerate(Iterable<?> iterable) {
 		return new Enumeration(iterable);
@@ -560,7 +561,7 @@ public final class Values {
 	}
 
 	public static Object eval(String expression) {
-		return eval(expression, NullContext.CONTEXT);
+		return eval(expression, NullContext.NULL_CONTEXT);
 	}
 
 	public static Object eval(String expression, Context context) {
@@ -616,9 +617,7 @@ public final class Values {
 				throw new TemplateRenderException("key <%s> (%s) is not a String",
 						key, key.getClass().getName());
 			}
-			builder.append(escape((String) key))
-					.append(": ")
-					.append(uneval(entry.getValue()));
+			builder.append(escape((String) key)).append(": ").append(uneval(entry.getValue()));
 			if (!iter.hasNext()) {
 				return builder.append('}').toString();
 			}
@@ -635,7 +634,7 @@ public final class Values {
 			.build();
 
 	public static String escape(String str) {
-		return "\"" + ESCAPER.escape(str) + "\"";
+		return '"' + ESCAPER.escape(str) + '"';
 	}
 
 	public static Iterable<String> splitLines(final String str) {
@@ -643,7 +642,7 @@ public final class Values {
 
 			@Override
 			public Iterator<String> iterator() {
-				return new Iterator<String>() {
+				return new UnmodifiableIterator<String>() {
 
 					int index;
 
@@ -654,7 +653,7 @@ public final class Values {
 
 					@Override
 					public String next() {
-						int start = index;
+						int lastIndex = index;
 						while (index < str.length()) {
 							int i = index++;
 							switch (str.charAt(i)) {
@@ -662,12 +661,13 @@ public final class Values {
 								if (index < str.length() && str.charAt(index) == '\n') {
 									index++;
 								}
+								// fallthrough
 							case '\n':
-								return str.substring(start, i);
+								return str.substring(lastIndex, i);
 							}
 						}
 						index = -1;
-						return str.substring(start);
+						return str.substring(lastIndex);
 					}
 				};
 			}
@@ -697,6 +697,34 @@ public final class Values {
 				return c1.contains(o) || c2.contains(o);
 			}
 		};
+	}
+
+	// String.replace uses regexes!? Unacceptable!
+	public static String replace(String str, String target, String replacement) {
+		int index = str.indexOf(target);
+		if (index == -1) {
+			return str;
+		}
+
+		StringBuilder builder = new StringBuilder(
+				estimateLength(str.length(), target.length(), replacement.length()));
+
+		int lastIndex = 0;
+		do {
+			builder.append(str.substring(lastIndex, index)).append(replacement);
+			lastIndex = index + target.length();
+			index = str.indexOf(target, lastIndex);
+		} while (index != -1);
+
+		return builder.append(str.substring(lastIndex)).toString();
+	}
+
+	private static final float REPLACE_FACTOR = .125f;
+
+	private static int estimateLength(int length, int target, int replacement) {
+		int delta = replacement - target;
+		return delta <= 0 ? length
+				: length + Math.max(delta, (int) (length / target * delta * REPLACE_FACTOR));
 	}
 
 }

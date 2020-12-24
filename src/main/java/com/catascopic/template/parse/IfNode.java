@@ -41,7 +41,7 @@ class IfNode implements Node {
 
 			@Override
 			protected Node build(Block block) {
-				return build(block, EmptyNode.EMPTY);
+				return build(block, EmptyNode.EMPTY_NODE);
 			}
 
 			@Override
@@ -72,7 +72,7 @@ class IfNode implements Node {
 
 				@Override
 				protected Node build(Block block) {
-					return build(block, EmptyNode.EMPTY);
+					return build(block, EmptyNode.EMPTY_NODE);
 				}
 
 				@Override
@@ -110,7 +110,7 @@ class IfNode implements Node {
 
 	@Override
 	public String toString() {
-		return elseNode == EmptyNode.EMPTY
+		return elseNode == EmptyNode.EMPTY_NODE
 				? "@{if " + condition + " " + block + "@{end}"
 				: "@{if " + condition + " " + block + elseNode + "@{end}";
 	}

@@ -325,7 +325,7 @@ public enum BuiltIn implements TemplateFunction {
 	},
 
 	/**
-	 * <code>replace(str, find, replace)</code>
+	 * <code>replace(str, target, replacement)</code>
 	 * <p>
 	 * Returns a string with all instances of a given substring replaced with
 	 * another string.
@@ -334,7 +334,7 @@ public enum BuiltIn implements TemplateFunction {
 
 		@Override
 		public Object apply(Params params) {
-			return params.getString(0).replace(params.getString(1), params.getString(2));
+			return Values.replace(params.getString(0), params.getString(1), params.getString(2));
 		}
 	},
 

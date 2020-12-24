@@ -10,7 +10,7 @@ public enum EmptyLocalAccess implements LocalAccess {
 	/**
 	 * The singleton {@link EmptyLocalAccess}.
 	 */
-	EMPTY;
+	EMPTY_LOCAL_ACCESS;
 
 	@Override
 	public Object get(String name) {

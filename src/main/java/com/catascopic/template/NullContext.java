@@ -10,7 +10,7 @@ public enum NullContext implements Context {
 	/**
 	 * The singleton {@link NullContext}.
 	 */
-	CONTEXT;
+	NULL_CONTEXT;
 
 	@Override
 	public Object get(String name) {
